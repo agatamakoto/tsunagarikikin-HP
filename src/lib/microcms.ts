@@ -4,6 +4,7 @@
  * microCMSのドキュメント: https://microcms.io/docs/api
  */
 
+const MICROCMS_SERVICE_DOMAIN = import.meta.env.MICROCMS_SERVICE_DOMAIN;
 const MICROCMS_API_URL = import.meta.env.MICROCMS_API_URL;
 const MICROCMS_API_KEY = import.meta.env.MICROCMS_API_KEY;
 
@@ -26,7 +27,9 @@ async function parseJsonResponse<T>(response: Response): Promise<T> {
 }
 
 function buildContentUrl(endpoint: string, options?: MicroCMSOptions): string {
-  const baseUrl = (MICROCMS_API_URL || '').replace(/\/+$/, '');
+  const baseUrl = MICROCMS_SERVICE_DOMAIN
+    ? `https://${MICROCMS_SERVICE_DOMAIN}.microcms.io/api/v1`
+    : (MICROCMS_API_URL || '').replace(/\/+$/, '');
   const params = new URLSearchParams();
 
   if (options?.limit) params.append('limit', options.limit.toString());
@@ -35,7 +38,8 @@ function buildContentUrl(endpoint: string, options?: MicroCMSOptions): string {
   if (options?.filters) params.append('filters', options.filters);
   if (options?.orders) params.append('orders', options.orders);
 
-  const endpointSuffix = `/apis/${endpoint}`;
+  const isLegacyApiPath = baseUrl.includes('/apis/');
+  const endpointSuffix = isLegacyApiPath ? `/apis/${endpoint}` : `/api/v1/${endpoint}`;
   const resolvedBase = baseUrl.endsWith(endpointSuffix) ? baseUrl : `${baseUrl}/${endpoint}`;
 
   return `${resolvedBase}${params.toString() ? '?' + params.toString() : ''}`;
@@ -48,7 +52,7 @@ export async function getMicroCMSContent<T>(
   endpoint: string,
   options?: MicroCMSOptions
 ): Promise<T> {
-  if (!MICROCMS_API_URL || !MICROCMS_API_KEY) {
+  if ((!MICROCMS_SERVICE_DOMAIN && !MICROCMS_API_URL) || !MICROCMS_API_KEY) {
     console.warn('microCMS環境変数が設定されていません。.env.localを確認してください。');
     // デモ用のダミーデータを返す
     return getDummyContent(endpoint) as T;
@@ -82,11 +86,17 @@ export async function getMicroCMSDocument<T>(
   endpoint: string,
   documentId: string
 ): Promise<T> {
-  if (!MICROCMS_API_URL || !MICROCMS_API_KEY) {
+  if ((!MICROCMS_SERVICE_DOMAIN && !MICROCMS_API_URL) || !MICROCMS_API_KEY) {
     return getDummyDocument(endpoint, documentId) as T;
   }
 
-  const url = `${MICROCMS_API_URL}/${endpoint}/${documentId}`;
+  const baseUrl = MICROCMS_SERVICE_DOMAIN
+    ? `https://${MICROCMS_SERVICE_DOMAIN}.microcms.io/api/v1`
+    : (MICROCMS_API_URL || '').replace(/\/+$/, '');
+  const isLegacyApiPath = baseUrl.includes('/apis/');
+  const endpointSuffix = isLegacyApiPath ? `/apis/${endpoint}` : `/api/v1/${endpoint}`;
+  const resolvedBase = baseUrl.endsWith(endpointSuffix) ? baseUrl : `${baseUrl}/${endpoint}`;
+  const url = `${resolvedBase}/${documentId}`;
 
   try {
     const response = await fetch(url, {
