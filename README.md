@@ -62,6 +62,13 @@ npm run dev
 
 詳細は [MICROCMS_SETUP.md](./MICROCMS_SETUP.md) をご参照ください。
 
+`.env.local` の推奨設定:
+
+```bash
+MICROCMS_SERVICE_DOMAIN=your-service-domain
+MICROCMS_API_KEY=your_microcms_api_key
+```
+
 ### DNS設定（escf.jp）
 
 詳細は [DNS_SETUP.md](./DNS_SETUP.md) をご参照ください。
@@ -258,3 +265,4 @@ ISC License
 - [Astro ドキュメント](https://docs.astro.build/)
 - [microCMS ドキュメント](https://microcms.io/docs/)
 - [GitHub Pages](https://pages.github.com/)
+　
