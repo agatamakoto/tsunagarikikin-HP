@@ -1,0 +1,128 @@
+---
+// src/layouts/Layout.astro
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description || "公益財団法人えひめ西条つながり基金ホームページ"} />
+    <title>{title} | 公益財団法人えひめ西条つながり基金</title>
+    <style is:global>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        /* カラーパレット */
+        --color-primary: #5ec7d4; /* 透明感のある水色 */
+        --color-accent: #ff9f3c; /* 暖かいオレンジ */
+        --color-secondary: #ffd84c; /* イエロー */
+        --color-dark: #2c3e50;
+        --color-light: #f8f9fa;
+        --color-white: #ffffff;
+        --color-gray: #95a5a6;
+
+        /* タイポグラフィ */
+        --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Noto Sans JP", sans-serif;
+        --font-size-base: 16px;
+        --font-size-lg: 18px;
+        --font-size-xl: 20px;
+        --font-size-2xl: 24px;
+        --font-size-3xl: 32px;
+        --font-size-4xl: 48px;
+
+        /* スペーシング */
+        --spacing-xs: 4px;
+        --spacing-sm: 8px;
+        --spacing-md: 16px;
+        --spacing-lg: 24px;
+        --spacing-xl: 32px;
+        --spacing-2xl: 48px;
+      }
+
+      html {
+        font-family: var(--font-family);
+        font-size: var(--font-size-base);
+        color: var(--color-dark);
+      }
+
+      body {
+        background-color: var(--color-white);
+        line-height: 1.6;
+      }
+
+      h1, h2, h3, h4, h5, h6 {
+        font-weight: 700;
+        line-height: 1.2;
+        margin-top: var(--spacing-lg);
+        margin-bottom: var(--spacing-md);
+      }
+
+      h1 {
+        font-size: var(--font-size-4xl);
+      }
+
+      h2 {
+        font-size: var(--font-size-3xl);
+      }
+
+      h3 {
+        font-size: var(--font-size-2xl);
+      }
+
+      p {
+        margin-bottom: var(--spacing-md);
+      }
+
+      a {
+        color: var(--color-primary);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+
+      a:hover {
+        color: var(--color-accent);
+      }
+
+      button {
+        font-family: var(--font-family);
+        cursor: pointer;
+        border: none;
+        border-radius: 20px;
+        padding: var(--spacing-md) var(--spacing-lg);
+        font-size: var(--font-size-base);
+        transition: all 0.3s ease;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(94, 199, 212, 0.3);
+      }
+
+      img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 var(--spacing-md);
+      }
+    </style>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

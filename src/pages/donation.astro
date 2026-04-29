@@ -1,0 +1,401 @@
+---
+// src/pages/donation.astro
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="寄付をする" description="つながり基金への寄付方法について">
+  <Header />
+  
+  <main>
+    <div class="container page-content">
+      <h1>寄付をする</h1>
+
+      <section id="how">
+        <h2>寄付の仕組み</h2>
+        <p class="lead">あなたの想いが、愛媛の未来を育む力になります。</p>
+        <p>（公財）えひめ西条つながり基金へのご寄付は、愛媛県全域の地域課題解決や魅力づくりに取り組むNPOや市民活動団体への助成金として、大切に活用させていただきます。</p>
+
+        <div class="three-step-grid">
+          <article class="step-card">
+            <div class="step-number">1</div>
+            <h3>想いを託す</h3>
+            <p>皆様からの想いと一緒にご寄付をお預かりします。</p>
+          </article>
+
+          <article class="step-card">
+            <div class="step-number">2</div>
+            <h3>必要な場所へ届ける</h3>
+            <p>愛媛の課題解決に取り組む団体を厳正に審査し、助成金を交付します。</p>
+          </article>
+
+          <article class="step-card">
+            <div class="step-number">3</div>
+            <h3>未来が変わる</h3>
+            <p>助成を受けた団体が活動し、愛媛のまちがより豊かになります。活動報告は定期的にウェブサイト等でお知らせします。</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="donation-methods">
+        <h2>寄付方法の選択</h2>
+
+        <div class="accordion-item">
+          <button class="accordion-button" type="button" data-target="personal-detail">
+            <span>個人向け寄付</span>
+            <span>愛媛を愛するお一人おひとりの支援が、確かな一歩を生み出します。</span>
+          </button>
+          <div id="personal-detail" class="accordion-panel">
+            <p>ライフスタイルに合わせて、ご無理のない範囲でご支援いただける2つの方法をご用意しています。</p>
+
+            <div class="donation-option">
+              <h3>① マンスリーサポーター（継続寄付）</h3>
+              <p>毎月定額（1,000円〜）をクレジットカードで自動的にご寄付いただく仕組みです。継続的な支援が、地域活動の安定した基盤となります。</p>
+              <a class="donation-button" href="/contact">毎月1,000円から支援する</a>
+            </div>
+
+            <div class="donation-option">
+              <h3>② 都度寄付（今回のみの寄付）</h3>
+              <p>「今、応援したい」というタイミングで、任意の金額をご寄付いただけます。（クレジットカード、銀行振込など）</p>
+              <a class="donation-button" href="/contact">今回のみ支援する</a>
+            </div>
+
+            <div class="tax-note">
+              <strong>個人寄付の税制優遇について</strong>
+              <p>当基金は「公益財団法人」です。ご寄付は<strong>「寄付金控除（税額控除または所得控除）」の対象</strong>となります。確定申告を行っていただくことで、<strong>寄付金額の最大約40%が所得税から戻ってくる（税額控除の場合）</strong>など、大変有利な税制優遇が受けられます。</p>
+            </div>
+
+            <div class="simulator-card">
+              <h4>年収別・寄付金控除シミュレーション</h4>
+              <p>簡易シミュレーションで、寄付による税制優遇のイメージをチェックできます。</p>
+              <a class="simulator-button" href="/contact">シミュレーションをする</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-button" type="button" data-target="corporate-detail">
+            <span>企業・法人向け寄付</span>
+            <span>企業の力で、地域社会に持続可能なインパクトを。</span>
+          </button>
+          <div id="corporate-detail" class="accordion-panel">
+            <p>愛媛県の持続的な発展は、地元企業の皆様の成長と密接に関わっています。CSR（企業の社会的責任）やSDGsへの取り組みの一環として、ぜひご活用ください。</p>
+
+            <div class="tax-note">
+              <strong>法人寄付の税制優遇について</strong>
+              <p>公益財団法人への寄付は、一般の寄付金の損金算入限度額とは別枠で、<strong>「特別損金算入限度額」</strong>まで損金（経費）に算入することが可能です。法人税の負担を軽減しながら、地域貢献を実現できます。</p>
+            </div>
+
+            <div class="corporate-supporter">
+              <h3>法人サポーター制度について</h3>
+              <p>月額3,000円、または年額30,000円からのご寄付で「法人サポーター」としてご登録いただけます。当基金HPでの企業ロゴ掲載や、貴社の想いを伝えるインタビュー記事の掲載などの特典をご用意しております。</p>
+              <a class="donation-button" href="/contact">法人サポーター特設ページへ</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-button" type="button" data-target="crown-detail">
+            <span>冠（かんむり）基金の設立</span>
+            <span>あなたの名前や企業の理念を、愛媛県の未来へ。</span>
+          </button>
+          <div id="crown-detail" class="accordion-panel">
+            <p>「冠（かんむり）基金」とは、ご寄付者様のお名前や企業名、ご家族の想い出の名前などを冠した「オーダーメイドの基金」を設立できる制度です。</p>
+
+            <div class="recommended-for">
+              <h3>こんな方におすすめです</h3>
+              <ul>
+                <li>企業の周年記念事業として、地域へ恩返しをしたい。</li>
+                <li>故人の遺志を継ぎ、特定の分野（例：子どもたちのスポーツ振興）を支援し続けたい。</li>
+              </ul>
+            </div>
+
+            <div class="fund-structure">
+              <h3>仕組み</h3>
+              <p>まとまった金額をご寄付いただき、ご希望の名称と助成テーマを設定します。当基金が事務局となり、そのテーマに沿った活動を行う団体へ助成を行います。</p>
+              <p>※設立に必要な金額や手続きについては、個別にご相談を承ります。お気軽にお問い合わせください。</p>
+              <a class="donation-button" href="/contact">冠基金について問い合わせる</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-button" type="button" data-target="legacy-detail">
+            <span>遺贈寄付</span>
+            <span>人生の集大成として、愛する愛媛に想いを遺す。</span>
+          </button>
+          <div id="legacy-detail" class="accordion-panel">
+            <p>遺贈（いぞう）寄付とは、遺言により、ご自身の財産の一部または全部を公益活動のために寄付することです。「お世話になったまちの未来のために、財産を役立ててほしい」という温かいお気持ちを形にします。</p>
+
+            <div class="benefits-list">
+              <h3>遺贈寄付のメリット</h3>
+              <ul>
+                <li><strong>想いの実現:</strong> ご自身の生きた証として、未来の地域社会に貢献できます。</li>
+                <li><strong>相続税の非課税措置:</strong> 公益財団法人である当基金へのご寄付（遺贈）財産には、原則として相続税がかかりません（租税特別措置法第70条）。これにより、ご遺族の税負担を軽減しつつ、社会貢献が可能です。</li>
+              </ul>
+            </div>
+
+            <div class="consultation-flow">
+              <h3>ご相談の流れ</h3>
+              <p>秘密厳守で、専任のスタッフや専門家（弁護士・税理士等）と連携しながらご相談を承ります。まずは、専用のお問い合わせフォームまたはお電話にてお気軽にご連絡ください。</p>
+              <a class="donation-button" href="/contact">遺贈寄付について問い合わせる</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .page-content {
+    padding: var(--spacing-2xl) 0;
+    max-width: 900px;
+  }
+
+  .page-content h1 {
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-2xl);
+    border-bottom: 3px solid var(--color-primary);
+    padding-bottom: var(--spacing-lg);
+  }
+
+  .page-content section {
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .page-content h2 {
+    color: var(--color-primary);
+    margin-top: 0;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .page-content .lead {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-dark);
+  }
+
+  .three-step-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-xl);
+  }
+
+  .step-card {
+    background: linear-gradient(180deg, rgba(94,199,212,0.12), rgba(255,255,255,1));
+    border: 1px solid rgba(94,199,212,0.25);
+    border-radius: 24px;
+    padding: var(--spacing-lg);
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .step-number {
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    background-color: var(--color-primary);
+    color: white;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  .step-card h3 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+
+  .step-card p {
+    margin: 0;
+    color: var(--color-dark);
+    line-height: 1.75;
+    flex: 1;
+  }
+
+  .accordion-item {
+    border-radius: 24px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .accordion-button {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-md);
+    background-color: var(--color-white);
+    border: none;
+    padding: var(--spacing-lg);
+    font-size: var(--font-size-base);
+    text-align: left;
+    cursor: pointer;
+    color: var(--color-dark);
+    position: relative;
+  }
+
+  .accordion-button span:first-child {
+    font-weight: 700;
+  }
+
+  .accordion-button span:last-child {
+    color: var(--color-gray);
+    flex: 1;
+  }
+
+  .accordion-button::after {
+    content: '+';
+    font-size: 24px;
+    color: var(--color-primary);
+    transition: transform 0.3s ease;
+  }
+
+  .accordion-button.active::after {
+    transform: rotate(45deg);
+  }
+
+  .accordion-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+    background-color: var(--color-light);
+    padding: 0 var(--spacing-lg);
+  }
+
+  .accordion-panel.open {
+    padding: var(--spacing-lg);
+    max-height: 2000px;
+  }
+
+  .accordion-panel p,
+  .accordion-panel li,
+  .accordion-panel h3,
+  .accordion-panel h4 {
+    color: var(--color-dark);
+  }
+
+  .donation-option,
+  .corporate-supporter,
+  .recommended-for,
+  .fund-structure,
+  .benefits-list,
+  .consultation-flow,
+  .simulator-card,
+  .tax-note {
+    background: white;
+    border-radius: 20px;
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+    border: 1px solid rgba(94,199,212,0.12);
+  }
+
+  .donation-option h3,
+  .corporate-supporter h3,
+  .recommended-for h3,
+  .fund-structure h3,
+  .benefits-list h3,
+  .consultation-flow h3,
+  .simulator-card h4 {
+    margin-top: 0;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .tax-note p,
+  .donation-option p,
+  .corporate-supporter p,
+  .fund-structure p,
+  .consultation-flow p,
+  .simulator-card p {
+    margin: 0;
+    line-height: 1.75;
+  }
+
+  .tax-note {
+    background-color: rgba(255, 235, 205, 0.9);
+  }
+
+  .tax-note strong {
+    color: var(--color-primary);
+  }
+
+  .donation-button,
+  .simulator-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: var(--spacing-md);
+    background-color: var(--color-primary);
+    color: white;
+    text-decoration: none;
+    padding: 0.9rem 1.3rem;
+    border-radius: 999px;
+    transition: background-color 0.25s ease;
+  }
+
+  .donation-button:hover,
+  .simulator-button:hover {
+    background-color: #4baab3;
+  }
+
+  .benefits-list ul,
+  .recommended-for ul {
+    padding-left: 1.2rem;
+    margin: 0;
+  }
+
+  .benefits-list li,
+  .recommended-for li {
+    margin-bottom: var(--spacing-sm);
+    line-height: 1.8;
+  }
+
+  @media (max-width: 900px) {
+    .three-step-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 680px) {
+    .accordion-button {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .accordion-button span:last-child {
+      margin-top: var(--spacing-sm);
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const buttons = document.querySelectorAll('.accordion-button');
+
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        const target = document.getElementById(button.dataset.target);
+        const isOpen = target.classList.contains('open');
+
+        buttons.forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.accordion-panel').forEach(panel => panel.classList.remove('open'));
+
+        if (!isOpen) {
+          button.classList.add('active');
+          target.classList.add('open');
+        }
+      });
+    });
+  });
+</script>

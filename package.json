@@ -1,18 +1,24 @@
 {
-  "name": "@example/minimal",
-  "type": "module",
-  "version": "0.0.1",
-  "private": true,
-  "engines": {
-    "node": ">=22.12.0"
-  },
+  "name": "tender-telescope",
+  "version": "1.0.0",
+  "description": "つながり基金ホームページ開発プロジェクト",
+  "main": "index.js",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+    "preview": "astro preview"
+  },
+  "keywords": [
+    "web",
+    "fund",
+    "homepage"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "astro": "^6.1.9"
   },
   "dependencies": {
-    "astro": "^6.1.9"
+    "node-fetch": "^3.3.2"
   }
 }

@@ -1,0 +1,292 @@
+---
+// src/pages/support.astro
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="助成や支援を受ける" description="つながり基金の助成や伴走支援プログラムについて">
+  <Header />
+  
+  <main>
+    <div class="container page-content">
+      <h1>助成や支援を受ける</h1>
+
+      <section class="section section-programs">
+        <div class="section-header">
+          <div>
+            <h2>助成プログラム一覧（現在募集中）</h2>
+            <p class="section-lead">【助成プログラムはmicroCMSから動的に読み込まれます】</p>
+          </div>
+        </div>
+
+        <div class="card-grid">
+          <article class="program-card">
+            <div class="program-image">募集中</div>
+            <div class="program-content">
+              <h3>地域のあったか見守り支援プログラム</h3>
+              <p>生活支援や見守り活動を行う団体のための助成プログラムです。</p>
+              <div class="program-meta">
+                <span>募集期間：2026/05/01〜2026/06/30</span>
+                <span>対象：市民活動団体・NPO</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="program-card">
+            <div class="program-image">募集中</div>
+            <div class="program-content">
+              <h3>若者のチャレンジ支援助成</h3>
+              <p>新しい活動やチャレンジを応援する団体のための公募型助成です。</p>
+              <div class="program-meta">
+                <span>募集期間：2026/05/15〜2026/07/15</span>
+                <span>対象：20代〜40代を支援する団体</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="crowdfunding" class="section section-crowdfunding">
+        <div class="section-header">
+          <div>
+            <h2>寄付型クラウドファンディング</h2>
+            <p class="section-lead">あなたの団体の熱い想いを、共感と資金に変える仕組みです。</p>
+            <p>「この地域課題を解決したい」「新しいプロジェクトを立ち上げたい」という市民活動団体の皆様の取り組みをWeb上で発信し、広く一般から寄付（活動資金）を募るプログラム（事業指定助成プログラム）です。当基金がプラットフォームを提供し、皆様の資金集めを強力にバックアップします。</p>
+          </div>
+        </div>
+
+        <div class="benefit-grid">
+          <article class="benefit-card">
+            <div class="benefit-icon">💰</div>
+            <h3>寄付者に「税制優遇」を提供できる</h3>
+            <p>当基金の仕組みを活用することで、寄付者様は<strong>寄付金控除</strong>を受けることができます。これが寄付への大きな後押しとなります。</p>
+          </article>
+
+          <article class="benefit-card">
+            <div class="benefit-icon">🤝</div>
+            <h3>信頼性の向上</h3>
+            <p>公益財団法人である当基金の審査を経てWebサイトに掲載されるため、プロジェクトの社会的な信用度が高まります。</p>
+          </article>
+
+          <article class="benefit-card">
+            <div class="benefit-icon">🚀</div>
+            <h3>リスクなしで挑戦できる</h3>
+            <p>募集期間は最大1年間で任意に設定可能。集まった寄付金から当基金の運営費（10%）を除いた全額を活動のための助成金として交付します。</p>
+          </article>
+        </div>
+
+        <div class="section-action">
+          <a class="primary-button" href="/contact">募集要項・エントリー詳細はこちら</a>
+        </div>
+      </section>
+
+      <section class="section section-support">
+        <div class="section-header">
+          <div>
+            <h2>組織基盤強化・伴走支援</h2>
+            <p class="section-lead">活動を持続可能にするため、強くてしなやかな「組織づくり」をサポートします。</p>
+            <p>地域を良くする素晴らしい活動も、資金繰りや人材不足などの壁にぶつかると、長く続けることが難しくなってしまいます。当基金では「助成金をお渡しして終わり」ではなく、皆様の活動が地域に根付き、自立して継続できるよう、組織の土台づくりを伴走（並走）して支援します。</p>
+          </div>
+        </div>
+
+        <div class="support-list">
+          <article class="support-item">
+            <div class="support-icon">✔️</div>
+            <div>
+              <h3>4つの視点からの総合アドバイス</h3>
+              <p>団体の成長ステージに合わせて、「事業（何をするか）」「財務（お金の管理と調達）」「組織（人づくり）」「成果（社会へのインパクト）」の4つの観点から課題を整理し、解決策を一緒に考えます。</p>
+            </div>
+          </article>
+
+          <article class="support-item">
+            <div class="support-icon">📘</div>
+            <div>
+              <h3>専門的なノウハウの提供</h3>
+              <p>ファンドレイジング（資金調達）の戦略、マーケティングや広報PR、非営利組織ならではの会計・税務の知識など、実践的なノウハウを提供し、組織のレベルアップを後押しします。</p>
+            </div>
+          </article>
+
+          <article class="support-item">
+            <div class="support-icon">🌐</div>
+            <div>
+              <h3>地域ネットワークとの接続</h3>
+              <p>他の活動団体や企業、行政、専門家（税理士など）とのマッチングを行い、孤立させないサポート体制を築きます。</p>
+            </div>
+          </article>
+        </div>
+
+        <div class="section-action">
+          <a class="secondary-button" href="/contact">組織の課題について相談してみる</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .page-content {
+    padding: var(--spacing-2xl) 0;
+    max-width: 1000px;
+  }
+
+  h1 {
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-2xl);
+    border-bottom: 3px solid var(--color-primary);
+    padding-bottom: var(--spacing-lg);
+  }
+
+  .section {
+    margin-bottom: var(--spacing-2xl);
+    padding: var(--spacing-xl) 0;
+  }
+
+  .section-header {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .section-lead {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--color-dark);
+    margin-top: var(--spacing-sm);
+  }
+
+  .card-grid,
+  .benefit-grid,
+  .support-list {
+    display: grid;
+    gap: var(--spacing-lg);
+  }
+
+  .card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .program-card,
+  .benefit-card,
+  .support-item {
+    background-color: var(--color-white);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 24px;
+    padding: var(--spacing-lg);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  }
+
+  .program-image {
+    background-color: rgba(94, 199, 212, 0.15);
+    color: var(--color-primary);
+    border-radius: 20px;
+    height: 180px;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .program-content h3,
+  .benefit-card h3,
+  .support-item h3 {
+    margin-bottom: var(--spacing-sm);
+    color: var(--color-dark);
+  }
+
+  .program-card p,
+  .benefit-card p,
+  .support-item p {
+    color: var(--color-dark);
+    line-height: 1.75;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .program-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    color: var(--color-gray);
+    font-size: 0.95rem;
+  }
+
+  .benefit-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .benefit-icon,
+  .support-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background-color: var(--color-primary);
+    color: white;
+    display: grid;
+    place-items: center;
+    font-size: 1.3rem;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .support-list {
+    grid-template-columns: 1fr;
+  }
+
+  .support-item {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: var(--spacing-md);
+    align-items: flex-start;
+  }
+
+  .section-action {
+    margin-top: var(--spacing-xl);
+  }
+
+  .primary-button,
+  .secondary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 1.6rem;
+    border-radius: 999px;
+    font-weight: 700;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .primary-button {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+  }
+
+  .secondary-button {
+    background-color: var(--color-accent);
+    color: var(--color-dark);
+  }
+
+  .primary-button:hover,
+  .secondary-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px rgba(94, 199, 212, 0.18);
+  }
+
+  strong {
+    color: var(--color-primary);
+  }
+
+  @media (max-width: 960px) {
+    .card-grid,
+    .benefit-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .support-item {
+      grid-template-columns: 1fr;
+    }
+
+    .program-meta {
+      font-size: 0.95rem;
+    }
+  }
+</style>

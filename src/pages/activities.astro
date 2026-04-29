@@ -1,0 +1,376 @@
+---
+// src/pages/activities.astro
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="活動を知る" description="寄付の活用や活動報告をご紹介します">
+  <Header />
+
+  <main>
+    <div class="container page">
+      <header class="page-header">
+        <h1>活動を知る</h1>
+        <p class="intro">皆様からお預かりした大切なご寄付が、どのように愛媛の地域課題解決に活かされているか、最新の取り組みや成果をご報告します。</p>
+      </header>
+
+      <section class="section impact">
+        <div class="section-head">
+          <h2>これまでのご支援</h2>
+        </div>
+
+        <div class="stat-grid">
+          <article class="stat-card">
+            <p class="stat-label">寄付総額</p>
+            <p class="stat-value">1,250万</p>
+            <p class="stat-unit">円</p>
+          </article>
+
+          <article class="stat-card">
+            <p class="stat-label">寄付者延べ人数</p>
+            <p class="stat-value">850</p>
+            <p class="stat-unit">人</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section reports">
+        <div class="section-head">
+          <h2>助成先の声・活動レポート</h2>
+        </div>
+
+        <div class="report-grid">
+          <article class="report-card">
+            <div class="report-thumb">画像</div>
+            <div class="report-body">
+              <div class="report-meta">
+                <span>2026.04.10</span>
+                <span class="tag">助成先レポート</span>
+              </div>
+              <h3>西条市の子ども食堂への支援活動報告</h3>
+              <p>地域の子どもたちに安定した居場所を届ける取り組み。毎週の活動で見えてきた変化と今後の展望をご紹介します。</p>
+            </div>
+          </article>
+
+          <article class="report-card">
+            <div class="report-thumb">画像</div>
+            <div class="report-body">
+              <div class="report-meta">
+                <span>2026.03.22</span>
+                <span class="tag">助成先レポート</span>
+              </div>
+              <h3>障がい者就労支援の現場からの声</h3>
+              <p>就労支援プログラムを通じて、自立を目指す利用者の挑戦と支援の成果をレポートします。</p>
+            </div>
+          </article>
+
+          <article class="report-card">
+            <div class="report-thumb">画像</div>
+            <div class="report-body">
+              <div class="report-meta">
+                <span>2026.02.18</span>
+                <span class="tag">助成先レポート</span>
+              </div>
+              <h3>地域環境保全プロジェクトの活動記録</h3>
+              <p>自然環境の保全と地域住民の関わりを深めるプロジェクトの現状と、次の展開についてお伝えします。</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="news" class="section news">
+        <div class="section-head">
+          <h2>お知らせ</h2>
+          <p class="section-note">【最新のお知らせはmicroCMSから動的に読み込まれます】</p>
+        </div>
+
+        <div class="list-card">
+          <article class="news-item">
+            <div>
+              <span class="news-date">2026.04.15</span>
+              <span class="news-tag info">お知らせ</span>
+            </div>
+            <p class="news-title">2026年度の助成プログラム募集を開始しました</p>
+          </article>
+
+          <article class="news-item">
+            <div>
+              <span class="news-date">2026.03.10</span>
+              <span class="news-tag event">イベント</span>
+            </div>
+            <p class="news-title">地域連携フォーラム2026をオンライン開催します</p>
+          </article>
+
+          <article class="news-item">
+            <div>
+              <span class="news-date">2026.01.28</span>
+              <span class="news-tag report">レポート</span>
+            </div>
+            <p class="news-title">寄付活用の成果レポートを公開しました</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="media" class="section media">
+        <div class="section-head">
+          <h2>メディア掲載実績</h2>
+          <p class="section-note">【メディア掲載実績はmicroCMSから動的に読み込まれます】</p>
+        </div>
+
+        <div class="list-card">
+          <article class="news-item">
+            <div>
+              <span class="news-date">2026.04.05</span>
+              <span class="news-tag media">新聞</span>
+            </div>
+            <p class="news-title">愛媛新聞に当基金の取り組みが掲載されました</p>
+          </article>
+
+          <article class="news-item">
+            <div>
+              <span class="news-date">2026.03.12</span>
+              <span class="news-tag media">TV</span>
+            </div>
+            <p class="news-title">地元ニュースで助成活動の成果が紹介されました</p>
+          </article>
+
+          <article class="news-item">
+            <div>
+              <span class="news-date">2026.02.25</span>
+              <span class="news-tag media">Web</span>
+            </div>
+            <p class="news-title">ウェブメディアで活動報告が取り上げられました</p>
+          </article>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .page {
+    padding: var(--spacing-2xl) 0;
+    max-width: 1100px;
+  }
+
+  .page-header {
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .page-header h1 {
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-md);
+    border-bottom: 3px solid var(--color-primary);
+    display: inline-block;
+    padding-bottom: 0.5rem;
+  }
+
+  .intro {
+    max-width: 760px;
+    line-height: 1.75;
+    margin-top: var(--spacing-md);
+    color: var(--color-dark);
+  }
+
+  .section {
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .section-head h2 {
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .section-note {
+    color: var(--color-gray);
+    margin-top: calc(var(--spacing-sm) / 2);
+    line-height: 1.6;
+  }
+
+  .stat-grid,
+  .report-grid,
+  .list-card {
+    display: grid;
+    gap: var(--spacing-lg);
+  }
+
+  .stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stat-card {
+    background: var(--color-white);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 24px;
+    padding: var(--spacing-xl);
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(44, 62, 80, 0.05);
+  }
+
+  .stat-label {
+    color: var(--color-gray);
+    margin-bottom: var(--spacing-md);
+    display: block;
+    font-weight: 700;
+  }
+
+  .stat-value {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--color-accent);
+    line-height: 1;
+  }
+
+  .stat-unit {
+    margin-top: var(--spacing-sm);
+    color: var(--color-dark);
+    font-weight: 700;
+  }
+
+  .report-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .report-card {
+    background: var(--color-white);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 10px 28px rgba(44, 62, 80, 0.05);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .report-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(44, 62, 80, 0.12);
+  }
+
+  .report-thumb {
+    min-height: 180px;
+    background: rgba(94, 199, 212, 0.12);
+    display: grid;
+    place-items: center;
+    color: var(--color-primary);
+    font-weight: 700;
+  }
+
+  .report-body {
+    padding: var(--spacing-lg);
+  }
+
+  .report-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+    color: var(--color-gray);
+    font-size: 0.95rem;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(94, 199, 212, 0.18);
+    color: var(--color-primary);
+    font-weight: 700;
+  }
+
+  .report-body h3 {
+    margin: 0 0 var(--spacing-sm) 0;
+    color: var(--color-dark);
+    line-height: 1.4;
+  }
+
+  .report-body p {
+    margin: 0;
+    line-height: 1.75;
+    color: var(--color-dark);
+  }
+
+  .news .list-card,
+  .media .list-card {
+    border-radius: 24px;
+    background: var(--color-white);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 10px 30px rgba(44, 62, 80, 0.05);
+    overflow: hidden;
+  }
+
+  .news-item {
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .news-item:last-child {
+    border-bottom: none;
+  }
+
+  .news-item div {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .news-date {
+    color: var(--color-gray);
+    font-size: 0.95rem;
+  }
+
+  .news-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-white);
+  }
+
+  .news-tag.info {
+    background: var(--color-primary);
+  }
+
+  .news-tag.event {
+    background: var(--color-accent);
+  }
+
+  .news-tag.report {
+    background: #6c757d;
+  }
+
+  .news-tag.media {
+    background: #2c3e50;
+  }
+
+  .news-title {
+    margin: 0;
+    color: var(--color-dark);
+    font-weight: 700;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 980px) {
+    .stat-grid,
+    .report-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .page {
+      padding: var(--spacing-xl) 0;
+    }
+
+    .report-meta {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>

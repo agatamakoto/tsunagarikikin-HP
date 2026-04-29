@@ -1,0 +1,243 @@
+---
+// src/components/QuestionFlow.astro
+---
+
+<section class="question-flow">
+  <div class="container">
+    <h2>あなたはどの立場ですか？</h2>
+    <p class="subtitle">あなたの立場から、最適な情報をお届けします</p>
+    
+    <div class="flow-container">
+      <div class="step-1">
+        <div class="options" id="step1Options">
+          <div class="option-card" data-role="individual">
+            <div class="icon">👤</div>
+            <h3>個人として</h3>
+            <p>地域のために何かしたい</p>
+          </div>
+
+          <div class="option-card" data-role="company">
+            <div class="icon">🏢</div>
+            <h3>企業・法人として</h3>
+            <p>企業の社会貢献活動</p>
+          </div>
+
+          <div class="option-card" data-role="npo">
+            <div class="icon">🤝</div>
+            <h3>NPO・地域活動団体として</h3>
+            <p>組織として関わりたい</p>
+          </div>
+
+          <div class="option-card" data-role="government">
+            <div class="icon">🏛️</div>
+            <h3>行政・教育機関として</h3>
+            <p>自治体や学校として</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-2" id="step2" style="display: none;">
+        <button class="back-btn" id="backBtn">&larr; 戻る</button>
+        <h3 id="step2Title">どのような形で関わりたいですか？</h3>
+        <div class="options" id="step2Options"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .question-flow {
+    padding: var(--spacing-2xl) 0;
+    background: linear-gradient(135deg, rgba(94, 199, 212, 0.05) 0%, rgba(255, 159, 60, 0.05) 100%);
+  }
+
+  .question-flow h2 {
+    text-align: center;
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .subtitle {
+    text-align: center;
+    font-size: var(--font-size-lg);
+    color: var(--color-gray);
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .flow-container {
+    position: relative;
+  }
+
+  .step-1,
+  .step-2 {
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .option-card {
+    background-color: var(--color-white);
+    border: 2px solid #e0e0e0;
+    border-radius: 20px;
+    padding: var(--spacing-lg);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .option-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 8px 24px rgba(94, 199, 212, 0.2);
+    transform: translateY(-4px);
+  }
+
+  .option-card .icon {
+    font-size: 48px;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .option-card h3 {
+    margin: var(--spacing-md) 0;
+    color: var(--color-dark);
+  }
+
+  .option-card p {
+    color: var(--color-gray);
+    font-size: var(--font-size-base);
+    margin: 0;
+  }
+
+  .back-btn {
+    background-color: transparent;
+    border: 2px solid var(--color-gray);
+    color: var(--color-gray);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: 20px;
+    margin-bottom: var(--spacing-xl);
+    font-size: var(--font-size-base);
+  }
+
+  .back-btn:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  #step2Title {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+    color: var(--color-primary);
+  }
+
+  @media (max-width: 768px) {
+    .options {
+      grid-template-columns: 1fr;
+    }
+
+    .option-card .icon {
+      font-size: 36px;
+    }
+  }
+</style>
+
+<script>
+  // 質問フロー用のデータ
+  const flowData = {
+    individual: {
+      title: '個人として - どのような形で関わりたいですか？',
+      options: [
+        { text: '地域のために寄付をしたい', icon: '💝', link: '/donation' },
+        { text: '自分のアイデアで地域を良くしたい', icon: '💡', link: '/support' },
+        { text: 'ボランティア・プロボノとして参加したい', icon: '🙋', link: '/projects' },
+        { text: 'まずは財団の活動について知りたい', icon: '📚', link: '/about' },
+      ]
+    },
+    company: {
+      title: '企業・法人として - どのような形で関わりたいですか？',
+      options: [
+        { text: '社会貢献活動として寄付をしたい', icon: '💼', link: '/donation' },
+        { text: '企業の力で地域の課題を解決したい', icon: '🤝', link: '/projects' },
+        { text: '冠基金を設立したい', icon: '📋', link: '/support' },
+        { text: '地域との協働を起こしたい', icon: '📚', link: '/about' },
+      ]
+    },
+    npo: {
+      title: 'NPO・地域活動団体として - どのような形で関わりたいですか？',
+      options: [
+        { text: '助成プログラムに応募したい', icon: '📝', link: '/support' },
+        { text: '組織基盤強化や資金調達についての相談したい', icon: '🎯', link: '/support' },
+        { text: '企業や行政などと協働・マッチングしたい', icon: '🤝', link: '/projects' },
+        { text: '仲間やつながりを作りたい', icon: '📚', link: '/about' },
+      ]
+    },
+    government: {
+      title: '行政・教育機関として - どのような形で関わりたいですか？',
+      options: [
+        { text: '地域プロジェクトで協働したい', icon: '🏛️', link: '/projects' },
+        { text: '助成プログラムの情報を得たい', icon: '📋', link: '/support' },
+        { text: '地域課題の現場について理解を深めたい', icon: '💰', link: '/donation' },
+        { text: '協定を組んで課題解決を推進したい', icon: '📚', link: '/about' },
+      ]
+    }
+  };
+
+  // ステップ1のカード選択
+  document.querySelectorAll('.option-card').forEach(card => {
+    if (card.closest('#step1Options')) {
+      card.addEventListener('click', function() {
+        const role = this.dataset.role;
+        showStep2(role);
+      });
+    }
+  });
+
+  function showStep2(role) {
+    const step1 = document.querySelector('.step-1');
+    const step2 = document.querySelector('.step-2');
+    
+    step1.style.display = 'none';
+    step2.style.display = 'block';
+
+    const data = flowData[role];
+    const step2Title = document.getElementById('step2Title');
+    const step2Options = document.getElementById('step2Options');
+
+    step2Title.textContent = data.title;
+    step2Options.innerHTML = '';
+
+    data.options.forEach(option => {
+      const optionCard = document.createElement('div');
+      optionCard.className = 'option-card';
+      optionCard.innerHTML = `
+        <div class="icon">${option.icon}</div>
+        <h3>${option.text}</h3>
+      `;
+      optionCard.style.cursor = 'pointer';
+      optionCard.addEventListener('click', () => {
+        window.location.href = option.link;
+      });
+      step2Options.appendChild(optionCard);
+    });
+  }
+
+  // 戻るボタン
+  document.getElementById('backBtn').addEventListener('click', () => {
+    document.querySelector('.step-1').style.display = 'block';
+    document.querySelector('.step-2').style.display = 'none';
+  });
+</script>

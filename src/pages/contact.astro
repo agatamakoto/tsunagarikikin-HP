@@ -1,0 +1,323 @@
+---
+// src/pages/contact.astro
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="お問い合わせ" description="つながり基金へのお問い合わせページ">
+  <Header />
+
+  <main>
+    <div class="container page">
+      <header class="page-header">
+        <h1>お問い合わせ</h1>
+        <p class="intro">当基金へのご質問、ご相談、協働のご提案などはこちらのフォームよりお気軽にご連絡ください。内容を確認の上、担当者より折り返しご連絡いたします。</p>
+      </header>
+
+      <section class="section form-section">
+        <div class="section-head">
+          <h2>お問い合わせフォーム</h2>
+        </div>
+
+        <form class="form-panel">
+          <div class="form-row">
+            <label for="name">お名前（必須）</label>
+            <input type="text" id="name" name="name" placeholder="例：山田 太郎" required />
+          </div>
+
+          <div class="form-row">
+            <label for="email">メールアドレス（必須）</label>
+            <input type="email" id="email" name="email" placeholder="例：contact@example.com" required />
+          </div>
+
+          <div class="form-row">
+            <label for="purpose">お問い合わせの目的（必須）</label>
+            <select id="purpose" name="purpose" required>
+              <option value="" disabled selected>選択してください</option>
+              <option value="donation">寄付について（個人・法人・遺贈など）</option>
+              <option value="grant">助成金の申請・相談について</option>
+              <option value="support">伴走支援・協働プロジェクトについて</option>
+              <option value="media">取材・メディア掲載について</option>
+              <option value="other">その他のお問い合わせ</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label for="message">メッセージ（必須）</label>
+            <textarea id="message" name="message" rows="8" placeholder="お問い合わせ内容をご入力ください" required></textarea>
+          </div>
+
+          <button type="submit" class="submit-button">送信内容を確認する</button>
+
+          <p class="form-note">※ご入力いただいた個人情報は、お問い合わせへの対応以外の目的には使用いたしません。</p>
+        </form>
+      </section>
+
+      <section class="section faq-section">
+        <div class="section-head">
+          <h2>よくあるご質問（FAQ）</h2>
+          <p class="section-intro">お問い合わせの前に、よくあるご質問もご確認ください。</p>
+        </div>
+
+        <div class="faq-list">
+          <details>
+            <summary>Q. 寄付金控除は受けられますか？</summary>
+            <p>はい。当基金は公益財団法人のため、個人の方は「寄付金控除（税額控除または所得控除）」、法人の方は「特別損金算入限度額」までの損金算入が可能です。</p>
+          </details>
+
+          <details>
+            <summary>Q. どのような団体が助成を受けられますか？</summary>
+            <p>愛媛県内で地域課題の解決や魅力向上に取り組むNPO法人、市民活動団体、および企業（ソーシャルビジネス等）が対象です。募集中のプログラム詳細は「助成や支援を受ける」ページをご覧ください。</p>
+          </details>
+
+          <details>
+            <summary>Q. 相談料は必要ですか？</summary>
+            <p>愛媛県内在住の方に限り、<strong>初回無料相談</strong>を承っています。<strong>新しく何かを始めたい</strong>、<strong>団体の運営上で困っていることがある</strong>など、まずはお気軽にご相談ください。</p>
+          </details>
+
+          <details>
+            <summary>Q. 講演や視察のご依頼について</summary>
+            <p>講演会への登壇や、当基金・サカエマチHOLICへの視察のご依頼は随時承っております。上記お問い合わせフォームより、希望日時や内容をご相談ください。</p>
+          </details>
+
+          <details>
+            <summary>Q. 企業として協働プロジェクトを立ち上げることは可能ですか？</summary>
+            <p>大歓迎です。企業のCSR活動やSDGsへの取り組みとして、当基金が行政やNPOとのマッチングを行い、地域貢献の形を一緒にデザインします。まずはフォームよりご相談ください。</p>
+          </details>
+        </div>
+      </section>
+
+      <section class="section contact-info">
+        <div class="section-head">
+          <h2>SNS・その他のお問い合わせ先</h2>
+        </div>
+
+        <div class="contact-grid">
+          <div class="contact-card">
+            <p>最新の活動状況はSNSでも発信しています。</p>
+            <div class="social-links">
+              <a href="#" target="_blank">📸 Instagram</a>
+              <a href="#" target="_blank">▶️ YouTube</a>
+            </div>
+          </div>
+
+          <div class="contact-card">
+            <p>お急ぎの場合はお電話でも承ります。</p>
+            <p class="phone">電話番号：0897-47-6943</p>
+            <p class="phone-note">※サカエマチHOLICと共同の電話回線を使用しております。</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .page {
+    padding: var(--spacing-2xl) 0;
+    max-width: 940px;
+  }
+
+  .page-header {
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .page-header h1 {
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-md);
+    border-bottom: 3px solid var(--color-primary);
+    display: inline-block;
+    padding-bottom: 0.5rem;
+  }
+
+  .intro {
+    max-width: 760px;
+    line-height: 1.8;
+    color: var(--color-dark);
+  }
+
+  .section {
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .section-head h2 {
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .section-intro {
+    color: var(--color-dark);
+    line-height: 1.75;
+    margin-top: var(--spacing-sm);
+    max-width: 720px;
+  }
+
+  .form-panel {
+    background: #f3f6f8;
+    border-radius: 24px;
+    padding: var(--spacing-xl);
+    box-shadow: 0 16px 40px rgba(44, 62, 80, 0.05);
+  }
+
+  .form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  label {
+    font-weight: 700;
+    color: var(--color-dark);
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    padding: 1rem;
+    border-radius: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    background: white;
+    font-family: inherit;
+    font-size: var(--font-size-base);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px rgba(94, 199, 212, 0.12);
+  }
+
+  textarea {
+    min-height: 220px;
+    resize: vertical;
+  }
+
+  .submit-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-accent);
+    color: var(--color-dark);
+    border: none;
+    border-radius: 999px;
+    padding: 1rem 1.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .submit-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 30px rgba(255, 159, 60, 0.22);
+  }
+
+  .form-note {
+    margin-top: var(--spacing-md);
+    color: var(--color-gray);
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .faq-list {
+    display: grid;
+    gap: var(--spacing-md);
+  }
+
+  details {
+    background: var(--color-light);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 20px;
+    padding: var(--spacing-lg);
+  }
+
+  summary {
+    font-weight: 700;
+    cursor: pointer;
+    list-style: none;
+    color: var(--color-dark);
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  details[open] {
+    box-shadow: 0 12px 30px rgba(44, 62, 80, 0.08);
+  }
+
+  details p {
+    margin-top: var(--spacing-md);
+    color: var(--color-dark);
+    line-height: 1.75;
+  }
+
+  .contact-grid {
+    display: grid;
+    gap: var(--spacing-lg);
+  }
+
+  .contact-card {
+    background: var(--color-white);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 24px;
+    padding: var(--spacing-lg);
+    box-shadow: 0 10px 30px rgba(44, 62, 80, 0.05);
+  }
+
+  .social-links {
+    display: flex;
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+    margin-top: var(--spacing-md);
+  }
+
+  .social-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.9rem 1.2rem;
+    border-radius: 999px;
+    background: rgba(94, 199, 212, 0.12);
+    color: var(--color-dark);
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  .social-links a:hover {
+    background: rgba(94, 199, 212, 0.22);
+  }
+
+  .phone {
+    margin-top: var(--spacing-sm);
+    font-weight: 700;
+    color: var(--color-dark);
+  }
+
+  .phone-note {
+    margin-top: 0.5rem;
+    color: var(--color-gray);
+    line-height: 1.7;
+  }
+
+  @media (max-width: 860px) {
+    .form-panel,
+    .contact-card,
+    details {
+      padding: var(--spacing-lg);
+    }
+  }
+
+  @media (max-width: 700px) {
+    .page {
+      padding: var(--spacing-xl) 0;
+    }
+  }
+</style>

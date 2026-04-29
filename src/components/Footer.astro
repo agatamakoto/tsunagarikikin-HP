@@ -1,0 +1,112 @@
+---
+// src/components/Footer.astro
+---
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>公益財団法人えひめ西条つながり基金について</h4>
+        <ul>
+          <li><a href="/about">財団について</a></li>
+          <li><a href="/about#vision">ビジョン・ミッション</a></li>
+          <li><a href="/about#organization">組織概要・役員名簿</a></li>
+          <li><a href="/information-disclosure">情報公開</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4>寄付・助成</h4>
+        <ul>
+          <li><a href="/donation">寄付をする</a></li>
+          <li><a href="/donation#how">寄付の仕組み</a></li>
+          <li><a href="/support">助成プログラム</a></li>
+          <li><a href="/support#crowdfunding">クラウドファンディング</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4>活動・プロジェクト</h4>
+        <ul>
+          <li><a href="/projects">協働とプロジェクト</a></li>
+          <li><a href="/news">活動を知る</a></li>
+          <li><a href="/news#news">お知らせ</a></li>
+          <li><a href="/news#media">メディア掲載実績</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4>お問い合わせ</h4>
+        <ul>
+          <li><a href="/contact">お問い合わせフォーム</a></li>
+          <li><a href="/contact#faq">よくあるご質問</a></li>
+          <li><a href="/contact#sns">SNS</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2024 公益財団法人えひめ西条つながり基金. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background-color: var(--color-dark);
+    color: var(--color-light);
+    padding: var(--spacing-2xl) 0 var(--spacing-lg);
+    margin-top: var(--spacing-2xl);
+  }
+
+  .footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .footer-section h4 {
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-md);
+    font-size: var(--font-size-lg);
+  }
+
+  .footer-section ul {
+    list-style: none;
+  }
+
+  .footer-section li {
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .footer-section a {
+    color: var(--color-light);
+    transition: color 0.3s ease;
+  }
+
+  .footer-section a:hover {
+    color: var(--color-primary);
+  }
+
+  .footer-bottom {
+    text-align: center;
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--color-gray);
+    font-size: var(--font-size-base);
+  }
+
+  @media (max-width: 768px) {
+    .footer-content {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-lg);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .footer-content {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,99 @@
+---
+// src/components/Header.astro
+---
+
+<header class="header">
+  <div class="container">
+    <div class="header-content">
+      <div class="logo">
+        <a href="/">公益財団法人えひめ西条つながり基金</a>
+      </div>
+      <nav class="nav">
+        <ul>
+          <li><a href="/about">財団について</a></li>
+          <li><a href="/donation">寄付をする</a></li>
+          <li><a href="/support">助成や支援</a></li>
+          <li><a href="/projects">協働とプロジェクト</a></li>
+          <li><a href="/activities">活動を知る</a></li>
+          <li><a href="/contact">お問い合わせ</a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<style>
+  .header {
+    background-color: var(--color-white);
+    border-bottom: 1px solid #e0e0e0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md) 0;
+  }
+
+  .logo {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+  }
+
+  .logo a {
+    color: var(--color-primary);
+    transition: color 0.3s ease;
+  }
+
+  .logo a:hover {
+    color: var(--color-accent);
+  }
+
+  .nav ul {
+    list-style: none;
+    display: flex;
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .nav a {
+    font-size: var(--font-size-base);
+    color: var(--color-dark);
+    transition: color 0.3s ease;
+    position: relative;
+  }
+
+  .nav a:hover {
+    color: var(--color-primary);
+  }
+
+  .nav a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--color-primary);
+    transition: width 0.3s ease;
+  }
+
+  .nav a:hover::after {
+    width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    .nav ul {
+      gap: var(--spacing-md);
+    }
+
+    .nav {
+      display: none;
+    }
+  }
+</style>

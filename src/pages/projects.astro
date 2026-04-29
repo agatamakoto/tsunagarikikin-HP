@@ -1,0 +1,284 @@
+---
+// src/pages/projects.astro
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="協働とプロジェクト" description="つながり基金の協働プロジェクトと連携事例について">
+  <Header />
+  
+  <main>
+    <div class="container page-content">
+      <h1>協働とプロジェクト</h1>
+
+      <section class="section intro">
+        <p class="intro-tag">愛媛の未来をともに創る、共創のプラットフォーム</p>
+        <p class="intro-text">(公財)えひめ西条つながり基金は、中立的な公益財団法人としての信頼を活かし、セクター（企業・行政・NPO・市民）の垣根を越えた協働をプロデュースしています。多様な強みを掛け合わせることで、単独では解決できない地域課題に持続可能なインパクトをもたらします。</p>
+      </section>
+
+      <section class="section project-list">
+        <div class="section-head">
+          <h2>進行中の地域プロジェクト</h2>
+          <p class="section-lead">当基金がハブとなり、地域課題の解決や魅力向上に取り組む現在進行中のプロジェクトです。</p>
+        </div>
+
+        <div class="card-grid">
+          <article class="project-card">
+            <div class="project-thumb">画像</div>
+            <div class="project-body">
+              <span class="project-tag">進行中</span>
+              <h3>OMATSU-RebootCAMP</h3>
+              <p>地域を再生する若者と地元企業の協働キャンプ。新しい地域価値を生み出す仕組みをつくっています。</p>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div class="project-thumb">画像</div>
+            <div class="project-body">
+              <span class="project-tag">進行中</span>
+              <h3>地域共創プロジェクト</h3>
+              <p>市民・NPO・企業が連携し、まちの魅力向上と課題解決を目的とした共創プログラムを推進中です。</p>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div class="project-thumb">画像</div>
+            <div class="project-body">
+              <span class="project-tag">進行中</span>
+              <h3>その他の協働プロジェクト</h3>
+              <p>多様な主体による協働を継続的に支援し、地域資源を活かしたプロジェクトを展開しています。</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section case-study">
+        <div class="section-head">
+          <h2>多様なセクターが連携する協働ネットワーク事例</h2>
+          <p class="section-lead">それぞれの強み（資金・ノウハウ・現場力・公共性）を組み合わせ、地域課題の解決に挑む事業者を支援する強力なサポート体制を構築しています。</p>
+        </div>
+
+        <div class="case-card">
+          <div class="case-image">ロゴ</div>
+          <div class="case-body">
+            <span class="case-label">事例: さいじょうソーシャルビジネスサポーターズ</span>
+            <p>地域の社会的課題の解決にビジネスの手法で取り組む「ソーシャルビジネス」をまちぐるみで応援するため、西条市をはじめとする5者が連携ネットワークを結成しました。ボランティア活動の事業化や、資金調達・情報発信といった課題に対し、ワンストップで対応できる合同相談窓口を開設。5者それぞれの得意分野（資金面、情報面、ノウハウ提供、マッチング等）を活かした総合的な伴走支援を行っています。</p>
+
+            <div class="badge-list">
+              <span class="badge">金融: 日本政策金融公庫 新居浜支店</span>
+              <span class="badge">企業・支援機関: 西条産業情報支援センター(SICS)</span>
+              <span class="badge">公益財団: えひめ西条つながり基金</span>
+              <span class="badge">NPO: NPO法人西条まちづくり応援団</span>
+              <span class="badge">行政: 西条市</span>
+            </div>
+
+            <a class="case-button" href="https://www.city.saijo.ehime.jp/soshiki/chiikishinko/sosialbusiness-050331.html" target="_blank" rel="noreferrer">さいじょうソーシャルビジネスサポーターズ 詳細へ</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section cta-section">
+        <div class="cta-card">
+          <div>
+            <h2>私たちと協働しませんか？</h2>
+            <p>CSR活動の一環として地域課題に取り組みたい企業様や、連携先を探している行政・NPOの皆様からのご相談をお待ちしております。当基金が最適なマッチングとプロジェクト進行をサポートします。</p>
+          </div>
+          <a class="primary-button" href="/contact">協働について相談する</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .page-content {
+    padding: var(--spacing-2xl) 0;
+    max-width: 1100px;
+  }
+
+  h1 {
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-2xl);
+    border-bottom: 3px solid var(--color-primary);
+    padding-bottom: var(--spacing-lg);
+  }
+
+  .section {
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .intro-tag {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    background: rgba(94, 199, 212, 0.15);
+    color: var(--color-primary);
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .intro-text,
+  .section-lead,
+  .case-body p,
+  .project-body p,
+  .cta-card p {
+    line-height: 1.75;
+    color: var(--color-dark);
+  }
+
+  .section-head {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .section-lead {
+    max-width: 760px;
+    font-size: 1.05rem;
+    color: var(--color-dark);
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--spacing-lg);
+  }
+
+  .project-card,
+  .case-card,
+  .cta-card {
+    background: var(--color-white);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 24px;
+    box-shadow: 0 16px 40px rgba(44, 62, 80, 0.05);
+  }
+
+  .project-thumb,
+  .case-image {
+    min-height: 220px;
+    border-radius: 24px 24px 0 0;
+    background: rgba(94, 199, 212, 0.12);
+    display: grid;
+    place-items: center;
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  .project-body,
+  .case-body {
+    padding: var(--spacing-lg);
+  }
+
+  .project-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(94, 199, 212, 0.18);
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .project-card h3,
+  .case-body h3,
+  .cta-card h2 {
+    margin-top: 0;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-dark);
+  }
+
+  .badge-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    margin: var(--spacing-md) 0;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.6rem 0.85rem;
+    border-radius: 999px;
+    background: rgba(255, 159, 60, 0.12);
+    color: var(--color-dark);
+    font-size: 0.95rem;
+    border: 1px solid rgba(255, 159, 60, 0.2);
+  }
+
+  .case-button,
+  .primary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 1.6rem;
+    border-radius: 999px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .case-button {
+    background: var(--color-primary);
+    color: var(--color-white);
+  }
+
+  .primary-button {
+    background: var(--color-accent);
+    color: var(--color-dark);
+  }
+
+  .case-button:hover,
+  .primary-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 30px rgba(94, 199, 212, 0.2);
+  }
+
+  .case-card {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: var(--spacing-lg);
+    align-items: center;
+    padding: var(--spacing-lg);
+  }
+
+  .cta-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-xl);
+    background: linear-gradient(90deg, rgba(94,199,212,0.15), rgba(255,255,255,1));
+  }
+
+  @media (max-width: 980px) {
+    .card-grid,
+    .case-card,
+    .cta-card {
+      grid-template-columns: 1fr;
+    }
+
+    .case-card {
+      padding: 0;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .page-content {
+      padding: var(--spacing-xl) 0;
+    }
+
+    .case-card {
+      gap: var(--spacing-md);
+    }
+
+    .project-thumb,
+    .case-image {
+      min-height: 180px;
+    }
+  }
+</style>

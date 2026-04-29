@@ -1,0 +1,96 @@
+---
+// src/pages/news.astro
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="活動を知る" description="つながり基金のニュースと活動報告">
+  <Header />
+  
+  <main>
+    <div class="container page-content">
+      <h1>活動を知る</h1>
+      
+      <section>
+        <h2>寄付総額・寄付者延べ人数</h2>
+        <div class="stats">
+          <div class="stat-item">
+            <div class="stat-value">¥850M</div>
+            <div class="stat-label">寄付総額</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">12K+</div>
+            <div class="stat-label">寄付者延べ人数</div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>助成先の声・活動レポート</h2>
+        <p>【助成先からの活動レポートはmicroCMSから動的に読み込まれます】</p>
+      </section>
+
+      <section id="news">
+        <h2>お知らせ</h2>
+        <p>【最新のお知らせはmicroCMSから動的に読み込まれます】</p>
+      </section>
+
+      <section id="media">
+        <h2>メディア掲載実績</h2>
+        <p>【メディア掲載実績はmicroCMSから動的に読み込まれます】</p>
+      </section>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .page-content {
+    padding: var(--spacing-2xl) 0;
+    max-width: 800px;
+  }
+
+  .page-content h1 {
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-2xl);
+    border-bottom: 3px solid var(--color-primary);
+    padding-bottom: var(--spacing-lg);
+  }
+
+  .page-content section {
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .page-content h2 {
+    color: var(--color-primary);
+    margin-top: 0;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--spacing-lg);
+  }
+
+  .stat-item {
+    background-color: var(--color-light);
+    border: 2px solid var(--color-primary);
+    border-radius: 12px;
+    padding: var(--spacing-lg);
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .stat-label {
+    color: var(--color-gray);
+    font-size: var(--font-size-base);
+  }
+</style>

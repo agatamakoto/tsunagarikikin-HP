@@ -1,0 +1,380 @@
+---
+// src/pages/about.astro
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="財団について" description="つながり基金のビジョン、ミッション、組織概要">
+  <Header />
+  
+  <main>
+    <div class="container page-content">
+      <h1>財団について</h1>
+
+      <section id="vision">
+        <h2>ビジョン・ミッション</h2>
+
+        <div class="accordion-item">
+          <button class="accordion-button" type="button" data-target="vision-detail">
+            <span>ビジョン</span>
+            <span>誰もが主体的になりたい未来に向けてココロオドル　まちづくりに参加できる共創型社会を目指す</span>
+          </button>
+          <div id="vision-detail" class="accordion-panel">
+            <p>私たちはひとりひとりが思い描くまちの未来に向けて、ワクワクしながら活動できるまちを志しています。</p>
+            <p>地元の人だけではなく、西条というまちに関わりたいと思う全ての人たちが、つながり合い行動し、地域への想いを実現できる、そんな共創型社会を目指します。</p>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-button" type="button" data-target="mission-detail">
+            <span>ミッション</span>
+            <span>次世代と共に協働による　楽しいまちづくりを</span>
+          </button>
+          <div id="mission-detail" class="accordion-panel">
+            <p>私たちはまちの未来を考えるとき、その未来の中心にいる次世代の人たちと一緒に考えることが必要だと考えています。</p>
+            <p>ともに考え、ともに働き、ともに結果をわかちあう。多様な協働でひとりひとりが活躍できる場を創り出し、まちのことをジブンゴトに考える人を増やします。</p>
+            <p>いつでも明るくポジティブに、信頼し合える仲間と笑顔で楽しみながら続けていけるまちづくり活動の輪を広げていきます。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="operations">
+        <h2>業務内容</h2>
+
+        <div class="service-card">
+          <h3>助成事業</h3>
+          <p>地域課題解決を目指した独自の助成プログラムを行っています。詳しくは <a href="/support">助成プログラムのページ</a>をご覧ください。</p>
+        </div>
+
+        <div class="service-card">
+          <h3>寄付募集事業</h3>
+          <p>「地域の課題は地域で解決する」そのためにお金の流れを変える活動をしています。遺贈寄付の仕組みづくりや、企業や個人からの寄付を地域の団体に循環させています。</p>
+        </div>
+
+        <div class="service-card">
+          <h3>コンサルティング事業</h3>
+          <p>NPO法人や市民団体、自治組織などからの相談を受け、課題解決に向けてサポートを行います。資金調達、組織支援、事業化支援など、連携する専門家とともに幅広く対応しています。</p>
+        </div>
+
+        <div class="service-card">
+          <h3>空き家活用事業</h3>
+          <p>寄付していただいた不動産を活用し、周辺の団体や企業と連携し地域の課題解決や活性化を支援します。</p>
+        </div>
+
+        <div class="service-card">
+          <h3>調査・研究事業</h3>
+          <p>精度の高い事業を行うために、地域課題の調査や研究を行っています。これまでに西条市内在住の外国人について、西条市の若者の課題について、また県内の社会的事業に取り組む主体への支援状況に関する調査を行っています。</p>
+        </div>
+      </section>
+
+      <section id="organization">
+        <h2>組織概要・役員名簿</h2>
+
+        <div class="organization-grid">
+          <div class="organization-image">
+            <img src="/placeholder-image.png" alt="組織イメージ" />
+          </div>
+          <div class="organization-details">
+            <dl>
+              <div>
+                <dt>名称</dt>
+                <dd>公益財団法人えひめ西条つながり基金</dd>
+              </div>
+              <div>
+                <dt>設立年月日</dt>
+                <dd>2022年4月8日</dd>
+              </div>
+              <div>
+                <dt>住所</dt>
+                <dd>〒793-0030　愛媛県西条市大町1663番地</dd>
+              </div>
+              <div>
+                <dt>代表理事</dt>
+                <dd>今井　博志</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+
+        <div class="officers">
+          <h3>役員名簿</h3>
+          <div class="officer-group">
+            <div>
+              <h4>評議員</h4>
+              <ul>
+                <li>関野 邦夫</li>
+                <li>今岡 正士</li>
+                <li>十亀 博之</li>
+                <li>岡田 主税</li>
+                <li>伊藤 有香</li>
+                <li>前田 眞</li>
+                <li>泉谷 昇</li>
+              </ul>
+            </div>
+            <div>
+              <h4>理事</h4>
+              <ul>
+                <li>今井 博志 (代表理事)</li>
+                <li>星隈 英明</li>
+                <li>庄野 由桂</li>
+                <li>處 淳子</li>
+                <li>徳永 泰子</li>
+                <li>金瀬 聡</li>
+                <li>高橋 英士</li>
+              </ul>
+            </div>
+            <div>
+              <h4>監事</h4>
+              <ul>
+                <li>曽我部 保文</li>
+                <li>佐々木 良道</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="foundation-policy">
+        <h2>財団運営方針</h2>
+        <p>財団運営方針については、以下のリンクから「これからの財団について」のページをお読みください。</p>
+        <a href="/about#opensource" class="policy-link">これからの財団について</a>
+      </section>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .page-content {
+    padding: var(--spacing-2xl) 0;
+    max-width: 900px;
+  }
+
+  .page-content h1 {
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-2xl);
+    border-bottom: 3px solid var(--color-primary);
+    padding-bottom: var(--spacing-lg);
+  }
+
+  .page-content section {
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .page-content h2 {
+    color: var(--color-primary);
+    margin-top: 0;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .page-content p {
+    line-height: 1.8;
+    color: var(--color-dark);
+  }
+
+  .accordion-item {
+    border-radius: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .accordion-button {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-md);
+    background-color: var(--color-white);
+    border: none;
+    padding: var(--spacing-lg);
+    font-size: var(--font-size-base);
+    text-align: left;
+    cursor: pointer;
+    color: var(--color-dark);
+    position: relative;
+  }
+
+  .accordion-button span:first-child {
+    font-weight: 700;
+  }
+
+  .accordion-button span:last-child {
+    color: var(--color-gray);
+    flex: 1;
+  }
+
+  .accordion-button::after {
+    content: '+';
+    font-size: 24px;
+    color: var(--color-primary);
+    transition: transform 0.3s ease;
+  }
+
+  .accordion-button.active::after {
+    transform: rotate(45deg);
+  }
+
+  .accordion-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+    background-color: var(--color-light);
+    padding: 0 var(--spacing-lg);
+  }
+
+  .accordion-panel.open {
+    padding: var(--spacing-lg);
+    max-height: 500px;
+  }
+
+  .service-card {
+    background-color: var(--color-light);
+    border-radius: 20px;
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+    border: 1px solid rgba(94, 199, 212, 0.15);
+  }
+
+  .service-card h3 {
+    margin-bottom: var(--spacing-md);
+    color: var(--color-dark);
+  }
+
+  .service-card p {
+    margin: 0;
+    color: var(--color-dark);
+  }
+
+  .service-card a {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  .organization-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: var(--spacing-xl);
+    align-items: start;
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .organization-image {
+    min-height: 260px;
+    background-color: rgba(94, 199, 212, 0.1);
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .organization-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .organization-details dl {
+    display: grid;
+    gap: var(--spacing-md);
+  }
+
+  .organization-details dt {
+    font-weight: 700;
+    color: var(--color-dark);
+  }
+
+  .organization-details dd {
+    margin: 0;
+    color: var(--color-gray);
+    line-height: 1.6;
+  }
+
+  .officers {
+    background-color: var(--color-light);
+    border-radius: 20px;
+    padding: var(--spacing-lg);
+    border: 1px solid rgba(94, 199, 212, 0.15);
+  }
+
+  .officers h3 {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .officer-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-xl);
+  }
+
+  .officer-group h4 {
+    margin-bottom: var(--spacing-sm);
+    color: var(--color-primary);
+  }
+
+  .officer-group ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .officer-group li {
+    margin-bottom: var(--spacing-sm);
+    color: var(--color-dark);
+  }
+
+  .policy-link {
+    display: inline-block;
+    margin-top: var(--spacing-md);
+    background-color: var(--color-primary);
+    color: white;
+    padding: var(--spacing-md) var(--spacing-xl);
+    border-radius: 999px;
+    transition: background-color 0.3s ease;
+  }
+
+  .policy-link:hover {
+    background-color: #4baab3;
+  }
+
+  @media (max-width: 900px) {
+    .organization-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 680px) {
+    .accordion-button {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .accordion-button span:last-child {
+      margin-top: var(--spacing-sm);
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const buttons = document.querySelectorAll('.accordion-button');
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        const targetId = button.dataset.target;
+        const panel = document.getElementById(targetId);
+        const isOpen = panel.classList.contains('open');
+
+        buttons.forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.accordion-panel').forEach(p => p.classList.remove('open'));
+
+        if (!isOpen) {
+          button.classList.add('active');
+          panel.classList.add('open');
+        }
+      });
+    });
+  });
+</script>
