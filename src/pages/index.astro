@@ -4,6 +4,20 @@ import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import QuestionFlow from '../components/QuestionFlow.astro';
 import Footer from '../components/Footer.astro';
+import { getMicroCMSContent } from '../lib/microcms';
+
+interface NewsItem {
+  id: string;
+  title: string;
+  publishedAt: string;
+}
+
+interface NewsResponse {
+  contents: NewsItem[];
+}
+
+const response = await getMicroCMSContent<NewsResponse>('news', { limit: 3 });
+const newsList = response.contents;
 ---
 
 <Layout title="トップページ" description="西条の地から、地域共創のプラットフォームへ">
@@ -70,10 +84,15 @@ import Footer from '../components/Footer.astro';
           <div class="news-subsection">
             <h3>お知らせ</h3>
             <ul class="news-list">
-              <li><a href="#">【重要】寄付型クラウドファンディング第2期の募集開始</a></li>
-              <li><a href="#">新しい助成プログラムのご紹介</a></li>
-              <li><a href="#">OMATSU-RebootCAMP 2024の参加者募集中</a></li>
+              {newsList.map((content) => (
+                <li>
+                  <a href="/news">
+                    {new Date(content.publishedAt).toISOString().slice(0, 10)} - {content.title}
+                  </a>
+                </li>
+              ))}
             </ul>
+            <a class="more-news-link" href="/activities">もっと見る</a>
           </div>
 
           <!-- 統計情報 -->
@@ -328,6 +347,13 @@ import Footer from '../components/Footer.astro';
     content: '→ ';
     margin-right: var(--spacing-sm);
     color: var(--color-primary);
+  }
+
+  .more-news-link {
+    display: inline-block;
+    margin-top: var(--spacing-md);
+    color: var(--color-primary);
+    font-weight: 700;
   }
 
   /* Stats Section */

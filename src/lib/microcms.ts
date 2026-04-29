@@ -15,6 +15,32 @@ interface MicroCMSOptions {
   orders?: string;
 }
 
+async function parseJsonResponse<T>(response: Response): Promise<T> {
+  const raw = await response.text();
+
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    throw new Error('microCMS returned non-JSON response');
+  }
+}
+
+function buildContentUrl(endpoint: string, options?: MicroCMSOptions): string {
+  const baseUrl = (MICROCMS_API_URL || '').replace(/\/+$/, '');
+  const params = new URLSearchParams();
+
+  if (options?.limit) params.append('limit', options.limit.toString());
+  if (options?.offset) params.append('offset', options.offset.toString());
+  if (options?.depth) params.append('depth', options.depth.toString());
+  if (options?.filters) params.append('filters', options.filters);
+  if (options?.orders) params.append('orders', options.orders);
+
+  const endpointSuffix = `/apis/${endpoint}`;
+  const resolvedBase = baseUrl.endsWith(endpointSuffix) ? baseUrl : `${baseUrl}/${endpoint}`;
+
+  return `${resolvedBase}${params.toString() ? '?' + params.toString() : ''}`;
+}
+
 /**
  * microCMSからデータを取得
  */
@@ -28,14 +54,7 @@ export async function getMicroCMSContent<T>(
     return getDummyContent(endpoint) as T;
   }
 
-  const params = new URLSearchParams();
-  if (options?.limit) params.append('limit', options.limit.toString());
-  if (options?.offset) params.append('offset', options.offset.toString());
-  if (options?.depth) params.append('depth', options.depth.toString());
-  if (options?.filters) params.append('filters', options.filters);
-  if (options?.orders) params.append('orders', options.orders);
-
-  const url = `${MICROCMS_API_URL}/${endpoint}${params.toString() ? '?' + params.toString() : ''}`;
+  const url = buildContentUrl(endpoint, options);
 
   try {
     const response = await fetch(url, {
@@ -48,7 +67,7 @@ export async function getMicroCMSContent<T>(
       throw new Error(`microCMS API Error: ${response.status} ${response.statusText}`);
     }
 
-    return response.json();
+    return await parseJsonResponse<T>(response);
   } catch (error) {
     console.error(`Error fetching from microCMS (${endpoint}):`, error);
     // エラー時はダミーデータを返す
@@ -80,7 +99,7 @@ export async function getMicroCMSDocument<T>(
       throw new Error(`microCMS API Error: ${response.status} ${response.statusText}`);
     }
 
-    return response.json();
+    return await parseJsonResponse<T>(response);
   } catch (error) {
     console.error(`Error fetching document from microCMS:`, error);
     return getDummyDocument(endpoint, documentId) as T;

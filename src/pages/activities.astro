@@ -3,6 +3,20 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { getMicroCMSContent } from '../lib/microcms';
+
+interface NewsItem {
+  id: string;
+  title: string;
+  publishedAt: string;
+}
+
+interface NewsResponse {
+  contents: NewsItem[];
+}
+
+const response = await getMicroCMSContent<NewsResponse>('news');
+const newsList = response.contents;
 ---
 
 <Layout title="活動を知る" description="寄付の活用や活動報告をご紹介します">
@@ -86,29 +100,17 @@ import Footer from '../components/Footer.astro';
         </div>
 
         <div class="list-card">
-          <article class="news-item">
-            <div>
-              <span class="news-date">2026.04.15</span>
-              <span class="news-tag info">お知らせ</span>
-            </div>
-            <p class="news-title">2026年度の助成プログラム募集を開始しました</p>
-          </article>
-
-          <article class="news-item">
-            <div>
-              <span class="news-date">2026.03.10</span>
-              <span class="news-tag event">イベント</span>
-            </div>
-            <p class="news-title">地域連携フォーラム2026をオンライン開催します</p>
-          </article>
-
-          <article class="news-item">
-            <div>
-              <span class="news-date">2026.01.28</span>
-              <span class="news-tag report">レポート</span>
-            </div>
-            <p class="news-title">寄付活用の成果レポートを公開しました</p>
-          </article>
+          {newsList.map((content) => (
+            <article class="news-item">
+              <div>
+                <span class="news-date">{new Date(content.publishedAt).toISOString().slice(0, 10)}</span>
+                <span class="news-tag info">お知らせ</span>
+              </div>
+              <a class="news-title-link" href="/news">
+                <p class="news-title">{content.title}</p>
+              </a>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -354,6 +356,15 @@ import Footer from '../components/Footer.astro';
     color: var(--color-dark);
     font-weight: 700;
     line-height: 1.6;
+  }
+
+  .news-title-link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .news-title-link:hover .news-title {
+    color: var(--color-primary);
   }
 
   @media (max-width: 980px) {
