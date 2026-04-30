@@ -19,6 +19,6 @@
     "astro": "^6.1.9"
   },
   "dependencies": {
-    "node-fetch": "^3.3.2"
+    "microcms-js-sdk": "^3.4.0"
   }
 }
