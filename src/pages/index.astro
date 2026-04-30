@@ -110,7 +110,7 @@ try {
 
           <!-- 統計情報 -->
           <div class="stats-section">
-            <h3>公益財団法人えひめ西条つながり基金の実績</h3>
+            <h3>えひめ西条つながり基金の実績</h3>
             <div class="stats-grid">
               <div class="stat-card">
                 <div class="stat-number">
@@ -548,6 +548,23 @@ try {
     .projects-grid,
     .news-grid {
       grid-template-columns: 1fr;
+    }
+
+    .news-section {
+      padding: var(--spacing-xl) 0;
+    }
+
+    .stat-number {
+      font-size: var(--font-size-2xl);
+    }
+
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .news-subsection h3,
+    .stats-section h3 {
+      font-size: var(--font-size-xl);
     }
   }
 </style>
