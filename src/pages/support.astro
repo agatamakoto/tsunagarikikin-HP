@@ -3,6 +3,14 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { client } from '../lib/microcms';
+import type { Grant } from '../lib/microcms';
+
+let grantsList: Grant[] = [];
+try {
+  const grantsData = await client.get({ endpoint: 'grants', queries: { limit: 3 } });
+  grantsList = grantsData.contents;
+} catch (e) {}
 ---
 
 <Layout title="助成や支援を受ける" description="つながり基金の助成や伴走支援プログラムについて">
@@ -15,35 +23,34 @@ import Footer from '../components/Footer.astro';
       <section class="section section-programs">
         <div class="section-header">
           <div>
-            <h2>助成プログラム一覧（現在募集中）</h2>
-            <p class="section-lead">【助成プログラムはmicroCMSから動的に読み込まれます】</p>
+            <h2>助成プログラム一覧</h2>
           </div>
         </div>
 
         <div class="card-grid">
-          <article class="program-card">
-            <div class="program-image">募集中</div>
-            <div class="program-content">
-              <h3>地域のあったか見守り支援プログラム</h3>
-              <p>生活支援や見守り活動を行う団体のための助成プログラムです。</p>
-              <div class="program-meta">
-                <span>募集期間：2026/05/01〜2026/06/30</span>
-                <span>対象：市民活動団体・NPO</span>
-              </div>
-            </div>
-          </article>
-
-          <article class="program-card">
-            <div class="program-image">募集中</div>
-            <div class="program-content">
-              <h3>若者のチャレンジ支援助成</h3>
-              <p>新しい活動やチャレンジを応援する団体のための公募型助成です。</p>
-              <div class="program-meta">
-                <span>募集期間：2026/05/15〜2026/07/15</span>
-                <span>対象：20代〜40代を支援する団体</span>
-              </div>
-            </div>
-          </article>
+          {grantsList.length > 0 ? (
+            grantsList.map((grant) => (
+              <article class="program-card">
+                {grant.image ? (
+                  <img src={grant.image.url} alt={grant.title} class="program-image" style="object-fit: cover;" />
+                ) : (
+                  <div class="program-image">
+                    {grant.status.length > 0 ? grant.status[0] : '詳細'}
+                  </div>
+                )}
+                <div class="program-content">
+                  <h3>{grant.title}</h3>
+                  {grant.content && <div set:html={grant.content} />}
+                  <div class="program-meta">
+                    {grant.deadline && <span>締切：{grant.deadline}</span>}
+                    {grant.status.length > 0 && <span>{grant.status.join('・')}</span>}
+                  </div>
+                </div>
+              </article>
+            ))
+          ) : (
+            <p style="color: var(--color-gray); padding: var(--spacing-md) 0;">現在募集中の助成プログラムはありません。</p>
+          )}
         </div>
       </section>
 
@@ -163,7 +170,7 @@ import Footer from '../components/Footer.astro';
   }
 
   .card-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .program-card,
@@ -274,8 +281,17 @@ import Footer from '../components/Footer.astro';
   }
 
   @media (max-width: 960px) {
-    .card-grid,
+    .card-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .benefit-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .card-grid {
       grid-template-columns: 1fr;
     }
   }

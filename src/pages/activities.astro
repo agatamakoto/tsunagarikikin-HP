@@ -3,20 +3,26 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { getMicroCMSContent } from '../lib/microcms';
+import { client } from '../lib/microcms';
+import type { News, Statistic, Report } from '../lib/microcms';
 
-interface NewsItem {
-  id: string;
-  title: string;
-  publishedAt: string;
-}
+let newsList: News[] = [];
+let stats: Statistic | null = null;
+let reportsList: Report[] = [];
 
-interface NewsResponse {
-  contents: NewsItem[];
-}
+try {
+  const response = await client.get({ endpoint: 'news' });
+  newsList = response.contents;
+} catch (e) {}
 
-const response = await getMicroCMSContent<NewsResponse>('news');
-const newsList = response.contents;
+try {
+  stats = await client.get({ endpoint: 'statistics' });
+} catch (e) {}
+
+try {
+  const reportsData = await client.get({ endpoint: 'reports', queries: { limit: 6 } });
+  reportsList = reportsData.contents;
+} catch (e) {}
 ---
 
 <Layout title="活動を知る" description="寄付の活用や活動報告をご紹介します">
@@ -37,14 +43,14 @@ const newsList = response.contents;
         <div class="stat-grid">
           <article class="stat-card">
             <p class="stat-label">寄付総額</p>
-            <p class="stat-value">1,250万</p>
-            <p class="stat-unit">円</p>
+            <p class="stat-value">{stats ? Math.floor(stats.total_amount / 10000).toLocaleString() + '万' : '集計中'}</p>
+            <p class="stat-unit">{stats ? '円' : ''}</p>
           </article>
 
           <article class="stat-card">
             <p class="stat-label">寄付者延べ人数</p>
-            <p class="stat-value">850</p>
-            <p class="stat-unit">人</p>
+            <p class="stat-value">{stats ? stats.supporter_count.toLocaleString() : '集計中'}</p>
+            <p class="stat-unit">{stats ? '人' : ''}</p>
           </article>
         </div>
       </section>
@@ -55,97 +61,56 @@ const newsList = response.contents;
         </div>
 
         <div class="report-grid">
-          <article class="report-card">
-            <div class="report-thumb">画像</div>
-            <div class="report-body">
-              <div class="report-meta">
-                <span>2026.04.10</span>
-                <span class="tag">助成先レポート</span>
-              </div>
-              <h3>西条市の子ども食堂への支援活動報告</h3>
-              <p>地域の子どもたちに安定した居場所を届ける取り組み。毎週の活動で見えてきた変化と今後の展望をご紹介します。</p>
-            </div>
-          </article>
-
-          <article class="report-card">
-            <div class="report-thumb">画像</div>
-            <div class="report-body">
-              <div class="report-meta">
-                <span>2026.03.22</span>
-                <span class="tag">助成先レポート</span>
-              </div>
-              <h3>障がい者就労支援の現場からの声</h3>
-              <p>就労支援プログラムを通じて、自立を目指す利用者の挑戦と支援の成果をレポートします。</p>
-            </div>
-          </article>
-
-          <article class="report-card">
-            <div class="report-thumb">画像</div>
-            <div class="report-body">
-              <div class="report-meta">
-                <span>2026.02.18</span>
-                <span class="tag">助成先レポート</span>
-              </div>
-              <h3>地域環境保全プロジェクトの活動記録</h3>
-              <p>自然環境の保全と地域住民の関わりを深めるプロジェクトの現状と、次の展開についてお伝えします。</p>
-            </div>
-          </article>
+          {reportsList.length > 0 ? (
+            reportsList.map((report) => (
+              <article class="report-card">
+                {report.image ? (
+                  <img src={report.image.url} alt={report.title} class="report-thumb" style="object-fit: cover; height: 180px; width: 100%;" />
+                ) : (
+                  <div class="report-thumb">画像</div>
+                )}
+                <div class="report-body">
+                  <div class="report-meta">
+                    {report.date && <span>{report.date.slice(0, 10).replace(/-/g, '.')}</span>}
+                    <span class="tag">助成先レポート</span>
+                  </div>
+                  <h3>{report.title}</h3>
+                  <p>{report.summary}</p>
+                </div>
+              </article>
+            ))
+          ) : (
+            <p style="color: var(--color-gray);">レポートを準備中です。</p>
+          )}
         </div>
       </section>
 
       <section id="news" class="section news">
         <div class="section-head">
           <h2>お知らせ</h2>
-          <p class="section-note">【最新のお知らせはmicroCMSから動的に読み込まれます】</p>
         </div>
 
-        <div class="list-card">
-          {newsList.map((content) => (
-            <article class="news-item">
+        <div class="list-card" id="news-list">
+          {newsList.map((content, index) => (
+            <article class="news-item" data-news-index={index}>
               <div>
                 <span class="news-date">{new Date(content.publishedAt).toISOString().slice(0, 10)}</span>
                 <span class="news-tag info">お知らせ</span>
               </div>
-              <a class="news-title-link" href="/news">
+              <a class="news-title-link" href={`/news/${content.id}`}>
                 <p class="news-title">{content.title}</p>
               </a>
             </article>
           ))}
         </div>
+
+        {newsList.length > 5 && (
+          <div class="show-more-wrap">
+            <button id="news-toggle-btn" class="show-more-btn" data-expanded="false">もっと見る</button>
+          </div>
+        )}
       </section>
 
-      <section id="media" class="section media">
-        <div class="section-head">
-          <h2>メディア掲載実績</h2>
-          <p class="section-note">【メディア掲載実績はmicroCMSから動的に読み込まれます】</p>
-        </div>
-
-        <div class="list-card">
-          <article class="news-item">
-            <div>
-              <span class="news-date">2026.04.05</span>
-              <span class="news-tag media">新聞</span>
-            </div>
-            <p class="news-title">愛媛新聞に当基金の取り組みが掲載されました</p>
-          </article>
-
-          <article class="news-item">
-            <div>
-              <span class="news-date">2026.03.12</span>
-              <span class="news-tag media">TV</span>
-            </div>
-            <p class="news-title">地元ニュースで助成活動の成果が紹介されました</p>
-          </article>
-
-          <article class="news-item">
-            <div>
-              <span class="news-date">2026.02.25</span>
-              <span class="news-tag media">Web</span>
-            </div>
-            <p class="news-title">ウェブメディアで活動報告が取り上げられました</p>
-          </article>
-        </div>
-      </section>
     </div>
   </main>
 
@@ -367,6 +332,37 @@ const newsList = response.contents;
     color: var(--color-primary);
   }
 
+  .news-item.news-hidden {
+    display: none;
+  }
+
+  .show-more-wrap {
+    text-align: center;
+    margin-top: var(--spacing-lg);
+  }
+
+  .show-more-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 2.5rem;
+    border-radius: 999px;
+    background: transparent;
+    border: 2px solid var(--color-primary);
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .show-more-btn:hover {
+    background: var(--color-primary);
+    color: white;
+    transform: none;
+    box-shadow: none;
+  }
+
   @media (max-width: 980px) {
     .stat-grid,
     .report-grid {
@@ -385,3 +381,20 @@ const newsList = response.contents;
     }
   }
 </style>
+
+<script>
+  const INITIAL_SHOW = 5;
+  const items = Array.from(document.querySelectorAll('#news-list .news-item')) as HTMLElement[];
+  const btn = document.getElementById('news-toggle-btn') as HTMLButtonElement | null;
+
+  if (items.length > INITIAL_SHOW) {
+    items.slice(INITIAL_SHOW).forEach(item => item.classList.add('news-hidden'));
+
+    btn?.addEventListener('click', () => {
+      const expanded = btn.dataset.expanded === 'true';
+      items.slice(INITIAL_SHOW).forEach(item => item.classList.toggle('news-hidden', expanded));
+      btn.textContent = expanded ? 'もっと見る' : '閉じる';
+      btn.dataset.expanded = String(!expanded);
+    });
+  }
+</script>

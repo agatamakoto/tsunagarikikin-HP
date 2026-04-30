@@ -4,25 +4,37 @@ import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import QuestionFlow from '../components/QuestionFlow.astro';
 import Footer from '../components/Footer.astro';
-import { getMicroCMSContent } from '../lib/microcms';
+import { client } from '../lib/microcms';
+import type { News, Statistic, Project, Report } from '../lib/microcms';
 
-interface NewsItem {
-  id: string;
-  title: string;
-  publishedAt: string;
-}
+let newsList: News[] = [];
+let stats: Statistic | null = null;
+let projectsList: Project[] = [];
+let latestReport: Report | null = null;
 
-interface NewsResponse {
-  contents: NewsItem[];
-}
+try {
+  const newsData = await client.get({ endpoint: 'news', queries: { limit: 3 } });
+  newsList = newsData.contents;
+} catch (e) {}
 
-const response = await getMicroCMSContent<NewsResponse>('news', { limit: 3 });
-const newsList = response.contents;
+try {
+  stats = await client.get({ endpoint: 'statistics' });
+} catch (e) {}
+
+try {
+  const projectsData = await client.get({ endpoint: 'projects', queries: { limit: 3 } });
+  projectsList = projectsData.contents;
+} catch (e) {}
+
+try {
+  const reportsData = await client.get({ endpoint: 'reports', queries: { limit: 1 } });
+  latestReport = reportsData.contents[0] ?? null;
+} catch (e) {}
 ---
 
 <Layout title="トップページ" description="西条の地から、地域共創のプラットフォームへ">
   <Header />
-  
+
   <main>
     <!-- メインビジュアル (Hero Section) -->
     <section class="hero">
@@ -47,26 +59,20 @@ const newsList = response.contents;
       <div class="container">
         <h2>現在進行中のプロジェクト</h2>
         <div class="projects-grid">
-          <div class="project-card">
-            <div class="project-image" style="background-color: var(--color-primary); border-radius: 12px; height: 200px;"></div>
-            <h3>OMATSU-RebootCAMP</h3>
-            <p>地域の起業家育成と支援プログラム</p>
-            <a href="/projects" class="link-arrow">詳しく見る →</a>
-          </div>
-
-          <div class="project-card">
-            <div class="project-image" style="background-color: var(--color-accent); border-radius: 12px; height: 200px;"></div>
-            <h3>地域共創プロジェクト</h3>
-            <p>企業×NPO×行政の協働で実現する地域課題解決</p>
-            <a href="/projects" class="link-arrow">詳しく見る →</a>
-          </div>
-
-          <div class="project-card">
-            <div class="project-image" style="background-color: var(--color-secondary); border-radius: 12px; height: 200px;"></div>
-            <h3>次世代育成イニシアティブ</h3>
-            <p>若き起業家と地域をつなぐネットワーク構築</p>
-            <a href="/projects" class="link-arrow">詳しく見る →</a>
-          </div>
+          {projectsList.length > 0 ? (
+            projectsList.map((project) => (
+              <a href={`/projects/${project.id}`} class="project-card">
+                <div class="project-image">
+                  {project.image && <img src={project.image.url} alt={project.title} />}
+                </div>
+                <h3>{project.title}</h3>
+                <p>{project.description}</p>
+                <span class="link-arrow">詳しく見る →</span>
+              </a>
+            ))
+          ) : (
+            <p class="empty-message">プロジェクトを準備中です。</p>
+          )}
         </div>
 
         <div class="view-all">
@@ -83,16 +89,23 @@ const newsList = response.contents;
           <!-- お知らせ -->
           <div class="news-subsection">
             <h3>お知らせ</h3>
-            <ul class="news-list">
-              {newsList.map((content) => (
-                <li>
-                  <a href="/news">
-                    {new Date(content.publishedAt).toISOString().slice(0, 10)} - {content.title}
-                  </a>
-                </li>
-              ))}
-            </ul>
-            <a class="more-news-link" href="/activities">もっと見る</a>
+            {newsList.length > 0 ? (
+              <ul class="news-list">
+                {newsList.map((news) => (
+                  <li>
+                    <a href="/activities#news">
+                      <span class="news-date">{news.publishedAt.slice(0, 10).replace(/-/g, '.')}</span>
+                      {news.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p class="empty-message">お知らせを準備中です。</p>
+            )}
+            {newsList.length > 0 && (
+              <a href="/activities#news" class="more-link">もっと見る →</a>
+            )}
           </div>
 
           <!-- 統計情報 -->
@@ -100,24 +113,38 @@ const newsList = response.contents;
             <h3>公益財団法人えひめ西条つながり基金の実績</h3>
             <div class="stats-grid">
               <div class="stat-card">
-                <div class="stat-number">¥850M</div>
+                <div class="stat-number">
+                  {stats ? Math.floor(stats.total_amount / 10000).toLocaleString() + '万円' : '集計中'}
+                </div>
                 <div class="stat-label">寄付総額</div>
               </div>
               <div class="stat-card">
-                <div class="stat-number">12K+</div>
+                <div class="stat-number">
+                  {stats ? stats.supporter_count.toLocaleString() + '人' : '集計中'}
+                </div>
                 <div class="stat-label">寄付者延べ人数</div>
               </div>
             </div>
           </div>
 
-          <!-- メディア掲載 -->
+          <!-- 助成先の声・活動レポート -->
           <div class="news-subsection">
-            <h3>メディア掲載実績</h3>
-            <ul class="media-list">
-              <li><a href="#">日経新聞「地域共創の新しい形」</a></li>
-              <li><a href="#">経済誌「ソーシャルビジネスの未来」</a></li>
-              <li><a href="#">全国紙「西条発ムーブメント」</a></li>
-            </ul>
+            <h3>助成先の声・活動レポート</h3>
+            {latestReport ? (
+              <div class="report-preview">
+                {latestReport.image && (
+                  <img src={latestReport.image.url} alt="活動の様子" class="report-preview-img" />
+                )}
+                <p class="report-org">{latestReport.organization}</p>
+                <p class="report-title-text">
+                  <a href="/activities">{latestReport.title}</a>
+                </p>
+                <p class="report-summary">{latestReport.summary}</p>
+                <a href="/activities" class="link-arrow">レポート一覧を見る →</a>
+              </div>
+            ) : (
+              <p class="empty-message">レポートを準備中です。</p>
+            )}
           </div>
         </div>
       </div>
@@ -161,13 +188,25 @@ const newsList = response.contents;
     padding: 0 var(--spacing-md);
   }
 
+  .eyebrow {
+    display: inline-block;
+    background: rgba(94, 199, 212, 0.15);
+    color: var(--color-primary);
+    font-weight: 700;
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    margin-bottom: var(--spacing-md);
+  }
+
   .hero h1 {
     font-size: clamp(2.8rem, 5vw, 4.5rem);
     margin-bottom: var(--spacing-md);
+    margin-top: 0;
     line-height: 1.03;
   }
 
-  .hero p {
+  .hero-copy {
     font-size: clamp(1rem, 1.4vw, 1.2rem);
     line-height: 1.8;
     color: var(--color-dark);
@@ -200,7 +239,8 @@ const newsList = response.contents;
 
   .hero-button:hover {
     transform: translateY(-3px);
-    background-color: #317bad;
+    background-color: #e8891e;
+    color: white;
   }
 
   .hero-link {
@@ -228,6 +268,9 @@ const newsList = response.contents;
   }
 
   .project-card {
+    display: block;
+    color: inherit;
+    text-decoration: none;
     background-color: var(--color-white);
     border: 1px solid #e0e0e0;
     border-radius: 12px;
@@ -239,18 +282,27 @@ const newsList = response.contents;
   .project-card:hover {
     box-shadow: 0 8px 24px rgba(94, 199, 212, 0.15);
     transform: translateY(-4px);
+    color: inherit;
   }
 
   .project-image {
     width: 100%;
     height: 200px;
-    background-size: cover;
-    background-position: center;
+    background-color: rgba(94, 199, 212, 0.15);
+    overflow: hidden;
+  }
+
+  .project-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .project-card h3 {
     padding: var(--spacing-md) var(--spacing-md) 0;
     margin-bottom: var(--spacing-sm);
+    margin-top: var(--spacing-md);
   }
 
   .project-card p {
@@ -314,46 +366,55 @@ const newsList = response.contents;
   .stats-section h3 {
     color: var(--color-primary);
     margin-bottom: var(--spacing-md);
+    margin-top: 0;
     padding-bottom: var(--spacing-md);
     border-bottom: 2px solid var(--color-primary);
   }
 
-  .news-list,
-  .media-list {
+  .news-list {
     list-style: none;
   }
 
-  .news-list li,
-  .media-list li {
+  .news-list li {
     margin-bottom: var(--spacing-md);
   }
 
-  .news-list a,
-  .media-list a {
+  .news-list a {
     color: var(--color-dark);
     transition: color 0.3s ease;
     text-decoration: none;
     display: flex;
     align-items: flex-start;
+    gap: var(--spacing-sm);
   }
 
-  .news-list a:hover,
-  .media-list a:hover {
+  .news-list a::before {
+    content: '→';
+    color: var(--color-primary);
+    flex-shrink: 0;
+  }
+
+  .news-list a:hover {
     color: var(--color-primary);
   }
 
-  .news-list a::before,
-  .media-list a::before {
-    content: '→ ';
-    margin-right: var(--spacing-sm);
-    color: var(--color-primary);
+  .news-date {
+    color: var(--color-gray);
+    font-size: 0.9rem;
+    white-space: nowrap;
   }
 
-  .more-news-link {
+  .more-link {
     display: inline-block;
     margin-top: var(--spacing-md);
     color: var(--color-primary);
     font-weight: 700;
+    font-size: 0.95rem;
+    transition: color 0.2s ease;
+  }
+
+  .more-link:hover {
+    color: var(--color-accent);
   }
 
   /* Stats Section */
@@ -381,6 +442,57 @@ const newsList = response.contents;
   .stat-label {
     color: var(--color-gray);
     font-size: var(--font-size-base);
+  }
+
+  /* Report Preview */
+  .report-preview {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .report-preview-img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .report-org {
+    color: var(--color-gray);
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  .report-title-text {
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .report-title-text a {
+    color: var(--color-dark);
+  }
+
+  .report-title-text a:hover {
+    color: var(--color-primary);
+  }
+
+  .report-summary {
+    color: var(--color-gray);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .report-preview .link-arrow {
+    padding: 0;
+    margin-top: var(--spacing-sm);
+  }
+
+  .empty-message {
+    color: var(--color-gray);
   }
 
   /* Future Section */
@@ -418,7 +530,7 @@ const newsList = response.contents;
   }
 
   .learn-more-button:hover {
-    background-color: #ff8b20;
+    background-color: #e8891e;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(255, 159, 60, 0.3);
     color: white;
@@ -431,10 +543,6 @@ const newsList = response.contents;
 
     .hero h1 {
       font-size: var(--font-size-3xl);
-    }
-
-    .hero p {
-      font-size: var(--font-size-lg);
     }
 
     .projects-grid,
