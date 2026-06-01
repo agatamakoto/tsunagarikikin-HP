@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "npm run build && wrangler dev",
+    "generate-types": "wrangler types",
+    "deploy": "npm run build && wrangler deploy"
   },
   "keywords": [
     "web",
@@ -16,9 +18,14 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "astro": "^6.1.9"
+    "astro": "^6.1.9",
+    "wrangler": "^4.95.0"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^13.6.0",
     "microcms-js-sdk": "^3.4.0"
+  },
+  "overrides": {
+    "vite": "^7"
   }
 }
