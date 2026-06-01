@@ -11,14 +11,20 @@ export async function getStaticPaths() {
     const newsData = await client.get({ endpoint: 'news', queries: { limit: 100 } });
     return newsData.contents.map((news: News) => ({
       params: { id: news.id },
-      props: { news },
     }));
   } catch (e) {
     return [];
   }
 }
 
-const { news } = Astro.props as { news: News };
+const { id } = Astro.params;
+let news: News | null = null;
+try {
+  news = await client.get({ endpoint: 'news', contentId: id });
+} catch (e) {}
+
+if (!news) return Astro.redirect('/activities#news');
+
 const dateStr = new Date(news.publishedAt).toLocaleDateString('ja-JP', {
   year: 'numeric', month: 'long', day: 'numeric',
 });

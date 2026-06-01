@@ -1,0 +1,246 @@
+---
+// src/pages/reports/[id].astro
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { client } from '../../lib/microcms';
+import type { Report } from '../../lib/microcms';
+
+export async function getStaticPaths() {
+  try {
+    const reportsData = await client.get({ endpoint: 'reports', queries: { limit: 100 } });
+    return reportsData.contents.map((report: Report) => ({
+      params: { id: report.id },
+    }));
+  } catch (e) {
+    return [];
+  }
+}
+
+const { id } = Astro.params;
+let report: Report | null = null;
+try {
+  report = await client.get({ endpoint: 'reports', contentId: id });
+} catch (e) {}
+
+if (!report) return Astro.redirect('/activities');
+
+const dateStr = report.date
+  ? new Date(report.date).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' })
+  : null;
+---
+
+<Layout title={report.title} description={report.summary}>
+  <Header />
+
+  <main>
+    <div class="container page">
+      <nav class="breadcrumb">
+        <a href="/activities">← 活動レポート一覧に戻る</a>
+      </nav>
+
+      <article class="report-article">
+        <header class="article-header">
+          <div class="article-meta">
+            {dateStr && <span class="article-date">{dateStr}</span>}
+            <span class="tag">助成先レポート</span>
+          </div>
+          <h1>{report.title}</h1>
+          {report.organization && <p class="article-org">{report.organization}</p>}
+        </header>
+
+        {report.image && (
+          <div class="article-image-wrap">
+            <img src={report.image.url} alt={report.title} class="article-image" />
+          </div>
+        )}
+
+        {report.summary && (
+          <p class="article-summary">{report.summary}</p>
+        )}
+
+        {report.content && (
+          <div class="article-body" set:html={report.content} />
+        )}
+      </article>
+
+      <div class="cta-wrap">
+        <p>活動レポートや助成に関するお問い合わせはこちら</p>
+        <a href="/contact" class="cta-button">お問い合わせ</a>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .page {
+    padding: var(--spacing-2xl) 0;
+    max-width: 860px;
+  }
+
+  .breadcrumb {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .breadcrumb a {
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .breadcrumb a:hover {
+    color: var(--color-accent);
+  }
+
+  .report-article {
+    background: var(--color-white);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(44, 62, 80, 0.05);
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .article-header {
+    padding: var(--spacing-2xl);
+    padding-bottom: var(--spacing-lg);
+  }
+
+  .article-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .article-date {
+    color: var(--color-gray);
+    font-size: 0.95rem;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(94, 199, 212, 0.18);
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  .article-header h1 {
+    color: var(--color-dark);
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    line-height: 1.4;
+    margin: 0 0 var(--spacing-sm) 0;
+  }
+
+  .article-org {
+    color: var(--color-gray);
+    font-size: 0.95rem;
+    margin: 0;
+  }
+
+  .article-image-wrap {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+
+  .article-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .article-summary {
+    padding: var(--spacing-xl) var(--spacing-2xl) 0;
+    color: var(--color-gray);
+    font-size: 1.05rem;
+    line-height: 1.75;
+    margin: 0;
+  }
+
+  .article-body {
+    padding: var(--spacing-xl) var(--spacing-2xl) var(--spacing-2xl);
+    line-height: 1.9;
+    color: var(--color-dark);
+  }
+
+  .article-body :global(p) {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .article-body :global(h2),
+  .article-body :global(h3) {
+    color: var(--color-primary);
+    margin-top: var(--spacing-xl);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .article-body :global(img) {
+    border-radius: 12px;
+    margin: var(--spacing-lg) 0;
+    width: 100%;
+  }
+
+  .article-body :global(a) {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  .cta-wrap {
+    text-align: center;
+    padding: var(--spacing-xl);
+    background: linear-gradient(135deg, rgba(94, 199, 212, 0.1), rgba(255, 159, 60, 0.08));
+    border-radius: 24px;
+    border: 1px solid rgba(94, 199, 212, 0.2);
+  }
+
+  .cta-wrap p {
+    color: var(--color-dark);
+    margin-bottom: var(--spacing-lg);
+    font-size: 1.05rem;
+  }
+
+  .cta-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 1.8rem;
+    border-radius: 999px;
+    background: var(--color-accent);
+    color: var(--color-dark);
+    font-weight: 700;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .cta-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(255, 159, 60, 0.25);
+    color: var(--color-dark);
+  }
+
+  @media (max-width: 700px) {
+    .page {
+      padding: var(--spacing-xl) 0;
+    }
+
+    .article-header {
+      padding: var(--spacing-lg);
+    }
+
+    .article-summary {
+      padding: var(--spacing-lg) var(--spacing-lg) 0;
+    }
+
+    .article-body {
+      padding: var(--spacing-lg);
+    }
+  }
+</style>
