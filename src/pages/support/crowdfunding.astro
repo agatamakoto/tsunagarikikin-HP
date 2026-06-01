@@ -1,0 +1,616 @@
+---
+// src/pages/support/crowdfunding.astro
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<Layout title="事業指定助成プログラム（寄付型クラウドファンディング）" description="えひめ西条つながり基金の寄付型クラウドファンディングプログラムの募集要項・エントリー詳細">
+  <Header />
+
+  <main>
+    <div class="container page-content">
+
+      <nav class="breadcrumb">
+        <a href="/support">← 助成や支援を受けるに戻る</a>
+      </nav>
+
+      <h1>事業指定助成プログラム<br class="sp-br">（寄付型クラウドファンディング）</h1>
+
+      <section class="section intro-section">
+        <p class="intro-tag">あなたの団体の想いを、共感と資金に変える</p>
+        <p class="intro-text">「この地域課題を解決したい」「新しいプロジェクトを立ち上げたい」という市民活動団体の取り組みをWeb上で発信し、広く一般から寄付（活動資金）を募るプログラムです。公益財団法人えひめ西条つながり基金がプラットフォームを提供し、皆様の資金集めを強力にバックアップします。</p>
+      </section>
+
+      <!-- メリット -->
+      <section class="section">
+        <h2>このプログラムの3つのメリット</h2>
+        <div class="benefit-grid">
+          <div class="benefit-card">
+            <div class="benefit-icon">💰</div>
+            <h3>寄付者に「税制優遇」を提供できる</h3>
+            <p>当基金の仕組みを活用することで、寄付者様は<strong>寄付金控除</strong>を受けることができます。これが寄付への大きな後押しとなります。</p>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon">🤝</div>
+            <h3>信頼性の向上</h3>
+            <p>公益財団法人である当基金の審査を経てWebサイトに掲載されるため、プロジェクトの社会的な信用度が高まります。</p>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon">🚀</div>
+            <h3>リスクなしで挑戦できる</h3>
+            <p>募集期間は最大1年間で任意に設定可能。集まった寄付金からプランに応じた運営費を除いた全額を活動のための助成金として交付します。</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- プラン選択 -->
+      <section class="section">
+        <h2>プランを選ぶ</h2>
+        <p class="section-lead">活動状況やニーズに合わせて、2つのプランからお選びいただけます。</p>
+
+        <div class="plan-grid">
+          <div class="plan-card plan-standard">
+            <div class="plan-header">
+              <span class="plan-badge">スタンダードプラン</span>
+              <div class="plan-fee">
+                <span class="fee-number">10</span>
+                <span class="fee-unit">%</span>
+              </div>
+              <p class="fee-desc">集まった寄付金の10%が運営費</p>
+            </div>
+            <div class="plan-body">
+              <p class="plan-target">自分たちで広報・運営ができる団体向け</p>
+              <ul class="plan-features">
+                <li>✔ 基金Webサイトへの掲載</li>
+                <li>✔ 寄付金の受領・管理・交付</li>
+                <li>✔ 寄付者への領収書・税制優遇の対応</li>
+                <li>✔ 活動報告のサポート</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="plan-card plan-plus">
+            <div class="plan-badge-wrap">
+              <span class="plan-recommended">おすすめ</span>
+            </div>
+            <div class="plan-header">
+              <span class="plan-badge">伴走支援付きプラン</span>
+              <div class="plan-fee">
+                <span class="fee-number">20</span>
+                <span class="fee-unit">%</span>
+              </div>
+              <p class="fee-desc">集まった寄付金の20%が運営費</p>
+            </div>
+            <div class="plan-body">
+              <p class="plan-target">発信・資金調達に不安がある団体や、組織基盤を強化したい団体向け</p>
+              <ul class="plan-features">
+                <li>✔ スタンダードプランの内容すべて</li>
+                <li>✔ ファンドレイジング戦略の相談</li>
+                <li>✔ 広報・SNS発信のアドバイス</li>
+                <li>✔ 組織運営・財務管理のサポート</li>
+                <li>✔ 専門家（税理士等）とのマッチング</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 応募条件 -->
+      <section class="section">
+        <h2>応募条件</h2>
+        <div class="conditions-card">
+          <ul class="conditions-list">
+            <li>
+              <span class="cond-icon">📍</span>
+              <div>
+                <strong>活動地域</strong>
+                <p>主に西条市内で地域課題の解決に取り組む市民活動団体（NPO法人・任意団体など）</p>
+              </div>
+            </li>
+            <li>
+              <span class="cond-icon">📋</span>
+              <div>
+                <strong>情報公開</strong>
+                <p>CANPANコミュニティサイトへの登録、および情報公開レベル <strong>★3以上</strong> の取得（審査通過後にご案内します）</p>
+              </div>
+            </li>
+            <li>
+              <span class="cond-icon">🌱</span>
+              <div>
+                <strong>活動内容</strong>
+                <p>公益性のある活動であること。宗教・政治活動を主目的としないこと</p>
+              </div>
+            </li>
+            <li>
+              <span class="cond-icon">📅</span>
+              <div>
+                <strong>募集期間</strong>
+                <p>通年受付。募集期間は最大1年間で任意に設定可能</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 応募の流れ -->
+      <section class="section">
+        <h2>応募の流れ</h2>
+        <div class="flow-list">
+          <div class="flow-step">
+            <div class="step-number">01</div>
+            <div class="step-body">
+              <h3>申請・審査</h3>
+              <p>お問い合わせフォームよりご連絡ください。申請書類（申請書・予算書）をご提出いただき、当基金が内容を審査します。審査通過後、Webサイトへの掲載準備を行います。</p>
+            </div>
+          </div>
+          <div class="flow-connector"></div>
+          <div class="flow-step">
+            <div class="step-number">02</div>
+            <div class="step-body">
+              <h3>寄付募集</h3>
+              <p>当基金のWebサイトにプロジェクトを掲載し、寄付を募ります。活動の魅力を発信し、賛同する寄付者からの支援を集めます。募集期間は最大1年間。</p>
+            </div>
+          </div>
+          <div class="flow-connector"></div>
+          <div class="flow-step">
+            <div class="step-number">03</div>
+            <div class="step-body">
+              <h3>助成金の交付・活動報告</h3>
+              <p>集まった寄付金から運営費（スタンダード10% / 伴走支援付き20%）を除いた全額を助成金として交付します。活動完了後に報告書をご提出いただきます。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 申請書類 -->
+      <section class="section">
+        <h2>申請書類</h2>
+        <div class="docs-card">
+          <p>以下の書類をご準備のうえ、お問い合わせフォームよりご連絡ください。書式はお問い合わせ後にお送りします。</p>
+          <ul class="docs-list">
+            <li>📄 募集要項（当基金より提供）</li>
+            <li>📄 申請書（様式あり）</li>
+            <li>📄 予算書（様式あり）</li>
+            <li>📄 団体の規約・定款</li>
+            <li>📄 直近の活動報告書または事業報告書</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section class="section cta-section">
+        <div class="cta-card">
+          <div>
+            <h2>エントリー・お問い合わせ</h2>
+            <p>ご不明な点やエントリーのご相談は、お問い合わせフォームよりお気軽にご連絡ください。担当者よりご連絡いたします。</p>
+          </div>
+          <a href="/contact" class="cta-button">お問い合わせ・エントリーはこちら</a>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .page-content {
+    padding: var(--spacing-2xl) 0;
+    max-width: 1000px;
+  }
+
+  .breadcrumb {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .breadcrumb a {
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .breadcrumb a:hover {
+    color: var(--color-accent);
+  }
+
+  h1 {
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-2xl);
+    border-bottom: 3px solid var(--color-primary);
+    padding-bottom: var(--spacing-lg);
+    line-height: 1.3;
+  }
+
+  .sp-br {
+    display: none;
+  }
+
+  .section {
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .section h2 {
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .section-lead {
+    color: var(--color-dark);
+    line-height: 1.75;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .intro-section {
+    background: rgba(94, 199, 212, 0.06);
+    border-radius: 24px;
+    padding: var(--spacing-xl);
+    border: 1px solid rgba(94, 199, 212, 0.2);
+  }
+
+  .intro-tag {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    background: rgba(94, 199, 212, 0.15);
+    color: var(--color-primary);
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .intro-text {
+    line-height: 1.8;
+    color: var(--color-dark);
+    margin: 0;
+  }
+
+  /* メリット */
+  .benefit-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--spacing-lg);
+  }
+
+  .benefit-card {
+    background: var(--color-white);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 24px;
+    padding: var(--spacing-lg);
+    box-shadow: 0 10px 28px rgba(44, 62, 80, 0.05);
+  }
+
+  .benefit-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background-color: var(--color-primary);
+    display: grid;
+    place-items: center;
+    font-size: 1.3rem;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .benefit-card h3 {
+    margin-bottom: var(--spacing-sm);
+    color: var(--color-dark);
+  }
+
+  .benefit-card p {
+    color: var(--color-dark);
+    line-height: 1.75;
+    margin: 0;
+  }
+
+  strong {
+    color: var(--color-primary);
+  }
+
+  /* プラン */
+  .plan-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-lg);
+    align-items: start;
+  }
+
+  .plan-card {
+    background: var(--color-white);
+    border: 2px solid rgba(0, 0, 0, 0.08);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 10px 28px rgba(44, 62, 80, 0.05);
+    position: relative;
+  }
+
+  .plan-plus {
+    border-color: var(--color-accent);
+    box-shadow: 0 16px 40px rgba(255, 159, 60, 0.15);
+  }
+
+  .plan-badge-wrap {
+    background: var(--color-accent);
+    text-align: center;
+    padding: 0.4rem;
+  }
+
+  .plan-recommended {
+    color: white;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  .plan-header {
+    background: var(--color-light);
+    padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-lg);
+    text-align: center;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .plan-plus .plan-header {
+    background: rgba(255, 159, 60, 0.06);
+  }
+
+  .plan-badge {
+    display: inline-block;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--color-dark);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .plan-fee {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.2rem;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .fee-number {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: var(--color-primary);
+    line-height: 1;
+  }
+
+  .plan-plus .fee-number {
+    color: var(--color-accent);
+  }
+
+  .fee-unit {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+
+  .plan-plus .fee-unit {
+    color: var(--color-accent);
+  }
+
+  .fee-desc {
+    color: var(--color-gray);
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  .plan-body {
+    padding: var(--spacing-lg);
+  }
+
+  .plan-target {
+    font-size: 0.95rem;
+    color: var(--color-gray);
+    margin-bottom: var(--spacing-md);
+    line-height: 1.6;
+  }
+
+  .plan-features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .plan-features li {
+    color: var(--color-dark);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  /* 応募条件 */
+  .conditions-card {
+    background: var(--color-white);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 24px;
+    padding: var(--spacing-xl);
+    box-shadow: 0 10px 28px rgba(44, 62, 80, 0.05);
+  }
+
+  .conditions-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+
+  .conditions-list li {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: var(--spacing-md);
+    align-items: flex-start;
+  }
+
+  .cond-icon {
+    font-size: 1.4rem;
+    line-height: 1.5;
+  }
+
+  .conditions-list strong {
+    display: block;
+    color: var(--color-dark);
+    margin-bottom: 0.25rem;
+  }
+
+  .conditions-list p {
+    color: var(--color-dark);
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  /* 応募の流れ */
+  .flow-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .flow-step {
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    gap: var(--spacing-lg);
+    align-items: flex-start;
+    background: var(--color-white);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 24px;
+    padding: var(--spacing-xl);
+    box-shadow: 0 10px 28px rgba(44, 62, 80, 0.05);
+  }
+
+  .step-number {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 800;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+
+  .step-body h3 {
+    margin: 0 0 var(--spacing-sm) 0;
+    color: var(--color-dark);
+  }
+
+  .step-body p {
+    margin: 0;
+    color: var(--color-dark);
+    line-height: 1.75;
+  }
+
+  .flow-connector {
+    width: 2px;
+    height: 32px;
+    background: rgba(94, 199, 212, 0.4);
+    margin: 0 0 0 calc(var(--spacing-xl) + 28px - 1px);
+  }
+
+  /* 申請書類 */
+  .docs-card {
+    background: var(--color-light);
+    border-radius: 24px;
+    padding: var(--spacing-xl);
+    border: 1px solid rgba(94, 199, 212, 0.2);
+  }
+
+  .docs-card p {
+    color: var(--color-dark);
+    line-height: 1.75;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .docs-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .docs-list li {
+    color: var(--color-dark);
+    font-size: 1rem;
+  }
+
+  /* CTA */
+  .cta-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-xl);
+    padding: var(--spacing-xl);
+    background: linear-gradient(90deg, rgba(94, 199, 212, 0.12), rgba(255, 255, 255, 1));
+    border-radius: 24px;
+    border: 1px solid rgba(94, 199, 212, 0.2);
+  }
+
+  .cta-card h2 {
+    color: var(--color-primary);
+    margin: 0 0 var(--spacing-sm) 0;
+  }
+
+  .cta-card p {
+    color: var(--color-dark);
+    line-height: 1.75;
+    margin: 0;
+  }
+
+  .cta-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 1.6rem;
+    border-radius: 999px;
+    background: var(--color-accent);
+    color: var(--color-dark);
+    font-weight: 700;
+    white-space: nowrap;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .cta-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(255, 159, 60, 0.25);
+    color: var(--color-dark);
+  }
+
+  @media (max-width: 768px) {
+    .sp-br {
+      display: block;
+    }
+
+    .benefit-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .plan-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .cta-card {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .flow-step {
+      grid-template-columns: 1fr;
+    }
+
+    .flow-connector {
+      margin-left: calc(var(--spacing-xl));
+    }
+
+    .conditions-list li {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
