@@ -17,9 +17,31 @@ import Footer from '../../components/Footer.astro';
 
       <h1>事業指定助成プログラム<br class="sp-br">（寄付型クラウドファンディング）</h1>
 
+      <!-- イントロ -->
       <section class="section intro-section">
         <p class="intro-tag">あなたの団体の想いを、共感と資金に変える</p>
-        <p class="intro-text">「この地域課題を解決したい」「新しいプロジェクトを立ち上げたい」という市民活動団体の取り組みをWeb上で発信し、広く一般から寄付（活動資金）を募るプログラムです。公益財団法人えひめ西条つながり基金がプラットフォームを提供し、皆様の資金集めを強力にバックアップします。</p>
+        <p class="intro-text">「この地域課題を解決したい」「新しいプロジェクトを立ち上げたい」という市民活動団体の取り組みをWeb上で発信し、愛媛県内外の方々から広く寄付（活動資金）を募るプログラムです。えひめ西条つながり基金がプラットフォームを提供し、皆様の活動を全力でバックアップします。</p>
+      </section>
+
+      <!-- ほかのクラウドファンディングとの違い -->
+      <section class="section diff-section">
+        <h2>一般的なクラウドファンディングとの違い</h2>
+        <p class="section-lead">インターネットで「クラウドファンディング」と検索すると、様々なサービスが出てきます。実は、えひめ西条つながり基金を通じた場合には、大きな違いがあります。</p>
+
+        <div class="diff-highlight">
+          <div class="diff-icon">🎁</div>
+          <div>
+            <h3>寄付者が「寄付金控除」を受けられます</h3>
+            <p>寄付金控除とは、簡単に言うと「寄付した金額の一部が税金として戻ってくる」仕組みです。たとえば1万円を寄付すると、確定申告をすることで実質的な負担が軽くなります。これは寄付をしてくださる方にとって大きな後押しになります。</p>
+            <p>一般的なクラウドファンディングサービスでは、寄付者が税制上のメリットを受けられないことがほとんどです。しかし当プログラムでは、<strong>基本的に寄付者の方が寄付金控除を受けることができます。</strong></p>
+          </div>
+        </div>
+
+        <div class="diff-note">
+          <p class="diff-note-title">🔍 なぜ寄付金控除が受けられるの？</p>
+          <p>寄付金控除を受けるには、寄付先のプロジェクトが「社会的に意義のある活動（公益性がある）」だと、法的な手続きを経て認められている必要があります。この手続きは、はじめての方には少しハードルが高く感じることもあります。</p>
+          <p>えひめ西条つながり基金は公益財団法人として、この審査をクリアできるよう、申請の準備から丁寧にサポートします。「書類が難しくてわからない」「どこから手をつければいいか」そんな不安は、私たちが一つひとつ一緒に解決していきます。</p>
+        </div>
       </section>
 
       <!-- メリット -->
@@ -29,17 +51,17 @@ import Footer from '../../components/Footer.astro';
           <div class="benefit-card">
             <div class="benefit-icon">💰</div>
             <h3>寄付者に「税制優遇」を提供できる</h3>
-            <p>当基金の仕組みを活用することで、寄付者様は<strong>寄付金控除</strong>を受けることができます。これが寄付への大きな後押しとなります。</p>
+            <p>当基金の仕組みを活用することで、寄付者の方は<strong>寄付金控除</strong>を受けることができます。「応援したい気持ちはあるけど…」という方の背中を押す、大きなポイントです。</p>
           </div>
           <div class="benefit-card">
             <div class="benefit-icon">🤝</div>
             <h3>信頼性の向上</h3>
-            <p>公益財団法人である当基金の審査を経てWebサイトに掲載されるため、プロジェクトの社会的な信用度が高まります。</p>
+            <p>公益財団法人である当基金の審査を経てWebサイトに掲載されるため、プロジェクトの社会的な信用度が高まります。「ちゃんとした団体だ」と伝わることが、寄付集めにつながります。</p>
           </div>
           <div class="benefit-card">
             <div class="benefit-icon">🚀</div>
             <h3>リスクなしで挑戦できる</h3>
-            <p>募集期間は最大1年間で任意に設定可能。集まった寄付金からプランに応じた運営費を除いた全額を活動のための助成金として交付します。</p>
+            <p>募集期間は最大1年間で任意に設定可能。集まった寄付金からプランに応じた運営費を除いた全額を活動のための助成金として交付します。目標未達でも活動を止める必要はありません。</p>
           </div>
         </div>
       </section>
@@ -47,7 +69,7 @@ import Footer from '../../components/Footer.astro';
       <!-- プラン選択 -->
       <section class="section">
         <h2>プランを選ぶ</h2>
-        <p class="section-lead">活動状況やニーズに合わせて、2つのプランからお選びいただけます。</p>
+        <p class="section-lead">活動の状況やニーズに合わせて、2つのプランからお選びいただけます。どちらのプランでも、寄付者が寄付金控除を受けられる仕組みは変わりません。</p>
 
         <div class="plan-grid">
           <div class="plan-card plan-standard">
@@ -57,10 +79,10 @@ import Footer from '../../components/Footer.astro';
                 <span class="fee-number">10</span>
                 <span class="fee-unit">%</span>
               </div>
-              <p class="fee-desc">集まった寄付金の10%が運営費</p>
+              <p class="fee-desc">集まった寄付金の10%が運営手数料</p>
             </div>
             <div class="plan-body">
-              <p class="plan-target">自分たちで広報・運営ができる団体向け</p>
+              <p class="plan-target">広報・運営を自分たちで進められる団体向け</p>
               <ul class="plan-features">
                 <li>✔ 基金Webサイトへの掲載</li>
                 <li>✔ 寄付金の受領・管理・交付</li>
@@ -80,7 +102,7 @@ import Footer from '../../components/Footer.astro';
                 <span class="fee-number">20</span>
                 <span class="fee-unit">%</span>
               </div>
-              <p class="fee-desc">集まった寄付金の20%が運営費</p>
+              <p class="fee-desc">集まった寄付金の20%が運営手数料</p>
             </div>
             <div class="plan-body">
               <p class="plan-target">発信・資金調達に不安がある団体や、組織基盤を強化したい団体向け</p>
@@ -96,6 +118,46 @@ import Footer from '../../components/Footer.astro';
         </div>
       </section>
 
+      <!-- 中間支援組織が入る意義 -->
+      <section class="section">
+        <h2>お金を集める以上のことを、一緒に</h2>
+        <p class="section-lead">クラウドファンディングは「資金を集める手段」ですが、えひめ西条つながり基金が関わることで、それ以上のものが生まれると考えています。</p>
+
+        <div class="value-list">
+          <div class="value-item">
+            <div class="value-icon">🤝</div>
+            <div>
+              <h3>人と人をつなげる</h3>
+              <p>プロジェクトの担当者と、地域の支援者・賛同者を結ぶ橋渡しをします。「こんな活動があるんだ」と知ってもらうきっかけをつくり、応援したいと思う人を一人ひとり増やしていきます。</p>
+            </div>
+          </div>
+
+          <div class="value-item">
+            <div class="value-icon">🌱</div>
+            <div>
+              <h3>仲間・応援者を増やす</h3>
+              <p>お金を集めるだけでなく、活動を長く続けるための「仲間づくり」にもつながります。一度つながった応援者は、次のプロジェクトでも力になってくれる存在になっていきます。</p>
+            </div>
+          </div>
+
+          <div class="value-item">
+            <div class="value-icon">💬</div>
+            <div>
+              <h3>お金以上の価値を見つける</h3>
+              <p>地域のつながり、互いの信頼関係、活動を応援する文化。クラウドファンディングを通じて生まれるこれらの財産は、集まった金額以上に活動の力になります。地域でともに歩む仲間が増えることを、私たちは大切にしています。</p>
+            </div>
+          </div>
+
+          <div class="value-item">
+            <div class="value-icon">🔍</div>
+            <div>
+              <h3>最適な方法を一緒に考える</h3>
+              <p>「クラウドファンディングが、すべての団体にとってベストとは限らない」と考えています。ご相談を受けた結果、別の助成金や資金調達の方法が合っていると感じたときには、正直にそのご提案もします。私たちの目的は、皆さんの活動を支えることですから。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- 応募条件 -->
       <section class="section">
         <h2>応募条件</h2>
@@ -105,14 +167,14 @@ import Footer from '../../components/Footer.astro';
               <span class="cond-icon">📍</span>
               <div>
                 <strong>活動地域</strong>
-                <p>主に西条市内で地域課題の解決に取り組む市民活動団体（NPO法人・任意団体など）</p>
+                <p>愛媛県内を活動地域とする団体・プロジェクトを対象とします（NPO法人・任意団体など、法人格の有無は問いません）</p>
               </div>
             </li>
             <li>
               <span class="cond-icon">📋</span>
               <div>
                 <strong>情報公開</strong>
-                <p>CANPANコミュニティサイトへの登録、および情報公開レベル <strong>★3以上</strong> の取得（審査通過後にご案内します）</p>
+                <p>CANPANコミュニティサイトへの登録、および情報公開レベル <strong>★3以上</strong> の取得（審査通過後に一緒に準備を進めます）</p>
               </div>
             </li>
             <li>
@@ -140,13 +202,21 @@ import Footer from '../../components/Footer.astro';
           <div class="flow-step">
             <div class="step-number">01</div>
             <div class="step-body">
-              <h3>申請・審査</h3>
-              <p>お問い合わせフォームよりご連絡ください。申請書類（申請書・予算書）をご提出いただき、当基金が内容を審査します。審査通過後、Webサイトへの掲載準備を行います。</p>
+              <h3>まずはご相談ください</h3>
+              <p>お問い合わせフォームよりご連絡ください。「うちの団体に合っているか不安…」という段階でも大丈夫です。担当者が丁寧にお話を聞き、一緒に考えます。</p>
             </div>
           </div>
           <div class="flow-connector"></div>
           <div class="flow-step">
             <div class="step-number">02</div>
+            <div class="step-body">
+              <h3>申請・審査</h3>
+              <p>申請書類（申請書・予算書など）をご提出いただき、当基金が内容を審査します。書類の書き方も一緒にサポートしますのでご安心ください。審査通過後、Webサイトへの掲載準備を行います。</p>
+            </div>
+          </div>
+          <div class="flow-connector"></div>
+          <div class="flow-step">
+            <div class="step-number">03</div>
             <div class="step-body">
               <h3>寄付募集</h3>
               <p>当基金のWebサイトにプロジェクトを掲載し、寄付を募ります。活動の魅力を発信し、賛同する寄付者からの支援を集めます。募集期間は最大1年間。</p>
@@ -154,10 +224,10 @@ import Footer from '../../components/Footer.astro';
           </div>
           <div class="flow-connector"></div>
           <div class="flow-step">
-            <div class="step-number">03</div>
+            <div class="step-number">04</div>
             <div class="step-body">
               <h3>助成金の交付・活動報告</h3>
-              <p>集まった寄付金から運営費（スタンダード10% / 伴走支援付き20%）を除いた全額を助成金として交付します。活動完了後に報告書をご提出いただきます。</p>
+              <p>集まった寄付金から運営手数料（スタンダード10% / 伴走支援付き20%）を除いた全額を助成金として交付します。活動完了後に報告書をご提出いただきます。</p>
             </div>
           </div>
         </div>
@@ -167,7 +237,7 @@ import Footer from '../../components/Footer.astro';
       <section class="section">
         <h2>申請書類</h2>
         <div class="docs-card">
-          <p>以下の書類をご準備のうえ、お問い合わせフォームよりご連絡ください。書式はお問い合わせ後にお送りします。</p>
+          <p>以下の書類をご準備いただきます。書式はお問い合わせ後にお送りしますので、まずはお気軽にご連絡ください。</p>
           <ul class="docs-list">
             <li>📄 募集要項（当基金より提供）</li>
             <li>📄 申請書（様式あり）</li>
@@ -183,7 +253,7 @@ import Footer from '../../components/Footer.astro';
         <div class="cta-card">
           <div>
             <h2>エントリー・お問い合わせ</h2>
-            <p>ご不明な点やエントリーのご相談は、お問い合わせフォームよりお気軽にご連絡ください。担当者よりご連絡いたします。</p>
+            <p>「うちの団体でも使えるの？」という素朴な疑問から、エントリーのご相談まで、お問い合わせフォームよりお気軽にどうぞ。担当者より丁寧にご連絡いたします。</p>
           </div>
           <a href="/contact" class="cta-button">お問い合わせ・エントリーはこちら</a>
         </div>
@@ -238,10 +308,11 @@ import Footer from '../../components/Footer.astro';
 
   .section-lead {
     color: var(--color-dark);
-    line-height: 1.75;
+    line-height: 1.8;
     margin-bottom: var(--spacing-lg);
   }
 
+  /* イントロ */
   .intro-section {
     background: rgba(94, 199, 212, 0.06);
     border-radius: 24px;
@@ -263,6 +334,73 @@ import Footer from '../../components/Footer.astro';
     line-height: 1.8;
     color: var(--color-dark);
     margin: 0;
+  }
+
+  /* 違いセクション */
+  .diff-section .section-lead {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .diff-highlight {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: var(--spacing-lg);
+    align-items: flex-start;
+    background: var(--color-white);
+    border: 2px solid var(--color-primary);
+    border-radius: 24px;
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-lg);
+    box-shadow: 0 10px 28px rgba(94, 199, 212, 0.1);
+  }
+
+  .diff-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    display: grid;
+    place-items: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .diff-highlight h3 {
+    color: var(--color-primary);
+    margin: 0 0 var(--spacing-md) 0;
+  }
+
+  .diff-highlight p {
+    color: var(--color-dark);
+    line-height: 1.8;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .diff-highlight p:last-child {
+    margin-bottom: 0;
+  }
+
+  .diff-note {
+    background: rgba(255, 159, 60, 0.06);
+    border-left: 4px solid var(--color-accent);
+    border-radius: 0 16px 16px 0;
+    padding: var(--spacing-lg) var(--spacing-xl);
+  }
+
+  .diff-note-title {
+    font-weight: 700;
+    color: var(--color-dark);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .diff-note p {
+    color: var(--color-dark);
+    line-height: 1.8;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .diff-note p:last-child {
+    margin-bottom: 0;
   }
 
   /* メリット */
@@ -418,6 +556,46 @@ import Footer from '../../components/Footer.astro';
     color: var(--color-dark);
     font-size: 0.95rem;
     line-height: 1.5;
+  }
+
+  /* 中間支援の意義 */
+  .value-list {
+    display: grid;
+    gap: var(--spacing-lg);
+  }
+
+  .value-item {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: var(--spacing-lg);
+    align-items: flex-start;
+    background: var(--color-white);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 24px;
+    padding: var(--spacing-xl);
+    box-shadow: 0 10px 28px rgba(44, 62, 80, 0.05);
+  }
+
+  .value-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(94, 199, 212, 0.12);
+    display: grid;
+    place-items: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+
+  .value-item h3 {
+    margin: 0 0 var(--spacing-sm) 0;
+    color: var(--color-dark);
+  }
+
+  .value-item p {
+    margin: 0;
+    color: var(--color-dark);
+    line-height: 1.8;
   }
 
   /* 応募条件 */
@@ -586,12 +764,19 @@ import Footer from '../../components/Footer.astro';
       display: block;
     }
 
-    .benefit-grid {
+    .benefit-grid,
+    .plan-grid {
       grid-template-columns: 1fr;
     }
 
-    .plan-grid {
+    .diff-highlight,
+    .value-item {
       grid-template-columns: 1fr;
+    }
+
+    .diff-icon,
+    .value-icon {
+      margin-bottom: 0;
     }
 
     .cta-card {
@@ -606,7 +791,7 @@ import Footer from '../../components/Footer.astro';
     }
 
     .flow-connector {
-      margin-left: calc(var(--spacing-xl));
+      margin-left: var(--spacing-xl);
     }
 
     .conditions-list li {
