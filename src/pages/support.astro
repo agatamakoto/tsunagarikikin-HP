@@ -8,9 +8,17 @@ import type { Grant } from '../lib/microcms';
 
 let grantsList: Grant[] = [];
 try {
-  const grantsData = await client.get({ endpoint: 'grants', queries: { limit: 3 } });
+  const grantsData = await client.get({ endpoint: 'grants', queries: { limit: 100 } });
   grantsList = grantsData.contents;
 } catch (e) {}
+
+const openGrants   = grantsList.filter(g => (Array.isArray(g.status) ? g.status : [g.status as unknown as string]).includes('募集中'));
+const closedGrants = grantsList.filter(g => (Array.isArray(g.status) ? g.status : [g.status as unknown as string]).includes('終了'));
+
+function statusLabel(grant: Grant): string | null {
+  const s = Array.isArray(grant.status) ? grant.status[0] : (grant.status as unknown as string);
+  return s || null;
+}
 ---
 
 <Layout title="助成や支援を受ける" description="つながり基金の助成や伴走支援プログラムについて">
@@ -27,36 +35,73 @@ try {
           </div>
         </div>
 
-        <div class="card-grid">
-          {grantsList.length > 0 ? (
-            grantsList.map((grant) => {
-              const statusLabel = Array.isArray(grant.status)
-                ? grant.status[0]
-                : (grant.status as unknown as string) || null;
-              return (
-                <article class="program-card">
-                  <div class="program-image-wrap">
-                    {grant.imege ? (
-                      <img src={grant.imege.url} alt={grant.title} class="program-image" />
-                    ) : (
-                      <div class="program-image program-image--placeholder" />
-                    )}
-                    {statusLabel && (
-                      <span class={`status-badge status-badge--${statusLabel === '募集中' ? 'open' : statusLabel === '終了' ? 'closed' : 'default'}`}>
-                        {statusLabel}
-                      </span>
-                    )}
-                  </div>
-                  <div class="program-content">
-                    <h3>{grant.title}</h3>
-                  </div>
-                </article>
-              );
-            })
-          ) : (
-            <p style="color: var(--color-gray); padding: var(--spacing-md) 0;">現在募集中の助成プログラムはありません。</p>
-          )}
-        </div>
+        <!-- 募集中 -->
+        <h3 class="grants-subheading">現在募集中</h3>
+        {openGrants.length > 0 ? (
+          <div class="grants-group" id="open-grants">
+            <div class="card-grid">
+              {openGrants.map((grant, i) => {
+                const label = statusLabel(grant);
+                const Tag = grant.url ? 'a' : 'article';
+                return (
+                  <Tag
+                    class={`program-card${i >= 3 ? ' grant-hidden' : ''}`}
+                    {...(grant.url ? { href: grant.url, target: '_blank', rel: 'noreferrer' } : {})}
+                  >
+                    <div class="program-image-wrap">
+                      {grant.image
+                        ? <img src={grant.image.url} alt={grant.title} class="program-image" />
+                        : <div class="program-image program-image--placeholder" />}
+                      {label && <span class={`status-badge status-badge--open`}>{label}</span>}
+                    </div>
+                    <div class="program-content"><h3>{grant.title}</h3></div>
+                  </Tag>
+                );
+              })}
+            </div>
+            {openGrants.length > 3 && (
+              <div class="show-more-wrap">
+                <button class="show-more-btn" data-group="open-grants">もっと見る</button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <p class="grants-empty">現在募集中の助成プログラムはありません。</p>
+        )}
+
+        <!-- 終了 -->
+        {closedGrants.length > 0 && (
+          <div class="grants-closed-wrap">
+            <h3 class="grants-subheading grants-subheading--closed">終了したプログラム</h3>
+            <div class="grants-group" id="closed-grants">
+              <div class="card-grid">
+                {closedGrants.map((grant, i) => {
+                  const label = statusLabel(grant);
+                  const Tag = grant.url ? 'a' : 'article';
+                  return (
+                    <Tag
+                      class={`program-card${i >= 3 ? ' grant-hidden' : ''}`}
+                      {...(grant.url ? { href: grant.url, target: '_blank', rel: 'noreferrer' } : {})}
+                    >
+                      <div class="program-image-wrap">
+                        {grant.image
+                          ? <img src={grant.image.url} alt={grant.title} class="program-image" />
+                          : <div class="program-image program-image--placeholder" />}
+                        {label && <span class="status-badge status-badge--closed">{label}</span>}
+                      </div>
+                      <div class="program-content"><h3>{grant.title}</h3></div>
+                    </Tag>
+                  );
+                })}
+              </div>
+              {closedGrants.length > 3 && (
+                <div class="show-more-wrap">
+                  <button class="show-more-btn" data-group="closed-grants">もっと見る</button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </section>
 
       <section id="crowdfunding" class="section section-crowdfunding">
@@ -165,6 +210,75 @@ try {
     line-height: 1.8;
     color: var(--color-dark);
     margin-top: var(--spacing-sm);
+  }
+
+  .grants-subheading {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin: 0 0 var(--spacing-lg) 0;
+    padding-left: var(--spacing-md);
+    border-left: 3px solid var(--color-primary);
+  }
+
+  .grants-subheading--closed {
+    color: var(--color-gray);
+    border-left-color: var(--color-gray);
+  }
+
+  .grants-closed-wrap {
+    margin-top: var(--spacing-2xl);
+  }
+
+  .grants-empty {
+    color: var(--color-gray);
+    padding: var(--spacing-md) 0;
+  }
+
+  .grant-hidden {
+    display: none;
+  }
+
+  .show-more-wrap {
+    text-align: center;
+    margin-top: var(--spacing-lg);
+  }
+
+  .show-more-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.65rem 2rem;
+    border-radius: 999px;
+    background: transparent;
+    border: 2px solid var(--color-primary);
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .show-more-btn:hover {
+    background: var(--color-primary);
+    color: white;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .program-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .program-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 36px rgba(44, 62, 80, 0.12);
+    color: inherit;
   }
 
   .card-grid,
@@ -346,3 +460,17 @@ try {
     }
   }
 </style>
+
+<script>
+  document.querySelectorAll('.show-more-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const groupId = (btn as HTMLElement).dataset.group;
+      if (!groupId) return;
+      const group = document.getElementById(groupId);
+      if (!group) return;
+      const hidden = group.querySelectorAll('.grant-hidden');
+      hidden.forEach(el => el.classList.remove('grant-hidden'));
+      (btn as HTMLElement).closest('.show-more-wrap')?.remove();
+    });
+  });
+</script>

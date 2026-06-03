@@ -39,10 +39,11 @@ export interface Project {
 export interface Grant {
   id: string;
   title: string;
-  status: string[];          // 募集中などのステータス（セレクトボックスは配列になります）
-  deadline: string;          // 締め切り日
-  imege?: { url: string };   // microCMS側のフィールドIDが "imege"（タイポ）
+  status: string[];          // 募集中などのステータス
+  deadline?: string;
+  image?: { url: string };
   content?: string;
+  url?: string;              // 外部リンク（microCMSで作ったページのURL）
 }
 
 // 5. 活動レポート (reports)
