@@ -1,0 +1,579 @@
+---
+// src/pages/donation/simulator.astro
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<Layout title="寄付金控除シミュレーション" description="年収と寄付金額を入力するだけで、実質的な寄付負担額を簡単に確認できます。">
+  <Header />
+
+  <main>
+    <div class="sim-page-header">
+      <nav class="sim-breadcrumb">
+        <a href="/donation">← 寄付をするに戻る</a>
+      </nav>
+      <h1>寄付金控除シミュレーション</h1>
+      <p>公益財団法人への寄付で受けられる税制優遇を、<br>かんたんに確認できます。</p>
+    </div>
+
+    <div class="sim-container">
+
+      <!-- 入力カード -->
+      <div class="sim-card">
+        <h2>あなたの情報を入力</h2>
+
+        <div class="form-group">
+          <label class="form-label">年収（給与収入）<span class="required">必須</span></label>
+          <div class="input-wrap">
+            <input type="number" id="income" value="5000000" min="1000000" max="50000000" step="100000">
+            <span class="input-unit">円</span>
+          </div>
+          <div class="slider-wrap">
+            <input type="range" id="income-slider" min="1000000" max="20000000" step="100000" value="5000000">
+            <div class="range-labels"><span>100万円</span><span>2,000万円</span></div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">寄付予定金額<span class="required">必須</span></label>
+          <div class="input-wrap">
+            <input type="number" id="donation" value="30000" min="2000" max="10000000" step="1000">
+            <span class="input-unit">円</span>
+          </div>
+          <div class="slider-wrap">
+            <input type="range" id="donation-slider" min="2000" max="500000" step="1000" value="30000">
+            <div class="range-labels"><span>2,000円</span><span>50万円</span></div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">控除方式を選択</label>
+          <div class="method-tabs">
+            <button class="tab-btn active" id="tab-tax" type="button">税額控除<br><small>（おすすめ）</small></button>
+            <button class="tab-btn" id="tab-income" type="button">所得控除</button>
+          </div>
+          <p class="method-note">※ 通常は税額控除の方が有利です。</p>
+        </div>
+      </div>
+
+      <!-- 結果カード -->
+      <div class="result-card">
+        <h2>シミュレーション結果</h2>
+        <div class="result-main">
+          <div class="result-item">
+            <p class="result-item-label">寄付金額</p>
+            <p class="result-item-value" id="res-donation">30,000<small>円</small></p>
+          </div>
+          <div class="result-item">
+            <p class="result-item-label">税金の戻り額</p>
+            <p class="result-item-value" id="res-refund">—</p>
+          </div>
+        </div>
+        <div class="result-highlight">
+          <p class="result-highlight-label">実質的な負担額</p>
+          <p class="result-highlight-value" id="res-net">—<small>円</small></p>
+        </div>
+      </div>
+
+      <!-- 内訳カード -->
+      <div class="sim-card">
+        <h2>計算の内訳</h2>
+        <table class="detail-table">
+          <thead>
+            <tr><th>項目</th><th>金額</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>所得税の軽減（概算）</td><td id="d-income-tax">—</td></tr>
+            <tr><td>住民税の控除（概算）</td><td id="d-juminzei">—</td></tr>
+            <tr class="highlight-row"><td>合計 税負担軽減額</td><td id="d-total">—</td></tr>
+          </tbody>
+        </table>
+        <p class="detail-note">※ 確定申告が必要です。詳細は税理士にご相談ください。</p>
+      </div>
+
+      <!-- 注意事項 -->
+      <div class="note-card">
+        <h3>ご注意・前提条件</h3>
+        <ul class="note-list">
+          <li>このシミュレーションは概算です。実際の控除額は個人の状況により異なります。</li>
+          <li>税額控除：所得税分は（寄付額－2,000円）×40%、住民税分は（寄付額－2,000円）×10%を上限内で控除。</li>
+          <li>所得控除：（寄付額－2,000円）を課税所得から差し引き、税率を乗じた額を軽減します。</li>
+          <li>所得税の控除上限は総所得金額等の40%、住民税は30%を目安としています。</li>
+          <li>給与所得者の場合、給与所得控除後の所得を基準に計算しています。</li>
+        </ul>
+      </div>
+
+      <!-- CTA -->
+      <div class="sim-cta">
+        <p>実際に寄付してみましょう</p>
+        <a href="https://buy.stripe.com/ONETIME_PLACEHOLDER" class="cta-btn">寄付する（準備中）</a>
+        <a href="/donation" class="cta-btn outline">寄付ページに戻る</a>
+      </div>
+
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .sim-page-header {
+    background: linear-gradient(135deg, #1a3547 0%, #2a8aaa 60%, #5bbcd6 100%);
+    padding: 40px 24px 36px;
+    color: white;
+    text-align: center;
+  }
+
+  .sim-breadcrumb {
+    margin-bottom: 16px;
+  }
+
+  .sim-breadcrumb a {
+    color: rgba(255,255,255,0.8);
+    font-size: 0.9rem;
+  }
+
+  .sim-breadcrumb a:hover { color: white; }
+
+  .sim-page-header h1 {
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    color: white;
+    margin: 0 0 12px 0;
+  }
+
+  .sim-page-header p {
+    font-size: 0.95rem;
+    opacity: 0.88;
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  .sim-container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 32px 16px 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .sim-card {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #d0e8f0;
+    padding: 28px 24px;
+  }
+
+  .sim-card h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #2a8aaa;
+    margin: 0 0 20px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e8f6fb;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .sim-card h2::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 18px;
+    background: var(--color-accent);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .form-group { margin-bottom: 20px; }
+
+  .form-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: #5a7080;
+    margin-bottom: 8px;
+  }
+
+  .required {
+    font-size: 0.75rem;
+    background: var(--color-accent);
+    color: white;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-weight: 400;
+  }
+
+  .input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .input-wrap input[type=number] {
+    width: 100%;
+    padding: 12px 48px 12px 16px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    border: 1.5px solid #d0e8f0;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color .2s;
+    appearance: textfield;
+    -moz-appearance: textfield;
+    font-family: inherit;
+  }
+
+  .input-wrap input[type=number]::-webkit-outer-spin-button,
+  .input-wrap input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  .input-wrap input:focus { border-color: var(--color-primary); }
+
+  .input-unit {
+    position: absolute;
+    right: 14px;
+    font-size: 0.85rem;
+    color: #5a7080;
+    pointer-events: none;
+  }
+
+  .slider-wrap { margin-top: 10px; }
+
+  input[type=range] {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #d0e8f0;
+    outline: none;
+    cursor: pointer;
+    accent-color: #2a8aaa;
+    border: none;
+    padding: 0;
+  }
+
+  .range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #5a7080;
+    margin-top: 4px;
+  }
+
+  .method-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 10px 8px;
+    border: 1.5px solid #d0e8f0;
+    background: white;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: all .2s;
+    color: #5a7080;
+    font-weight: 500;
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  .tab-btn small { font-size: 0.75rem; font-weight: 400; }
+
+  .tab-btn.active {
+    border-color: #2a8aaa;
+    background: #e8f6fb;
+    color: #2a8aaa;
+  }
+
+  .method-note {
+    font-size: 0.8rem;
+    color: #5a7080;
+    margin: 4px 0 0 0;
+  }
+
+  /* 結果カード */
+  .result-card {
+    background: linear-gradient(135deg, #1a3547 0%, #2a8aaa 100%);
+    border-radius: 16px;
+    padding: 28px 24px;
+    color: white;
+  }
+
+  .result-card h2 {
+    font-size: 0.95rem;
+    font-weight: 500;
+    opacity: .85;
+    margin: 0 0 20px 0;
+    color: white;
+    border: none;
+    padding: 0;
+  }
+
+  .result-main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .result-item {
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .result-item-label {
+    font-size: 0.8rem;
+    opacity: .8;
+    margin-bottom: 6px;
+  }
+
+  .result-item-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .result-item-value small { font-size: 0.85rem; font-weight: 400; }
+
+  .result-highlight {
+    background: var(--color-accent);
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .result-highlight-label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .result-highlight-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .result-highlight-value small { font-size: 0.9rem; }
+
+  /* 内訳テーブル */
+  .detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  .detail-table th {
+    background: #e8f6fb;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 500;
+    color: #5a7080;
+    border-bottom: 1px solid #d0e8f0;
+  }
+
+  .detail-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #d0e8f0;
+    color: var(--color-dark);
+  }
+
+  .detail-table td:last-child { text-align: right; }
+
+  .detail-table tr:last-child td { border-bottom: none; }
+
+  .detail-table .highlight-row td {
+    font-weight: 700;
+    color: #2a8aaa;
+    background: #e8f6fb;
+  }
+
+  .detail-note {
+    font-size: 0.8rem;
+    color: #5a7080;
+    margin: 12px 0 0 0;
+  }
+
+  /* 注意事項 */
+  .note-card {
+    background: #e8f6fb;
+    border-radius: 16px;
+    border: 1px solid #d0e8f0;
+    padding: 20px 24px;
+  }
+
+  .note-card h3 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #2a8aaa;
+    margin: 0 0 12px 0;
+  }
+
+  .note-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .note-list li {
+    font-size: 0.82rem;
+    color: #5a7080;
+    padding-left: 18px;
+    position: relative;
+    line-height: 1.6;
+  }
+
+  .note-list li::before {
+    content: '※';
+    position: absolute;
+    left: 0;
+    color: var(--color-primary);
+  }
+
+  /* CTA */
+  .sim-cta {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .sim-cta > p {
+    font-size: 0.95rem;
+    color: #5a7080;
+    margin: 0;
+  }
+
+  .cta-btn {
+    display: inline-block;
+    background: var(--color-accent);
+    color: white;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 14px 40px;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: opacity .2s;
+  }
+
+  .cta-btn:hover { opacity: .88; color: white; }
+
+  .cta-btn.outline {
+    background: white;
+    color: #2a8aaa;
+    border: 2px solid #2a8aaa;
+  }
+
+  .cta-btn.outline:hover { color: #2a8aaa; opacity: .85; }
+
+  @media (max-width: 480px) {
+    .result-main { grid-template-columns: 1fr; }
+    .result-highlight { flex-direction: column; gap: 6px; text-align: center; }
+    .sim-card { padding: 20px 16px; }
+  }
+</style>
+
+<script>
+  let method = 'tax';
+
+  document.getElementById('tab-tax')?.addEventListener('click', () => setMethod('tax'));
+  document.getElementById('tab-income')?.addEventListener('click', () => setMethod('income'));
+
+  function setMethod(m: string) {
+    method = m;
+    document.getElementById('tab-tax')?.classList.toggle('active', m === 'tax');
+    document.getElementById('tab-income')?.classList.toggle('active', m === 'income');
+    calc();
+  }
+
+  function getNetIncome(income: number) {
+    if (income <= 1625000) return income * 0.4;
+    if (income <= 1800000) return income - 650000;
+    if (income <= 3600000) return income * 0.7 - 180000;
+    if (income <= 6600000) return income * 0.8 - 540000;
+    if (income <= 8500000) return income * 0.9 - 1100000;
+    return income - 1950000;
+  }
+
+  function getTaxRate(netIncome: number) {
+    const taxable = Math.max(0, netIncome - 480000);
+    if (taxable <= 1950000) return 0.05;
+    if (taxable <= 3300000) return 0.10;
+    if (taxable <= 6950000) return 0.20;
+    if (taxable <= 9000000) return 0.23;
+    if (taxable <= 18000000) return 0.33;
+    return 0.40;
+  }
+
+  function fmt(n: number) {
+    return Math.round(n).toLocaleString('ja-JP') + ' 円';
+  }
+
+  function calc() {
+    const income = parseInt((document.getElementById('income') as HTMLInputElement).value) || 0;
+    const donation = parseInt((document.getElementById('donation') as HTMLInputElement).value) || 0;
+    const base = Math.max(0, donation - 2000);
+    const netIncome = getNetIncome(income);
+    const taxRate = getTaxRate(netIncome);
+
+    let incomeTaxRefund: number, juminzeiRefund: number;
+
+    if (method === 'tax') {
+      incomeTaxRefund = Math.min(base * 0.40, netIncome * 0.40 * taxRate);
+      juminzeiRefund = Math.min(base * 0.10, netIncome * 0.30 * 0.10);
+    } else {
+      incomeTaxRefund = Math.min(base, netIncome * 0.40) * taxRate;
+      juminzeiRefund = Math.min(base, netIncome * 0.30) * 0.10;
+    }
+
+    const totalRefund = incomeTaxRefund + juminzeiRefund;
+    const net = Math.max(0, donation - totalRefund);
+
+    const resDonation = document.getElementById('res-donation');
+    const resRefund = document.getElementById('res-refund');
+    const resNet = document.getElementById('res-net');
+    if (resDonation) resDonation.innerHTML = Math.round(donation).toLocaleString('ja-JP') + '<small>円</small>';
+    if (resRefund) resRefund.innerHTML = fmt(totalRefund);
+    if (resNet) resNet.innerHTML = Math.round(net).toLocaleString('ja-JP') + '<small>円</small>';
+
+    const dIncomeTax = document.getElementById('d-income-tax');
+    const dJuminzei = document.getElementById('d-juminzei');
+    const dTotal = document.getElementById('d-total');
+    if (dIncomeTax) dIncomeTax.textContent = fmt(incomeTaxRefund);
+    if (dJuminzei) dJuminzei.textContent = fmt(juminzeiRefund);
+    if (dTotal) dTotal.textContent = fmt(totalRefund);
+  }
+
+  document.getElementById('income')?.addEventListener('input', function(this: HTMLInputElement) {
+    (document.getElementById('income-slider') as HTMLInputElement).value = this.value;
+    calc();
+  });
+  document.getElementById('income-slider')?.addEventListener('input', function(this: HTMLInputElement) {
+    (document.getElementById('income') as HTMLInputElement).value = this.value;
+    calc();
+  });
+  document.getElementById('donation')?.addEventListener('input', function(this: HTMLInputElement) {
+    (document.getElementById('donation-slider') as HTMLInputElement).value = this.value;
+    calc();
+  });
+  document.getElementById('donation-slider')?.addEventListener('input', function(this: HTMLInputElement) {
+    (document.getElementById('donation') as HTMLInputElement).value = this.value;
+    calc();
+  });
+
+  calc();
+</script>
