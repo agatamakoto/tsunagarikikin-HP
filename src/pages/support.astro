@@ -29,25 +29,30 @@ try {
 
         <div class="card-grid">
           {grantsList.length > 0 ? (
-            grantsList.map((grant) => (
-              <article class="program-card">
-                {grant.image ? (
-                  <img src={grant.image.url} alt={grant.title} class="program-image" style="object-fit: cover;" />
-                ) : (
-                  <div class="program-image">
-                    {grant.status.length > 0 ? grant.status[0] : '詳細'}
+            grantsList.map((grant) => {
+              const statusLabel = Array.isArray(grant.status)
+                ? grant.status[0]
+                : (grant.status as unknown as string) || null;
+              return (
+                <article class="program-card">
+                  <div class="program-image-wrap">
+                    {grant.image ? (
+                      <img src={grant.image.url} alt={grant.title} class="program-image" />
+                    ) : (
+                      <div class="program-image program-image--placeholder" />
+                    )}
+                    {statusLabel && (
+                      <span class={`status-badge status-badge--${statusLabel === '募集中' ? 'open' : statusLabel === '終了' ? 'closed' : 'default'}`}>
+                        {statusLabel}
+                      </span>
+                    )}
                   </div>
-                )}
-                <div class="program-content">
-                  <h3>{grant.title}</h3>
-                  {grant.content && <div set:html={grant.content} />}
-                  <div class="program-meta">
-                    {grant.deadline && <span>締切：{grant.deadline}</span>}
-                    {grant.status.length > 0 && <span>{grant.status.join('・')}</span>}
+                  <div class="program-content">
+                    <h3>{grant.title}</h3>
                   </div>
-                </div>
-              </article>
-            ))
+                </article>
+              );
+            })
           ) : (
             <p style="color: var(--color-gray); padding: var(--spacing-md) 0;">現在募集中の助成プログラムはありません。</p>
           )}
@@ -179,19 +184,55 @@ try {
     background-color: var(--color-white);
     border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 24px;
-    padding: var(--spacing-lg);
+    overflow: hidden;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
   }
 
+  .program-image-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+  }
+
   .program-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .program-image--placeholder {
     background-color: rgba(94, 199, 212, 0.15);
-    color: var(--color-primary);
-    border-radius: 20px;
-    height: 180px;
-    display: grid;
-    place-items: center;
+  }
+
+  .status-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
     font-weight: 700;
-    margin-bottom: var(--spacing-md);
+    line-height: 1;
+  }
+
+  .status-badge--open {
+    background: var(--color-primary);
+    color: white;
+  }
+
+  .status-badge--closed {
+    background: rgba(0, 0, 0, 0.55);
+    color: white;
+  }
+
+  .status-badge--default {
+    background: var(--color-accent);
+    color: white;
+  }
+
+  .program-content {
+    padding: var(--spacing-md) var(--spacing-lg);
   }
 
   .program-content h3,
@@ -201,7 +242,6 @@ try {
     color: var(--color-dark);
   }
 
-  .program-card p,
   .benefit-card p,
   .support-item p {
     color: var(--color-dark);
