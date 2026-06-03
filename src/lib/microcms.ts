@@ -41,7 +41,7 @@ export interface Grant {
   title: string;
   status: string[];          // 募集中などのステータス（セレクトボックスは配列になります）
   deadline: string;          // 締め切り日
-  image?: { url: string };
+  imege?: { url: string };   // microCMS側のフィールドIDが "imege"（タイポ）
   content?: string;
 }
 
