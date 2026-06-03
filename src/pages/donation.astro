@@ -52,13 +52,13 @@ import Footer from '../components/Footer.astro';
             <div class="donation-option">
               <h3>① マンスリーサポーター（継続寄付）</h3>
               <p>毎月定額（1,000円〜）をクレジットカードで自動的にご寄付いただく仕組みです。継続的な支援が、地域活動の安定した基盤となります。</p>
-              <a class="donation-button" href="/contact">毎月1,000円から支援する</a>
+              <a class="donation-button" href="https://buy.stripe.com/MONTHLY_PLACEHOLDER">毎月1,000円から支援する</a>
             </div>
 
             <div class="donation-option">
               <h3>② 都度寄付（今回のみの寄付）</h3>
               <p>「今、応援したい」というタイミングで、任意の金額をご寄付いただけます。（クレジットカード、銀行振込など）</p>
-              <a class="donation-button" href="/contact">今回のみ支援する</a>
+              <a class="donation-button" href="https://buy.stripe.com/ONETIME_PLACEHOLDER">今回のみ支援する</a>
             </div>
 
             <div class="tax-note">
@@ -69,7 +69,7 @@ import Footer from '../components/Footer.astro';
             <div class="simulator-card">
               <h4>年収別・寄付金控除シミュレーション</h4>
               <p>簡易シミュレーションで、寄付による税制優遇のイメージをチェックできます。</p>
-              <a class="simulator-button" href="/contact">シミュレーションをする</a>
+              <a class="simulator-button" href="/donation/simulator">シミュレーションをする</a>
             </div>
           </div>
         </div>
@@ -90,7 +90,7 @@ import Footer from '../components/Footer.astro';
             <div class="corporate-supporter">
               <h3>法人サポーター制度について</h3>
               <p>月額3,000円、または年額30,000円からのご寄付で「法人サポーター」としてご登録いただけます。当基金HPでの企業ロゴ掲載や、貴社の想いを伝えるインタビュー記事の掲載などの特典をご用意しております。</p>
-              <a class="donation-button" href="/contact">法人サポーター特設ページへ</a>
+              <a class="donation-button" href="/donation/corporate">法人サポーター特設ページへ</a>
             </div>
           </div>
         </div>
@@ -114,7 +114,7 @@ import Footer from '../components/Footer.astro';
             <div class="fund-structure">
               <h3>仕組み</h3>
               <p>まとまった金額をご寄付いただき、ご希望の名称と助成テーマを設定します。当基金が事務局となり、そのテーマに沿った活動を行う団体へ助成を行います。</p>
-              <p>※設立に必要な金額や手続きについては、個別にご相談を承ります。お気軽にお問い合わせください。</p>
+              <p>冠基金の設立には<strong>最低100万円からのご寄付</strong>が必要となります。設立の手続きや運営方法については、個別にご相談を承ります。お気軽にお問い合わせください。</p>
               <a class="donation-button" href="/contact">冠基金について問い合わせる</a>
             </div>
           </div>
@@ -127,6 +127,12 @@ import Footer from '../components/Footer.astro';
           </button>
           <div id="legacy-detail" class="accordion-panel">
             <p>遺贈（いぞう）寄付とは、遺言により、ご自身の財産の一部または全部を公益活動のために寄付することです。「お世話になったまちの未来のために、財産を役立ててほしい」という温かいお気持ちを形にします。</p>
+
+            <div class="legacy-example">
+              <p class="legacy-example-label">遺贈寄付の例</p>
+              <blockquote>「○○銀行の普通預金口座（口座番号：○○○○）に残っている残金を、ひとり親家庭の子育て支援のために役立ててほしい。」</blockquote>
+              <p class="legacy-example-note">このように特定の用途（例：子どもの居場所づくり・空き家の活用など）を指定することもできます。あなたの想いを未来に遺すことができます。</p>
+            </div>
 
             <div class="benefits-list">
               <h3>遺贈寄付のメリット</h3>
@@ -347,6 +353,38 @@ import Footer from '../components/Footer.astro';
   .donation-button:hover,
   .simulator-button:hover {
     background-color: #4baab3;
+  }
+
+  .legacy-example {
+    background: rgba(94, 199, 212, 0.06);
+    border-left: 4px solid var(--color-primary);
+    border-radius: 0 16px 16px 0;
+    padding: var(--spacing-lg);
+    margin: var(--spacing-lg) 0;
+  }
+
+  .legacy-example-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-sm) !important;
+  }
+
+  .legacy-example blockquote {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--color-dark);
+    border: none;
+    padding: 0;
+    margin: 0 0 var(--spacing-sm) 0;
+    font-style: normal;
+  }
+
+  .legacy-example-note {
+    font-size: 0.88rem;
+    color: var(--color-gray);
+    margin: 0 !important;
+    line-height: 1.6;
   }
 
   .benefits-list ul,
