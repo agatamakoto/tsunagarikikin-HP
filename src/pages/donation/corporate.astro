@@ -48,32 +48,19 @@ import Footer from '../../components/Footer.astro';
       <!-- サポートプラン -->
       <section class="corp-section">
         <h2 class="section-title">サポートプラン</h2>
-        <div class="plan-grid">
+        <div class="plan-single">
           <div class="plan-card">
             <div class="plan-header">
-              <p class="plan-badge">スタンダード</p>
               <p class="plan-name">法人サポーター</p>
               <p class="plan-price">月額 3,000円 / 年額 30,000円</p>
             </div>
             <div class="plan-body">
               <div class="plan-feature">基金ウェブサイトへの企業ロゴ掲載</div>
+              <div class="plan-feature">当基金ウェブサイトにインタビュー記事掲載</div>
+              <div class="plan-feature">えひめ西条つながり基金のロゴマークを貴社HP等に掲載・相互リンク</div>
               <div class="plan-feature">年次活動報告書のお届け</div>
               <div class="plan-feature">メールニュースレターの配信</div>
               <div class="plan-feature">寄付金受領証・税制優遇書類の発行</div>
-            </div>
-          </div>
-          <div class="plan-card featured">
-            <div class="plan-header">
-              <p class="plan-badge">プレミアム</p>
-              <p class="plan-name">法人サポーター＋</p>
-              <p class="plan-price">年額 100,000円〜（要相談）</p>
-            </div>
-            <div class="plan-body">
-              <div class="plan-feature">スタンダードの全特典</div>
-              <div class="plan-feature">当基金ウェブサイトにインタビュー記事掲載</div>
-              <div class="plan-feature">助成先団体との交流イベントへのご招待</div>
-              <div class="plan-feature">支援プロジェクトの指定・ご要望</div>
-              <div class="plan-feature">担当スタッフによる定期報告</div>
             </div>
           </div>
         </div>
@@ -115,22 +102,22 @@ import Footer from '../../components/Footer.astro';
           <li class="benefit-item">
             <div class="benefit-num">2</div>
             <div class="benefit-content">
-              <h3>インタビュー記事の掲載（プレミアムプラン）</h3>
+              <h3>インタビュー記事の掲載</h3>
               <p>CSR担当者や代表者へのインタビュー記事を当基金のウェブサイトに掲載。貴社の地域への思いや取り組みを、広く愛媛の人々に伝えることができます。</p>
             </div>
           </li>
           <li class="benefit-item">
             <div class="benefit-num">3</div>
             <div class="benefit-content">
-              <h3>年次活動報告書</h3>
-              <p>助成先団体の活動成果や基金全体の事業報告をまとめた年次報告書をお届けします。支援の「見える化」として、社内報・IRへの活用も可能です。</p>
+              <h3>ロゴマークの掲載・相互リンク</h3>
+              <p>えひめ西条つながり基金のロゴマークを貴社のウェブサイトや広報物に掲載できます。当基金サイトから貴社サイトへの相互リンクも設定します。</p>
             </div>
           </li>
           <li class="benefit-item">
             <div class="benefit-num">4</div>
             <div class="benefit-content">
-              <h3>交流イベントへのご招待（プレミアムプラン）</h3>
-              <p>助成先のNPO・市民団体と直接交流できるイベントにご招待します。愛媛県内の現場を知り、本業との連携機会を探ることができます。</p>
+              <h3>年次活動報告書</h3>
+              <p>助成先団体の活動成果や基金全体の事業報告をまとめた年次報告書をお届けします。支援の「見える化」として、社内報・IRへの活用も可能です。</p>
             </div>
           </li>
         </ul>
@@ -311,59 +298,35 @@ import Footer from '../../components/Footer.astro';
   }
 
   /* プランカード */
-  .plan-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
+  .plan-single {
     margin-bottom: 10px;
   }
 
   .plan-card {
     background: white;
     border-radius: 12px;
-    border: 2px solid #d0e8f0;
+    border: 2px solid var(--color-primary);
     overflow: hidden;
   }
 
-  .plan-card.featured { border-color: var(--color-accent); }
-
   .plan-header {
-    background: #e8f6fb;
-    padding: 16px 18px 14px;
+    background: rgba(94, 199, 212, 0.1);
+    padding: 20px 24px 16px;
     border-bottom: 1px solid #d0e8f0;
   }
 
-  .plan-card.featured .plan-header {
-    background: var(--color-accent);
-    border-bottom-color: transparent;
-  }
-
-  .plan-badge {
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: .06em;
-    color: #2a8aaa;
-    margin: 0 0 4px 0;
-  }
-
-  .plan-card.featured .plan-badge { color: rgba(255,255,255,.85); }
-
   .plan-name {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: #1a3547;
     margin: 0 0 4px 0;
   }
 
-  .plan-card.featured .plan-name { color: white; }
-
   .plan-price {
-    font-size: 0.82rem;
+    font-size: 0.88rem;
     color: #5a7080;
     margin: 0;
   }
-
-  .plan-card.featured .plan-price { color: rgba(255,255,255,.8); }
 
   .plan-body { padding: 16px 18px; }
 
@@ -386,8 +349,6 @@ import Footer from '../../components/Footer.astro';
     font-weight: 700;
     flex-shrink: 0;
   }
-
-  .plan-card.featured .plan-feature::before { color: var(--color-accent); }
 
   .plan-note {
     font-size: 0.8rem;
@@ -562,7 +523,6 @@ import Footer from '../../components/Footer.astro';
   }
 
   @media (max-width: 540px) {
-    .plan-grid { grid-template-columns: 1fr; }
     .why-grid { grid-template-columns: 1fr 1fr; }
   }
 
