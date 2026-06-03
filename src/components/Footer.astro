@@ -47,6 +47,11 @@
 
     <div class="footer-bottom">
       <p>&copy; 2024 公益財団法人えひめ西条つながり基金. All rights reserved.</p>
+      <p class="footer-legal">
+        <a href="/privacy">プライバシーポリシー</a>
+        <span>|</span>
+        <a href="/terms">利用規約</a>
+      </p>
     </div>
   </div>
 </footer>
@@ -95,6 +100,28 @@
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--color-gray);
     font-size: var(--font-size-base);
+  }
+
+  .footer-legal {
+    margin-top: var(--spacing-sm);
+    font-size: 0.85rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-md);
+  }
+
+  .footer-legal a {
+    color: var(--color-gray);
+    transition: color 0.2s ease;
+  }
+
+  .footer-legal a:hover {
+    color: var(--color-primary);
+  }
+
+  .footer-legal span {
+    color: rgba(255, 255, 255, 0.2);
   }
 
   @media (max-width: 768px) {
