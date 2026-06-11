@@ -1,90 +1,46 @@
-name: Deploy to GitHub Pages
+name: Deploy to Cloudflare Pages
 
 on:
-  # main ブランチへのプッシュで自動デプロイ
   push:
     branches:
-      - main
-  
-  # microCMS からの Webhook トリガー
+      - master
   workflow_dispatch:
-
-  # 毎日夜間に自動ビルド（スケジュール）
-  schedule:
-    - cron: '0 0 * * *'
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+  # microCMS の Webhook → GitHub Actions の「Run workflow」URL でトリガー可能
 
 concurrency:
-  group: pages
-  cancel-in-progress: false
-
-env:
-  BUILD_PATH: .
+  group: deploy
+  cancel-in-progress: true
 
 jobs:
-  build:
-    name: Build
+  deploy:
+    name: Build & Deploy
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Detect package manager
-        id: detect-package-manager
-        run: |
-          if [ -f "${{ env.BUILD_PATH }}/yarn.lock" ]; then
-            echo "manager=yarn" >> $GITHUB_OUTPUT
-            echo "command=install" >> $GITHUB_OUTPUT
-            echo "runner=yarn" >> $GITHUB_OUTPUT
-            exit 0
-          elif [ -f "${{ env.BUILD_PATH }}/package.json" ]; then
-            echo "manager=npm" >> $GITHUB_OUTPUT
-            echo "command=ci" >> $GITHUB_OUTPUT
-            echo "runner=npx --yes" >> $GITHUB_OUTPUT
-            exit 0
-          else
-            echo "Unable to determine package manager"
-            exit 1
-          fi
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: ${{ steps.detect-package-manager.outputs.manager }}
-          cache-dependency-path: ${{ env.BUILD_PATH }}/package-lock.json
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
+          cache: npm
 
       - name: Install dependencies
-        run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
-        working-directory: ${{ env.BUILD_PATH }}
+        run: npm ci
 
       - name: Build with Astro
         env:
-          MICROCMS_API_URL: ${{ secrets.MICROCMS_API_URL }}
+          MICROCMS_SERVICE_DOMAIN: ${{ secrets.MICROCMS_SERVICE_DOMAIN }}
           MICROCMS_API_KEY: ${{ secrets.MICROCMS_API_KEY }}
-        run: ${{ steps.detect-package-manager.outputs.runner }} astro build
-        working-directory: ${{ env.BUILD_PATH }}
+        run: npm run build
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
         with:
-          path: ${{ env.BUILD_PATH }}/dist
-
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    needs: build
-    runs-on: ubuntu-latest
-    name: Deploy
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=tsunagarikikin-hp --commit-dirty=true
