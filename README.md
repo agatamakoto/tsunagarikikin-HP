@@ -210,10 +210,13 @@ const { title } = Astro.props;
 
 ```astro
 ---
-import { getMicroCMSContent } from '../lib/microcms';
+import { client } from '../lib/microcms';
 
 // お知らせ一覧を取得
-const news = await getMicroCMSContent('news', { limit: 5 });
+const news = await client.get({
+  endpoint: 'news',
+  queries: { limit: 5 },
+});
 ---
 
 {news.contents.map((article) => (
