@@ -65,6 +65,10 @@ import Footer from '../../components/Footer.astro';
           </div>
         </div>
         <p class="plan-note">※ 金額・特典内容は個別にご相談が可能です。お気軽にお問い合わせください。</p>
+        <div class="plan-apply">
+          <a href="/donation/corporate-monthly" class="plan-apply-btn">クレジットカードでお申し込み</a>
+          <span class="plan-apply-note">請求書・お振込みをご希望の場合は <a href="/contact">お問い合わせ</a> ください。</span>
+        </div>
       </section>
 
       <!-- 税制優遇 -->
@@ -163,8 +167,8 @@ import Footer from '../../components/Footer.astro';
         <h2>まずはお気軽にご相談ください</h2>
         <p>「うちの会社でも参加できる？」という段階から歓迎します。<br>担当スタッフが丁寧にご説明します。</p>
         <div class="cta-buttons">
-          <a href="/contact" class="cta-btn">お問い合わせフォームへ</a>
-          <a href="/donation" class="cta-btn outline">寄付ページに戻る</a>
+          <a href="/donation/corporate-monthly" class="cta-btn">クレジットカードで申し込む</a>
+          <a href="/contact" class="cta-btn outline">お問い合わせフォームへ</a>
         </div>
         <div class="cta-contact-info">
           <strong>TEL</strong>：0897-47-6943（月〜土 9:00〜17:00）<br>
@@ -354,6 +358,32 @@ import Footer from '../../components/Footer.astro';
     font-size: 0.8rem;
     color: #5a7080;
     margin: 8px 0 0 0;
+  }
+
+  .plan-apply {
+    margin-top: 16px;
+    text-align: center;
+  }
+
+  .plan-apply-btn {
+    display: inline-block;
+    background: var(--color-primary);
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 14px 36px;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: opacity .2s;
+  }
+
+  .plan-apply-btn:hover { opacity: .88; color: white; }
+
+  .plan-apply-note {
+    display: block;
+    font-size: 0.8rem;
+    color: #5a7080;
+    margin-top: 10px;
   }
 
   /* 税制優遇 */
