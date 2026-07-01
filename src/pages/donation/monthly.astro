@@ -1,0 +1,290 @@
+---
+// src/pages/donation/monthly.astro
+// 個人向けマンスリーサポーター（Pay.jp 継続課金）申込フォーム
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<Layout title="マンスリーサポーター申込（個人）" description="えひめ西条つながり基金のマンスリーサポーター。毎月のご寄付で愛媛の地域活動を継続的に支えます。">
+  <Header />
+
+  <main>
+    <div class="container form-page">
+      <h1>マンスリーサポーター（個人）</h1>
+      <p class="lead">毎月一定額を当基金へご寄付いただく制度です。継続的なご支援が、地域活動の安定した基盤になります。いつでも変更・停止できます。</p>
+      <p class="switch-note">法人・団体としてのお申し込みは <a href="/donation/corporate-monthly">法人用フォーム</a> をご利用ください。</p>
+
+      <form id="tm-form" class="donation-form">
+        <fieldset class="fieldset">
+          <legend>毎月の金額</legend>
+          <div class="amounts">
+            <label><input type="radio" name="tm-amount" value="1000"><span>1,000円</span></label>
+            <label><input type="radio" name="tm-amount" value="3000" checked><span>3,000円</span></label>
+            <label><input type="radio" name="tm-amount" value="5000"><span>5,000円</span></label>
+            <label><input type="radio" name="tm-amount" value="other"><span>その他</span></label>
+          </div>
+          <div id="tm-other-wrap" class="hidden">
+            <label class="field-label" for="tm-other">金額を入力（1,000円以上・1円単位）</label>
+            <input type="number" id="tm-other" min="1000" step="100" placeholder="例：2,000">
+          </div>
+        </fieldset>
+
+        <fieldset class="fieldset">
+          <legend>寄付の方法</legend>
+          <label class="radio-line"><input type="radio" name="tm-mode" value="named" checked>
+            <span>お名前を登録して寄付する<small>（寄付金控除の領収書発行に対応します）</small></span></label>
+          <label class="radio-line"><input type="radio" name="tm-mode" value="anonymous">
+            <span>匿名で寄付する<small>（お名前・ご住所は伺いません。領収書は発行されません）</small></span></label>
+          <div class="anon-note" id="tm-anon-note">匿名を選択されました。ご寄付の受付・カード管理連絡のためメールアドレスのみお伺いします。氏名・ご住所は登録されません。</div>
+        </fieldset>
+
+        <div id="tm-identity">
+          <label class="field-label" for="tm-name">お名前<em>必須</em></label>
+          <input type="text" id="tm-name" placeholder="西条 太郎">
+
+          <label class="field-label" for="tm-kana">フリガナ<em>必須</em></label>
+          <input type="text" id="tm-kana" placeholder="サイジョウ タロウ">
+
+          <label class="field-label">性別<small>（任意）</small></label>
+          <div class="radio-inline">
+            <label><input type="radio" name="tm-gender" value="" checked>未回答</label>
+            <label><input type="radio" name="tm-gender" value="male">男性</label>
+            <label><input type="radio" name="tm-gender" value="female">女性</label>
+            <label><input type="radio" name="tm-gender" value="other">その他</label>
+          </div>
+
+          <label class="field-label" for="tm-birthdate">生年月日<small>（任意）</small></label>
+          <input type="date" id="tm-birthdate">
+
+          <label class="field-label" for="tm-phone">電話番号<em>必須</em></label>
+          <input type="tel" id="tm-phone" placeholder="090-1234-5678">
+
+          <label class="field-label">ご住所<small>（寄付金控除の証明書発行に使用します）</small><em>必須</em></label>
+          <div class="row2">
+            <input type="text" id="tm-zip" placeholder="郵便番号 例：799-1300">
+            <select id="tm-pref"><option value="">都道府県を選択</option></select>
+          </div>
+          <input type="text" id="tm-address" placeholder="市区町村・番地・建物名" class="mt8">
+
+          <label class="field-label" for="tm-mailing">郵送物の送付先<small>（上記と異なる場合のみ・任意）</small></label>
+          <textarea id="tm-mailing" placeholder="ご住所と異なる送付先がある場合にご記入ください"></textarea>
+
+          <label class="field-label">広報物・お礼状等へのお名前の掲載</label>
+          <div class="radio-inline">
+            <label><input type="radio" name="tm-publicity" value="no" checked>掲載を希望しない</label>
+            <label><input type="radio" name="tm-publicity" value="yes">掲載を希望する</label>
+          </div>
+        </div>
+
+        <label class="field-label" for="tm-email">メールアドレス<em>必須</em></label>
+        <input type="email" id="tm-email" placeholder="taro@example.com">
+
+        <label class="field-label" for="tm-referral">当基金を知ったきっかけ<small>（任意）</small></label>
+        <select id="tm-referral">
+          <option value="">選択してください</option>
+          <option value="homepage">ホームページ</option>
+          <option value="sns">SNS</option>
+          <option value="introduction">知人・関係者の紹介</option>
+          <option value="event">イベント・説明会</option>
+          <option value="press">新聞・報道</option>
+          <option value="other">その他</option>
+        </select>
+
+        <label class="field-label">クレジットカード<em>必須</em></label>
+        <div id="card-element"></div>
+
+        <button type="submit" id="tm-submit" class="submit-btn">この内容で申し込む</button>
+        <div class="msg" id="tm-msg"></div>
+        <p class="note">お預かりしたカード情報は決済会社（Pay.jp）が直接処理し、当基金のサーバーには保存されません。</p>
+      </form>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script is:inline src="https://js.pay.jp/v2/pay.js"></script>
+<script>
+  import { PAYJP_PUBLIC_KEY, DONATION_API_URL } from '../../lib/donationConfig';
+
+  const PREFECTURES = ["北海道","青森県","岩手県","宮城県","秋田県","山形県","福島県","茨城県","栃木県","群馬県",
+    "埼玉県","千葉県","東京都","神奈川県","新潟県","富山県","石川県","福井県","山梨県","長野県",
+    "岐阜県","静岡県","愛知県","三重県","滋賀県","京都府","大阪府","兵庫県","奈良県","和歌山県",
+    "鳥取県","島根県","岡山県","広島県","山口県","徳島県","香川県","愛媛県","高知県","福岡県",
+    "佐賀県","長崎県","熊本県","大分県","宮崎県","鹿児島県","沖縄県"];
+  const prefSelect = document.getElementById("tm-pref");
+  PREFECTURES.forEach((p) => { const o = document.createElement("option"); o.value = p; o.textContent = p; prefSelect.appendChild(o); });
+
+  const payjp = window.Payjp(PAYJP_PUBLIC_KEY);
+  const elements = payjp.elements();
+  const card = elements.create("card");
+  card.mount("#card-element");
+
+  const form = document.getElementById("tm-form");
+  const msg = document.getElementById("tm-msg");
+  const submit = document.getElementById("tm-submit");
+  const otherWrap = document.getElementById("tm-other-wrap");
+  const identity = document.getElementById("tm-identity");
+  const anonNote = document.getElementById("tm-anon-note");
+
+  form.querySelectorAll('input[name="tm-amount"]').forEach((r) => {
+    r.addEventListener("change", () => {
+      otherWrap.classList.toggle("hidden", getSelectedAmountRaw() !== "other");
+    });
+  });
+
+  const identityFields = ["tm-name","tm-kana","tm-phone","tm-zip","tm-pref","tm-address"];
+  form.querySelectorAll('input[name="tm-mode"]').forEach((r) => {
+    r.addEventListener("change", () => {
+      const anon = getMode() === "anonymous";
+      identity.classList.toggle("hidden", anon);
+      anonNote.classList.toggle("show", anon);
+    });
+  });
+
+  function getMode() { return form.querySelector('input[name="tm-mode"]:checked').value; }
+  function getSelectedAmountRaw() {
+    const el = form.querySelector('input[name="tm-amount"]:checked');
+    return el ? el.value : null;
+  }
+  function getAmount() {
+    const v = getSelectedAmountRaw();
+    if (v === "other") return parseInt(document.getElementById("tm-other").value, 10);
+    return parseInt(v, 10);
+  }
+  function show(type, text) { msg.className = "msg " + type; msg.textContent = text; }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    show("", "");
+
+    const amount = getAmount();
+    if (!Number.isInteger(amount) || amount < 1000) { show("err", "金額は1,000円以上で指定してください。"); return; }
+
+    const anonymous = getMode() === "anonymous";
+    const email = document.getElementById("tm-email").value.trim();
+    if (!email) { show("err", "メールアドレスを入力してください。"); return; }
+
+    const payload = {
+      entityType: "individual",
+      anonymous,
+      amount,
+      email,
+      referral: document.getElementById("tm-referral").value,
+    };
+
+    if (!anonymous) {
+      payload.name = document.getElementById("tm-name").value.trim();
+      payload.kana = document.getElementById("tm-kana").value.trim();
+      payload.gender = (form.querySelector('input[name="tm-gender"]:checked') || {}).value || "";
+      payload.birthdate = document.getElementById("tm-birthdate").value;
+      payload.phone = document.getElementById("tm-phone").value.trim();
+      payload.zip = document.getElementById("tm-zip").value.trim();
+      payload.prefecture = document.getElementById("tm-pref").value;
+      payload.address = document.getElementById("tm-address").value.trim();
+      payload.mailingAddress = document.getElementById("tm-mailing").value.trim();
+      payload.publicity = (form.querySelector('input[name="tm-publicity"]:checked') || {}).value || "no";
+
+      if (!payload.name || !payload.kana) { show("err", "お名前・フリガナを入力してください。"); return; }
+      if (!payload.phone) { show("err", "電話番号を入力してください。"); return; }
+      if (!payload.zip || !payload.prefecture || !payload.address) { show("err", "ご住所を入力してください（寄付金控除の証明書発行に必要です）。"); return; }
+    }
+
+    submit.disabled = true; submit.textContent = "処理中…";
+    try {
+      const t = await payjp.createToken(card);
+      if (t.error) { show("err", "カード情報を確認してください：" + t.error.message); return; }
+      payload.token = t.id;
+
+      const res = await fetch(DONATION_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) { show("err", "申し込みに失敗しました：" + (data.error || "しばらくして再度お試しください")); return; }
+
+      form.style.display = "none";
+      show("ok", "ありがとうございます。毎月" + amount.toLocaleString() + "円のご寄付を承りました。確認メールをお送りします。");
+    } catch (err) {
+      show("err", "通信エラーが発生しました。時間をおいて再度お試しください。");
+    } finally {
+      submit.disabled = false; submit.textContent = "この内容で申し込む";
+    }
+  });
+</script>
+
+<style>
+  .form-page {
+    max-width: 640px;
+    padding: var(--spacing-2xl) var(--spacing-md);
+  }
+  .form-page h1 {
+    font-size: var(--font-size-3xl);
+    color: var(--color-dark);
+    border-bottom: 3px solid var(--color-primary);
+    padding-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+  }
+  .lead { font-size: 1.05rem; font-weight: 600; color: var(--color-dark); }
+  .switch-note { font-size: 0.9rem; color: var(--color-gray); }
+
+  .donation-form { margin-top: var(--spacing-lg); }
+  .field-label { display: block; font-size: 0.9rem; font-weight: 700; margin: var(--spacing-lg) 0 var(--spacing-xs); color: var(--color-dark); }
+  .field-label small { font-weight: 400; color: var(--color-gray); font-size: 0.8rem; margin-left: 4px; }
+  .field-label em { font-style: normal; font-size: 0.7rem; background: var(--color-accent); color: #fff; border-radius: 4px; padding: 1px 6px; margin-left: 6px; vertical-align: middle; }
+
+  .donation-form input[type=text],
+  .donation-form input[type=email],
+  .donation-form input[type=tel],
+  .donation-form input[type=number],
+  .donation-form input[type=date],
+  .donation-form select,
+  .donation-form textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid #d5dde0;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: var(--font-family);
+    background: var(--color-white);
+  }
+  .donation-form textarea { resize: vertical; min-height: 62px; }
+  .mt8 { margin-top: var(--spacing-sm); }
+  .row2 { display: flex; gap: 10px; }
+  .row2 > * { flex: 1; }
+
+  .fieldset { border: 1px solid #e2e8ea; border-radius: 16px; padding: var(--spacing-md) var(--spacing-lg); margin: var(--spacing-lg) 0 0; }
+  .fieldset legend { font-size: 0.9rem; font-weight: 700; padding: 0 6px; color: var(--color-dark); }
+
+  .amounts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .amounts label { flex: 1; min-width: 88px; text-align: center; border: 2px solid #d5dde0; border-radius: 12px; padding: 12px 6px; cursor: pointer; font-weight: 700; position: relative; }
+  .amounts input { position: absolute; opacity: 0; }
+  .amounts label:has(input:checked) { border-color: var(--color-primary); background: rgba(94,199,212,0.12); color: #2a8aaa; }
+
+  .radio-line { display: flex; align-items: flex-start; gap: 8px; margin: 10px 0; cursor: pointer; font-size: 0.95rem; }
+  .radio-line input { margin-top: 4px; }
+  .radio-line small { display: block; color: var(--color-gray); font-size: 0.78rem; }
+  .radio-inline { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 6px; }
+  .radio-inline label { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; cursor: pointer; }
+
+  #card-element { padding: 12px; border: 1px solid #d5dde0; border-radius: 12px; background: var(--color-white); }
+
+  .anon-note { display: none; font-size: 0.82rem; color: #2a8aaa; background: rgba(94,199,212,0.12); border-radius: 10px; padding: 10px; margin-top: 8px; }
+  .anon-note.show { display: block; }
+  .hidden { display: none; }
+
+  .submit-btn {
+    width: 100%; margin-top: var(--spacing-xl); padding: 15px; border-radius: 999px;
+    background: var(--color-primary); color: #fff; font-size: 1.05rem; font-weight: 700;
+  }
+  .submit-btn:hover { background: #4baab3; }
+  .submit-btn:disabled { background: var(--color-gray); box-shadow: none; transform: none; }
+
+  .msg { margin-top: var(--spacing-md); padding: 12px; border-radius: 10px; font-size: 0.9rem; display: none; }
+  .msg.err { display: block; background: #fdecea; color: #b3261e; }
+  .msg.ok { display: block; background: #e6f4ea; color: #1e7d34; }
+  .note { font-size: 0.78rem; color: var(--color-gray); margin-top: 10px; }
+</style>
