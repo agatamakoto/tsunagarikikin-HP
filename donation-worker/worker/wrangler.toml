@@ -15,3 +15,9 @@ ALLOW_ORIGIN = "*"
 [[kv_namespaces]]
 binding = "DONORS"
 id = "7c1fa034d2964acebc8319982a9b3428"
+
+# サンクスメール送信用（Cloudflare Email Sending）※現在は保留中（escf.jpのDNS移行後に有効化）
+#   再開手順：下の2行のコメントを外す → npx wrangler email sending enable escf.jp → npx wrangler deploy
+#   （バインディングが無い間、Workerのメール送信は自動的にスキップされます。決済には影響しません）
+# [[send_email]]
+# name = "EMAIL"

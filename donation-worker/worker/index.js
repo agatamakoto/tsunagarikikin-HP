@@ -17,7 +17,7 @@
  */
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const cors = {
       "Access-Control-Allow-Origin": env.ALLOW_ORIGIN || "*",
       "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -31,6 +31,7 @@ export default {
 
     const entityType = body.entityType === "corporate" ? "corporate" : "individual";
     const anonymous = entityType === "individual" && !!body.anonymous;
+    const donationType = body.donationType === "onetime" ? "onetime" : "recurring"; // 継続 or 単発
     const billingCycle = body.billingCycle === "year" ? "year" : "month"; // 個人は月額のみ、法人は月額/年額
     const token = body.token;
     const amount = parseInt(body.amount, 10);
@@ -42,7 +43,7 @@ export default {
     if (!email) return json({ error: "メールアドレスを入力してください" }, 400, cors);
 
     // ---- 属性ごとの入力整形 ----
-    let donor = { entityType, anonymous, billingCycle, amount, email };
+    let donor = { entityType, anonymous, donationType, billingCycle, amount, email };
     let displayName;
 
     if (entityType === "corporate") {
@@ -105,6 +106,36 @@ export default {
       return { ok: res.ok, status: res.status, data };
     }
 
+    // ===== 単発寄付（都度寄付）: 顧客・定期課金を作らず、その場で1回だけ課金 =====
+    if (donationType === "onetime") {
+      const chargeParams = {
+        amount,
+        currency: "jpy",
+        card: token,
+        description: "都度寄付" + (anonymous ? "(匿名)" : "") + ": " + displayName,
+        "metadata[entityType]": entityType,
+        "metadata[anonymous]": anonymous ? "true" : "false",
+        "metadata[donationType]": "onetime",
+      };
+      if (!anonymous) chargeParams["metadata[name]"] = displayName;
+
+      const charge = await payjp("/charges", chargeParams);
+      if (!charge.ok) return json({ error: "決済に失敗しました", detail: charge.data.error || charge.data }, 400, cors);
+
+      if (env.DONORS) {
+        try {
+          await env.DONORS.put("charge:" + charge.data.id, JSON.stringify({
+            chargeId: charge.data.id,
+            ...donor,
+            createdAt: new Date().toISOString(),
+          }));
+        } catch (e) { /* 記録失敗でも決済自体は成立しているので握りつぶす */ }
+      }
+      ctx.waitUntil(sendThanks(env, { donor, kind: "onetime", amount }));
+      return json({ ok: true, chargeId: charge.data.id }, 200, cors);
+    }
+
+    // ===== 継続寄付（マンスリー／年額）: 顧客＋プラン＋定期課金 =====
     // 1) 顧客を作成（カードを登録）
     // Pay.jp customer の metadata は個人情報を最小限に留め、詳細はKVの寄付者記録側で保持する。
     const custParams = {
@@ -153,9 +184,90 @@ export default {
       } catch (e) { /* 記録失敗でも決済自体は成立しているので握りつぶす */ }
     }
 
+    ctx.waitUntil(sendThanks(env, { donor, kind: billingCycle === "year" ? "yearly" : "monthly", amount }));
     return json({ ok: true, subscriptionId: sub.data.id, customerId: cust.data.id }, 200, cors);
   },
 };
+
+// ===== サンクスメール送信（Cloudflare Email Sending） =====
+async function sendThanks(env, { donor, kind, amount }) {
+  if (!env.EMAIL || !donor.email) return;
+  const mail = buildThanksEmail({ donor, kind, amount });
+  try {
+    await env.EMAIL.send({
+      to: donor.email,
+      from: { email: "info@escf.jp", name: "公益財団法人えひめ西条つながり基金" },
+      replyTo: "info@escf.jp",
+      subject: mail.subject,
+      html: mail.html,
+      text: mail.text,
+    });
+  } catch (e) { /* 送信失敗は決済に影響させない */ }
+}
+
+function jstDateString() {
+  const d = new Date(Date.now() + 9 * 3600 * 1000); // JST
+  return d.getUTCFullYear() + "年" + (d.getUTCMonth() + 1) + "月" + d.getUTCDate() + "日";
+}
+
+function buildThanksEmail({ donor, kind, amount }) {
+  const anon = !!donor.anonymous;
+  const isCorp = donor.entityType === "corporate";
+  const name = isCorp ? donor.companyName : anon ? "" : donor.name;
+  const greeting = anon ? "ご支援者様" : name + (isCorp ? " 御中" : " 様");
+  const kindLabel = kind === "onetime" ? "今回のみのご寄付" : kind === "yearly" ? "年額サポーター（毎年）" : "マンスリーサポーター（毎月）";
+  const yen = "¥" + Number(amount).toLocaleString();
+  const date = jstDateString();
+  const subject = "【えひめ西条つながり基金】ご寄付ありがとうございました";
+  const receiptNote = anon
+    ? "匿名でのご寄付のため、寄付金受領証は発行いたしません。"
+    : "寄付金受領証および税額控除に係る証明書は、追ってお送りいたします。";
+
+  const text = [
+    greeting,
+    "",
+    "このたびは、公益財団法人えひめ西条つながり基金へご寄付をいただき、誠にありがとうございます。",
+    "以下のとおり承りました。",
+    "",
+    "　受付日：" + date,
+    "　種別　：" + kindLabel,
+    "　金額　：" + yen,
+    "",
+    receiptNote,
+    "",
+    "皆さまからのお気持ちは、愛媛県全域で地域課題の解決や魅力づくりに取り組む団体への助成として大切に活用いたします。",
+    "",
+    "──────────",
+    "公益財団法人えひめ西条つながり基金",
+    "TEL 0897-47-6943 ／ info@escf.jp",
+  ].join("\n");
+
+  const html = `<!doctype html><html lang="ja"><body style="margin:0;background:#f4f7f8;padding:24px 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif;color:#2c3e50;">
+  <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e2e8ea;">
+    <div style="background:#1a3547;color:#fff;padding:20px 24px;font-size:16px;font-weight:bold;">公益財団法人えひめ西条つながり基金</div>
+    <div style="padding:24px;line-height:1.9;">
+      <p style="margin:0 0 12px;font-weight:bold;">${escapeHtml(greeting)}</p>
+      <p style="margin:0 0 16px;">このたびは、当基金へご寄付をいただき、誠にありがとうございます。以下のとおり承りました。</p>
+      <table style="width:100%;border-collapse:collapse;background:#f8f9fa;border-radius:10px;overflow:hidden;font-size:14px;">
+        <tr><td style="padding:10px 14px;color:#5a7080;width:90px;">受付日</td><td style="padding:10px 14px;font-weight:bold;">${date}</td></tr>
+        <tr><td style="padding:10px 14px;color:#5a7080;border-top:1px solid #e2e8ea;">種別</td><td style="padding:10px 14px;font-weight:bold;border-top:1px solid #e2e8ea;">${kindLabel}</td></tr>
+        <tr><td style="padding:10px 14px;color:#5a7080;border-top:1px solid #e2e8ea;">金額</td><td style="padding:10px 14px;font-weight:bold;border-top:1px solid #e2e8ea;">${yen}</td></tr>
+      </table>
+      <p style="margin:16px 0 0;font-size:13px;color:#5a7080;">${escapeHtml(receiptNote)}</p>
+      <p style="margin:16px 0 0;">皆さまからのお気持ちは、愛媛県全域で地域課題の解決に取り組む団体への助成として大切に活用いたします。</p>
+    </div>
+    <div style="padding:16px 24px;background:#f8f9fa;border-top:1px solid #e2e8ea;font-size:12px;color:#5a7080;line-height:1.8;">
+      公益財団法人えひめ西条つながり基金<br>TEL 0897-47-6943 ／ <a href="mailto:info@escf.jp" style="color:#2a8aaa;">info@escf.jp</a>
+    </div>
+  </div>
+</body></html>`;
+
+  return { subject, html, text };
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
 
 function str(v, max) {
   return (v == null ? "" : String(v)).slice(0, max).trim();

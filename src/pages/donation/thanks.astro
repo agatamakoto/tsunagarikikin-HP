@@ -1,0 +1,134 @@
+---
+// src/pages/donation/thanks.astro
+// 寄付完了後のサンクスページ（各フォームから ?type=&amount= 付きで遷移）
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<Layout title="ご寄付ありがとうございました" description="えひめ西条つながり基金へのご寄付、誠にありがとうございました。">
+  <Header />
+
+  <main>
+    <div class="container thanks-wrap">
+      <div class="thanks-card">
+        <div class="check">
+          <svg viewBox="0 0 52 52" width="56" height="56" aria-hidden="true">
+            <circle cx="26" cy="26" r="25" fill="none" stroke="currentColor" stroke-width="2" opacity="0.35"></circle>
+            <path fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M14 27 l8 8 l16 -18"></path>
+          </svg>
+        </div>
+
+        <h1>ご寄付、ありがとうございました</h1>
+        <p class="thanks-line" id="thanks-line">ご寄付を承りました。</p>
+
+        <p class="thanks-body">
+          皆さまからのお気持ちは、愛媛県全域で地域課題の解決や魅力づくりに取り組む団体への助成として、大切に活用させていただきます。あたたかいご支援に、心より感謝申し上げます。
+        </p>
+
+        <div class="thanks-note">
+          <p>ご登録のメールアドレスへ確認のメールをお送りします。しばらく経っても届かない場合は、迷惑メールフォルダをご確認のうえ <a href="/contact">お問い合わせ</a> ください。</p>
+          <p class="small">寄付金控除の証明書（受領証）が必要な方には、後日あらためてご案内いたします。</p>
+        </div>
+
+        <div class="thanks-actions">
+          <a class="btn primary" href="/">トップへ戻る</a>
+          <a class="btn outline" href="/activities">活動を見る</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+  const p = new URLSearchParams(location.search);
+  const type = p.get("type");
+  const amount = parseInt(p.get("amount"), 10);
+  let label = "ご寄付を承りました。";
+  if (Number.isInteger(amount) && amount > 0) {
+    const yen = amount.toLocaleString() + "円";
+    if (type === "monthly") label = "毎月 " + yen + " のご寄付を承りました。";
+    else if (type === "yearly") label = "年額 " + yen + " のご寄付を承りました。";
+    else label = yen + " のご寄付を承りました。";
+  }
+  document.getElementById("thanks-line").textContent = label;
+</script>
+
+<style>
+  .thanks-wrap {
+    max-width: 640px;
+    padding: var(--spacing-2xl) var(--spacing-md);
+    display: flex;
+    justify-content: center;
+  }
+  .thanks-card {
+    background: linear-gradient(180deg, rgba(94,199,212,0.10), rgba(255,255,255,1));
+    border: 1px solid rgba(94,199,212,0.28);
+    border-radius: 28px;
+    padding: var(--spacing-2xl) var(--spacing-xl);
+    text-align: center;
+    width: 100%;
+  }
+  .check {
+    width: 84px; height: 84px;
+    margin: 0 auto var(--spacing-lg);
+    border-radius: 999px;
+    background: rgba(94,199,212,0.15);
+    color: var(--color-primary);
+    display: grid;
+    place-items: center;
+  }
+  .check path { stroke-dasharray: 40; stroke-dashoffset: 40; animation: draw .6s ease .15s forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+
+  .thanks-card h1 {
+    font-size: var(--font-size-2xl);
+    color: var(--color-dark);
+    margin: 0 0 var(--spacing-sm);
+  }
+  .thanks-line {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #2a8aaa;
+    margin: 0 0 var(--spacing-lg);
+  }
+  .thanks-body {
+    font-size: 0.98rem;
+    color: var(--color-dark);
+    line-height: 1.9;
+    text-align: left;
+    margin: 0 0 var(--spacing-lg);
+  }
+  .thanks-note {
+    background: var(--color-light);
+    border-radius: 16px;
+    padding: var(--spacing-md) var(--spacing-lg);
+    text-align: left;
+    margin-bottom: var(--spacing-xl);
+  }
+  .thanks-note p { font-size: 0.88rem; color: var(--color-dark); margin: 0 0 var(--spacing-sm); line-height: 1.7; }
+  .thanks-note p:last-child { margin-bottom: 0; }
+  .thanks-note .small { font-size: 0.8rem; color: var(--color-gray); }
+
+  .thanks-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .btn {
+    display: inline-block;
+    padding: 13px 32px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: opacity .2s, background-color .2s;
+  }
+  .btn.primary { background: var(--color-primary); color: #fff; }
+  .btn.primary:hover { background: #4baab3; color: #fff; }
+  .btn.outline { background: #fff; color: #2a8aaa; border: 2px solid var(--color-primary); }
+  .btn.outline:hover { color: #2a8aaa; opacity: .85; }
+</style>
