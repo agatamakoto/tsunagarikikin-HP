@@ -201,9 +201,7 @@ import Footer from '../../components/Footer.astro';
       const data = await res.json();
       if (!res.ok || !data.ok) { show("err", "申し込みに失敗しました：" + (data.error || "しばらくして再度お試しください")); return; }
 
-      const label = cycle === "year" ? ("年額" + amount.toLocaleString() + "円") : ("毎月" + amount.toLocaleString() + "円");
-      form.style.display = "none";
-      show("ok", "ありがとうございます。" + label + "のご寄付を承りました。確認メールをお送りします。");
+      window.location.href = "/donation/thanks?type=" + (cycle === "year" ? "yearly" : "monthly") + "&amount=" + amount + "&entity=corporate";
     } catch (err) {
       show("err", "通信エラーが発生しました。時間をおいて再度お試しください。");
     } finally {
