@@ -30,3 +30,8 @@ Thumbs.db
 dist/
 dist-ssr/
 *.local
+
+# Worker用バイナリ資産（KVに直接アップロードする。公開リポジトリに含めない）
+donation-worker/assets/
+donation-worker/worker/node_modules/
+donation-worker/worker/dist-check/

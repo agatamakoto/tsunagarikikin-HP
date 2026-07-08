@@ -32,6 +32,21 @@ import Footer from '../../components/Footer.astro';
         </fieldset>
 
         <fieldset class="fieldset">
+          <legend>寄付の使いみち</legend>
+          <label class="radio-line"><input type="radio" name="to-purpose" value="財団運営" checked>
+            <span>指定なし<small>（財団運営として自由にご活用ください）</small></span></label>
+          <label class="radio-line"><input type="radio" name="to-purpose" value="障害者支援">
+            <span>障害者支援</span></label>
+          <label class="radio-line"><input type="radio" name="to-purpose" value="防災">
+            <span>防災</span></label>
+          <label class="radio-line"><input type="radio" name="to-purpose" value="other">
+            <span>その他（具体的にご記入ください）</span></label>
+          <div id="to-purpose-other-wrap" class="hidden">
+            <input type="text" id="to-purpose-other" placeholder="例：〇〇プロジェクトへのご寄付など" class="mt8">
+          </div>
+        </fieldset>
+
+        <fieldset class="fieldset">
           <legend>寄付の方法</legend>
           <label class="radio-line"><input type="radio" name="to-mode" value="named" checked>
             <span>お名前を登録して寄付する<small>（寄付金控除の領収書発行に対応します）</small></span></label>
@@ -141,7 +156,23 @@ import Footer from '../../components/Footer.astro';
     });
   });
 
+  const purposeOtherWrap = document.getElementById("to-purpose-other-wrap");
+  form.querySelectorAll('input[name="to-purpose"]').forEach((r) => {
+    r.addEventListener("change", () => {
+      purposeOtherWrap.classList.toggle("hidden", getPurposeRaw() !== "other");
+    });
+  });
+
   function getMode() { return form.querySelector('input[name="to-mode"]:checked').value; }
+  function getPurposeRaw() {
+    const el = form.querySelector('input[name="to-purpose"]:checked');
+    return el ? el.value : "財団運営";
+  }
+  function getPurpose() {
+    const v = getPurposeRaw();
+    if (v === "other") return document.getElementById("to-purpose-other").value.trim() || "その他";
+    return v;
+  }
   function show(type, text) { msg.className = "msg " + type; msg.textContent = text; }
 
   form.addEventListener("submit", async (e) => {
@@ -161,6 +192,7 @@ import Footer from '../../components/Footer.astro';
       anonymous,
       amount,
       email,
+      purpose: getPurpose(),
       referral: document.getElementById("to-referral").value,
     };
 

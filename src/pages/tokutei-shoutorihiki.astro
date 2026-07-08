@@ -1,0 +1,169 @@
+---
+// src/pages/tokutei-shoutorihiki.astro
+// 特定商取引法に基づく表記（Pay.jp 本番審査要件）
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="特定商取引法に基づく表記" description="公益財団法人えひめ西条つながり基金 特定商取引法に基づく表記">
+  <Header />
+
+  <main>
+    <div class="container page">
+      <h1>特定商取引法に基づく表記</h1>
+
+      <p class="lead">当ウェブサイトを通じたご寄付のお申込みに関して、特定商取引法に基づき、以下のとおり表記いたします。</p>
+
+      <table class="law-table">
+        <tbody>
+          <tr>
+            <th>事業者名</th>
+            <td>公益財団法人えひめ西条つながり基金</td>
+          </tr>
+          <tr>
+            <th>代表者</th>
+            <td>代表理事　今井 博志</td>
+          </tr>
+          <tr>
+            <th>所在地</th>
+            <td>〒793-0030　愛媛県西条市大町1663番地　サカエマチHOLIC内</td>
+          </tr>
+          <tr>
+            <th>連絡先電話番号</th>
+            <td>0897-47-6943（月〜土 9:00〜17:00）</td>
+          </tr>
+          <tr>
+            <th>連絡先メールアドレス</th>
+            <td>info@escf.jp</td>
+          </tr>
+          <tr>
+            <th>ご寄付の金額</th>
+            <td>各お申込みページに表示する金額（都度寄付は任意金額、マンスリー・法人サポーターは選択いただいた金額）</td>
+          </tr>
+          <tr>
+            <th>お支払い方法</th>
+            <td>クレジットカード決済（Pay.jp）</td>
+          </tr>
+          <tr>
+            <th>お支払い時期</th>
+            <td>お申込み時に決済されます。マンスリーサポーター・法人サポーター（月額・年額）は、以降毎月または毎年同日に自動的に決済されます。</td>
+          </tr>
+          <tr>
+            <th>提供時期</th>
+            <td>ご寄付のお申込み完了をもって受付は完了します。物品・役務等の提供は発生しません。</td>
+          </tr>
+          <tr>
+            <th>キャンセル・返金について</th>
+            <td>ご寄付の性質上、お申込み完了後のキャンセル・返金は原則としてお受けしておりません。決済処理の誤り等、特別な事情がある場合は、上記連絡先までご相談ください。</td>
+          </tr>
+          <tr>
+            <th>手数料について</th>
+            <td>決済にかかる手数料はご寄付者様にご負担いただくことはありません。</td>
+          </tr>
+          <tr>
+            <th>動作環境</th>
+            <td>各種モダンブラウザ（Google Chrome、Safari、Microsoft Edge 等の最新版）でのご利用を推奨します。</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="terms-meta">
+        <p>公益財団法人えひめ西条つながり基金</p>
+        <p>〒793-0030 愛媛県西条市大町1663番地 サカエマチHOLIC内</p>
+      </div>
+
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .page {
+    padding: var(--spacing-2xl) 0;
+    max-width: 800px;
+  }
+
+  h1 {
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-lg);
+    border-bottom: 3px solid var(--color-primary);
+    padding-bottom: var(--spacing-lg);
+  }
+
+  .lead {
+    background: rgba(94, 199, 212, 0.06);
+    border-left: 4px solid var(--color-primary);
+    border-radius: 0 12px 12px 0;
+    padding: var(--spacing-lg);
+    line-height: 1.85;
+    color: var(--color-dark);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .law-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .law-table th,
+  .law-table td {
+    text-align: left;
+    padding: var(--spacing-md);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    line-height: 1.8;
+    color: var(--color-dark);
+    vertical-align: top;
+  }
+
+  .law-table th {
+    width: 220px;
+    font-weight: 700;
+    color: var(--color-primary);
+    background: rgba(94, 199, 212, 0.06);
+  }
+
+  .terms-meta {
+    margin-top: var(--spacing-2xl);
+    padding: var(--spacing-lg) var(--spacing-xl);
+    background: var(--color-light);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .terms-meta p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--color-gray);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 700px) {
+    .page {
+      padding: var(--spacing-xl) 0;
+    }
+
+    .law-table th,
+    .law-table td {
+      display: block;
+      width: auto;
+    }
+
+    .law-table th {
+      padding-bottom: 4px;
+      border-bottom: none;
+    }
+
+    .law-table td {
+      padding-top: 0;
+    }
+
+    .terms-meta {
+      padding: var(--spacing-lg);
+    }
+  }
+</style>
