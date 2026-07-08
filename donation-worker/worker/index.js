@@ -16,6 +16,8 @@
  *   - DONORS (推奨)    : 寄付者記録用のKV Namespace（無くても決済は動くが、名簿・領収書用データが残らない）
  */
 
+import { buildReceiptPdf, makeReceiptNo } from "./receipt.js";
+
 export default {
   async fetch(request, env, ctx) {
     const cors = {
@@ -43,7 +45,9 @@ export default {
     if (!email) return json({ error: "メールアドレスを入力してください" }, 400, cors);
 
     // ---- 属性ごとの入力整形 ----
-    let donor = { entityType, anonymous, donationType, billingCycle, amount, email };
+    // 使いみち：継続寄付（マンスリー・年額）は常に「財団運営」固定。都度寄付のみフォームで選択可。
+    const purpose = donationType === "onetime" ? (str(body.purpose, 100) || "財団運営") : "財団運営";
+    let donor = { entityType, anonymous, donationType, billingCycle, purpose, amount, email };
     let displayName;
 
     if (entityType === "corporate") {
@@ -189,20 +193,68 @@ export default {
   },
 };
 
-// ===== サンクスメール送信（Cloudflare Email Sending） =====
+// ===== サンクスメール送信（Resend経由。RESEND_API_KEY をsecretで登録） =====
+// 記名の寄付者には、受領証PDF（自動生成）＋税額控除に係る証明書PDFを添付する。
+// 匿名寄付は氏名・住所を記載できないため、受領証は発行しない（本文のみ）。
 async function sendThanks(env, { donor, kind, amount }) {
-  if (!env.EMAIL || !donor.email) return;
+  if (!env.RESEND_API_KEY || !donor.email) return;
   const mail = buildThanksEmail({ donor, kind, amount });
+
+  const attachments = [];
+  if (!donor.anonymous && env.DONORS) {
+    try {
+      const [fontBuf, certBuf] = await Promise.all([
+        env.DONORS.get("asset:font-kosugi", "arrayBuffer"),
+        env.DONORS.get("asset:tax-certificate", "arrayBuffer"),
+      ]);
+      if (fontBuf) {
+        const receiptNo = makeReceiptNo();
+        const issuedAt = jstDateString();
+        const pdfBytes = await buildReceiptPdf({
+          donor, kind, amount, receiptNo, issuedAt, fontBytes: fontBuf,
+        });
+        attachments.push({
+          filename: `寄付金受領証_${receiptNo}.pdf`,
+          content: bufferToBase64(pdfBytes),
+        });
+      }
+      if (certBuf) {
+        attachments.push({
+          filename: "税額控除に係る証明書.pdf",
+          content: bufferToBase64(new Uint8Array(certBuf)),
+        });
+      }
+    } catch (e) { /* 添付生成に失敗しても本文メールは送る */ }
+  }
+
   try {
-    await env.EMAIL.send({
-      to: donor.email,
-      from: { email: "info@escf.jp", name: "公益財団法人えひめ西条つながり基金" },
-      replyTo: "info@escf.jp",
-      subject: mail.subject,
-      html: mail.html,
-      text: mail.text,
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + env.RESEND_API_KEY,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: "公益財団法人えひめ西条つながり基金 <info@escf.jp>",
+        to: [donor.email],
+        reply_to: "info@escf.jp",
+        subject: mail.subject,
+        html: mail.html,
+        text: mail.text,
+        ...(attachments.length ? { attachments } : {}),
+      }),
     });
   } catch (e) { /* 送信失敗は決済に影響させない */ }
+}
+
+function bufferToBase64(bytes) {
+  const arr = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+  let binary = "";
+  const chunk = 0x8000;
+  for (let i = 0; i < arr.length; i += chunk) {
+    binary += String.fromCharCode.apply(null, arr.subarray(i, i + chunk));
+  }
+  return btoa(binary);
 }
 
 function jstDateString() {
