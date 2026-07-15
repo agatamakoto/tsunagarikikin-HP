@@ -10,5 +10,5 @@
 //     - donation-worker/ をデプロイすると発行されるURL
 // =====================================================================
 
-export const PAYJP_PUBLIC_KEY = "pk_test_98fd0733b9e756476e26e33e";
+export const PAYJP_PUBLIC_KEY = "pk_live_8b1b10e699203c0f6c7f10ac";
 export const DONATION_API_URL = "https://saijo-monthly-donation.agata-a57.workers.dev";
