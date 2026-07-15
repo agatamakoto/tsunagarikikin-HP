@@ -204,7 +204,7 @@ async function sendThanks(env, { donor, kind, amount }) {
   if (!donor.anonymous && env.DONORS) {
     try {
       const [fontBuf, certBuf] = await Promise.all([
-        env.DONORS.get("asset:font-kosugi", "arrayBuffer"),
+        env.DONORS.get("asset:font-ipaex", "arrayBuffer"),
         env.DONORS.get("asset:tax-certificate", "arrayBuffer"),
       ]);
       if (fontBuf) {
