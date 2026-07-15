@@ -2,11 +2,9 @@ name = "saijo-monthly-donation"
 main = "index.js"
 compatibility_date = "2024-11-01"
 
-# 許可するオリジン（末尾スラッシュなし）
-#   テスト中 : "*"（localhost を含めどこからでも許可）
-#   本番公開前: 必ず本番ドメイン "https://escf.jp" に変更してください
+# 許可するオリジン（末尾スラッシュなし）※本番運用のため escf.jp に限定済み
 [vars]
-ALLOW_ORIGIN = "*"
+ALLOW_ORIGIN = "https://escf.jp"
 
 # シークレット鍵は vars に書かず、下記コマンドで登録します（本番/テストで切替）：
 #   npx wrangler secret put PAYJP_SECRET_KEY
