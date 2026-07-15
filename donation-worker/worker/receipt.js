@@ -11,7 +11,12 @@ const A4 = { width: 595.28, height: 841.89 };
 export async function buildReceiptPdf({ donor, kind, amount, receiptNo, issuedAt, fontBytes }) {
   const pdf = await PDFDocument.create();
   pdf.registerFontkit(fontkit);
-  const font = await pdf.embedFont(fontBytes, { subset: true });
+  // フォントデータをプール共有のない綺麗なUint8Arrayに正規化（Node Buffer/ArrayBuffer両対応）
+  const src = fontBytes instanceof Uint8Array ? fontBytes : new Uint8Array(fontBytes);
+  const fontData = new Uint8Array(src.byteLength);
+  fontData.set(src);
+  // subset:true は一部フォントでグリフ欠落バグが出るため、フォント全体を埋め込む（IPAexゴシックで全文字表示を確認済み）
+  const font = await pdf.embedFont(fontData, { subset: false });
 
   const page = pdf.addPage([A4.width, A4.height]);
   const margin = 56;
@@ -63,8 +68,9 @@ export async function buildReceiptPdf({ donor, kind, amount, receiptNo, issuedAt
   const tableTop = y;
   const rowH = 30;
   const rows = [
-    ["寄付金額", `¥${Number(amount).toLocaleString()}`],
+    ["寄付金額", `${Number(amount).toLocaleString()} 円`],
     ["寄付の種別", kindLabel],
+    ["寄付の使い道", donor.purpose || "財団運営"],
     ["寄付者", isCorp ? donor.companyName : donor.name],
     ["ご住所", formatAddress(donor)],
   ];

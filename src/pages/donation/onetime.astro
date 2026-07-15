@@ -34,15 +34,11 @@ import Footer from '../../components/Footer.astro';
         <fieldset class="fieldset">
           <legend>寄付の使いみち</legend>
           <label class="radio-line"><input type="radio" name="to-purpose" value="財団運営" checked>
-            <span>指定なし<small>（財団運営として自由にご活用ください）</small></span></label>
-          <label class="radio-line"><input type="radio" name="to-purpose" value="障害者支援">
-            <span>障害者支援</span></label>
-          <label class="radio-line"><input type="radio" name="to-purpose" value="防災">
-            <span>防災</span></label>
+            <span>指定なし<small>（財団運営に主に使われます）</small></span></label>
           <label class="radio-line"><input type="radio" name="to-purpose" value="other">
-            <span>その他（具体的にご記入ください）</span></label>
+            <span>その他<small>（例：障がい者福祉、こども支援 など）</small></span></label>
           <div id="to-purpose-other-wrap" class="hidden">
-            <input type="text" id="to-purpose-other" placeholder="例：〇〇プロジェクトへのご寄付など" class="mt8">
+            <input type="text" id="to-purpose-other" placeholder="例：障がい者福祉、こども支援 など" class="mt8">
           </div>
         </fieldset>
 
