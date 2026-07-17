@@ -17,6 +17,7 @@
  */
 
 import { buildReceiptPdf, makeReceiptNo } from "./receipt.js";
+import { appendDonationRow } from "./sheets.js";
 
 export default {
   async fetch(request, env, ctx) {
@@ -136,6 +137,7 @@ export default {
         } catch (e) { /* 記録失敗でも決済自体は成立しているので握りつぶす */ }
       }
       ctx.waitUntil(sendThanks(env, { donor, kind: "onetime", amount }));
+      ctx.waitUntil(appendDonationRow(env, donor, charge.data.id));
       return json({ ok: true, chargeId: charge.data.id }, 200, cors);
     }
 
@@ -189,6 +191,7 @@ export default {
     }
 
     ctx.waitUntil(sendThanks(env, { donor, kind: billingCycle === "year" ? "yearly" : "monthly", amount }));
+    ctx.waitUntil(appendDonationRow(env, donor, sub.data.id));
     return json({ ok: true, subscriptionId: sub.data.id, customerId: cust.data.id }, 200, cors);
   },
 };
