@@ -5,8 +5,6 @@ compatibility_date = "2024-11-01"
 # 許可するオリジン（末尾スラッシュなし）※本番運用のため escf.jp に限定済み
 [vars]
 ALLOW_ORIGIN = "https://escf.jp"
-# 寄付者台帳_全自動版 のスプレッドシートID（自動追記先）
-GOOGLE_SHEET_ID = "1j4Lhp2Q4aZCSvjb9Q6S18N8n4atu8G_F9fScl8vQEAA"
 
 # シークレット鍵は vars に書かず、下記コマンドで登録します（本番/テストで切替）：
 #   npx wrangler secret put PAYJP_SECRET_KEY
@@ -22,9 +20,9 @@ id = "7c1fa034d2964acebc8319982a9b3428"
 #   3. npx wrangler deploy
 #   （RESEND_API_KEY が無い間、Workerのメール送信は自動的にスキップされます。決済には影響しません）
 
-# 寄付者台帳への自動追記（Googleスプレッドシート）
-#   1. GCPでサービスアカウントを作成し、JSONキーをダウンロード
-#   2. スプレッドシートをそのサービスアカウントのメール宛に「編集者」で共有
-#   3. Get-Content -Raw "キー.json" | npx wrangler secret put GOOGLE_SA_JSON
+# 寄付者台帳への自動追記（Google Apps Script Web App 経由・GCP不要）
+#   1. スプレッドシートの 拡張機能→Apps Script に受け取り用スクリプトを設置しWeb App公開
+#   2. npx wrangler secret put SHEETS_WEBHOOK_URL     → Web AppのURL(/exec)を貼り付け
+#   3. npx wrangler secret put SHEETS_WEBHOOK_SECRET  → スクリプトと同じ合言葉を貼り付け
 #   4. npx wrangler deploy
-#   （GOOGLE_SA_JSON が無い間、台帳追記は自動的にスキップされます。決済には影響しません）
+#   （SHEETS_WEBHOOK_URL が無い間、台帳追記は自動的にスキップされます。決済には影響しません）
