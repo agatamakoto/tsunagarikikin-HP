@@ -1,65 +1,27 @@
 /**
- * Googleスプレッドシート「寄付者台帳_全自動版」への自動追記
- * - サービスアカウントのJSON（env.GOOGLE_SA_JSON）でJWTを作り、アクセストークンを取得
- * - 寄付日の年度（4月〜翌3月）のタブ「〇〇〇〇年度」に1行追記する
+ * 寄付者台帳（Googleスプレッドシート）への自動追記
+ * - スプレッドシートに仕込んだ Google Apps Script の Web App へ、寄付1件分の行データをPOSTする
+ * - サービスアカウント/GCP不要（組織ポリシーの影響を受けない）
  * - 追記に失敗しても決済・KV記録には影響させない（握りつぶす）
+ *
+ * 必要な設定（secret）：
+ *   - SHEETS_WEBHOOK_URL    : Apps Script Web App のURL（/exec で終わるもの）
+ *   - SHEETS_WEBHOOK_SECRET : Apps Script側と一致させる合言葉（なりすまし防止）
  */
 
 export async function appendDonationRow(env, donor, txnId) {
-  if (!env.GOOGLE_SA_JSON || !env.GOOGLE_SHEET_ID) return;
+  if (!env.SHEETS_WEBHOOK_URL) return;
   try {
-    const sa = JSON.parse(env.GOOGLE_SA_JSON);
-    const token = await getAccessToken(sa);
-    const tab = fiscalYearTab();
-    const range = `'${tab}'!A:V`;
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${env.GOOGLE_SHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`;
-    await fetch(url, {
+    await fetch(env.SHEETS_WEBHOOK_URL, {
       method: "POST",
-      headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
-      body: JSON.stringify({ values: [donorToRow(donor, txnId)] }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        secret: env.SHEETS_WEBHOOK_SECRET || "",
+        fiscalYear: fiscalYearTab(),
+        row: donorToRow(donor, txnId),
+      }),
     });
-  } catch (e) { /* シート追記失敗はKVに残っているので握りつぶす */ }
-}
-
-async function getAccessToken(sa) {
-  const now = Math.floor(Date.now() / 1000);
-  const header = { alg: "RS256", typ: "JWT" };
-  const claim = {
-    iss: sa.client_email,
-    scope: "https://www.googleapis.com/auth/spreadsheets",
-    aud: "https://oauth2.googleapis.com/token",
-    iat: now,
-    exp: now + 3600,
-  };
-  const unsigned = b64url(utf8(JSON.stringify(header))) + "." + b64url(utf8(JSON.stringify(claim)));
-  const key = await importPrivateKey(sa.private_key);
-  const sig = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", key, utf8(unsigned));
-  const jwt = unsigned + "." + b64url(new Uint8Array(sig));
-
-  const res = await fetch("https://oauth2.googleapis.com/token", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=" + jwt,
-  });
-  const data = await res.json();
-  if (!data.access_token) throw new Error("token error: " + JSON.stringify(data));
-  return data.access_token;
-}
-
-async function importPrivateKey(pem) {
-  const body = pem
-    .replace("-----BEGIN PRIVATE KEY-----", "")
-    .replace("-----END PRIVATE KEY-----", "")
-    .replace(/\s+/g, "");
-  const der = Uint8Array.from(atob(body), (c) => c.charCodeAt(0));
-  return crypto.subtle.importKey("pkcs8", der.buffer, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["sign"]);
-}
-
-function utf8(s) { return new TextEncoder().encode(s); }
-function b64url(bytes) {
-  let bin = "";
-  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
-  return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  } catch (e) { /* 追記失敗はKVに残っているので握りつぶす */ }
 }
 
 // 4月始まりの年度タブ名（例：2026年4月〜2027年3月 → "2026年度"）
