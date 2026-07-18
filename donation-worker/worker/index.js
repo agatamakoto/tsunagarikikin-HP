@@ -23,10 +23,24 @@ export default {
   async fetch(request, env, ctx) {
     const cors = {
       "Access-Control-Allow-Origin": env.ALLOW_ORIGIN || "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
     };
     if (request.method === "OPTIONS") return new Response(null, { headers: cors });
+
+    const url = new URL(request.url);
+
+    // ===== 寄付者本人によるマイページ（定期寄付の確認・解約） =====
+    // ref = サブスクリプションID。このIDを知っている（＝申込時の本人メールに届いた）人だけが操作できる。
+    if (url.pathname === "/manage-info" && request.method === "GET") {
+      return handleManageInfo(url.searchParams.get("ref"), env, cors);
+    }
+    if (url.pathname === "/manage-cancel" && request.method === "POST") {
+      let cbody;
+      try { cbody = await request.json(); } catch { return json({ error: "invalid json" }, 400, cors); }
+      return handleManageCancel(cbody.ref, env, cors);
+    }
+
     if (request.method !== "POST") return json({ error: "method not allowed" }, 405, cors);
 
     let body;
@@ -95,21 +109,8 @@ export default {
       displayName = "匿名希望";
     }
 
-    const sk = env.PAYJP_SECRET_KEY;
-    if (!sk) return json({ error: "サーバー設定エラー（鍵未設定）" }, 500, cors);
-    const auth = "Basic " + btoa(sk + ":");
-
-    async function payjp(path, params, method) {
-      const opt = { method: method || "POST", headers: { Authorization: auth } };
-      if (params) {
-        opt.headers["Content-Type"] = "application/x-www-form-urlencoded";
-        opt.body = formEncode(params);
-      }
-      const res = await fetch("https://api.pay.jp/v1" + path, opt);
-      let data = {};
-      try { data = await res.json(); } catch {}
-      return { ok: res.ok, status: res.status, data };
-    }
+    if (!env.PAYJP_SECRET_KEY) return json({ error: "サーバー設定エラー（鍵未設定）" }, 500, cors);
+    const payjp = makePayjp(env.PAYJP_SECRET_KEY);
 
     // ===== 単発寄付（都度寄付）: 顧客・定期課金を作らず、その場で1回だけ課金 =====
     if (donationType === "onetime") {
@@ -190,7 +191,7 @@ export default {
       } catch (e) { /* 記録失敗でも決済自体は成立しているので握りつぶす */ }
     }
 
-    ctx.waitUntil(sendThanks(env, { donor, kind: billingCycle === "year" ? "yearly" : "monthly", amount }));
+    ctx.waitUntil(sendThanks(env, { donor, kind: billingCycle === "year" ? "yearly" : "monthly", amount, subscriptionId: sub.data.id }));
     ctx.waitUntil(appendDonationRow(env, donor, sub.data.id));
     return json({ ok: true, subscriptionId: sub.data.id, customerId: cust.data.id }, 200, cors);
   },
@@ -199,9 +200,9 @@ export default {
 // ===== サンクスメール送信（Resend経由。RESEND_API_KEY をsecretで登録） =====
 // 記名の寄付者には、受領証PDF（自動生成）＋税額控除に係る証明書PDFを添付する。
 // 匿名寄付は氏名・住所を記載できないため、受領証は発行しない（本文のみ）。
-async function sendThanks(env, { donor, kind, amount }) {
+async function sendThanks(env, { donor, kind, amount, subscriptionId }) {
   if (!env.RESEND_API_KEY || !donor.email) return;
-  const mail = buildThanksEmail({ donor, kind, amount });
+  const mail = buildThanksEmail({ donor, kind, amount, subscriptionId });
 
   const attachments = [];
   if (!donor.anonymous && env.DONORS) {
@@ -265,7 +266,7 @@ function jstDateString() {
   return d.getUTCFullYear() + "年" + (d.getUTCMonth() + 1) + "月" + d.getUTCDate() + "日";
 }
 
-function buildThanksEmail({ donor, kind, amount }) {
+function buildThanksEmail({ donor, kind, amount, subscriptionId }) {
   const anon = !!donor.anonymous;
   const isCorp = donor.entityType === "corporate";
   const name = isCorp ? donor.companyName : anon ? "" : donor.name;
@@ -277,6 +278,10 @@ function buildThanksEmail({ donor, kind, amount }) {
   const receiptNote = anon
     ? "匿名でのご寄付のため、寄付金受領証は発行いたしません。"
     : "寄付金受領証および税額控除に係る証明書は、追ってお送りいたします。";
+  const manageUrl = subscriptionId ? `https://escf.jp/donation/manage?ref=${encodeURIComponent(subscriptionId)}` : null;
+  const manageNote = manageUrl
+    ? "ご登録内容の確認・金額変更のご相談・解約は、下記のご本人専用ページから行えます。このURLは第三者に共有しないようご注意ください。"
+    : null;
 
   const text = [
     greeting,
@@ -291,6 +296,7 @@ function buildThanksEmail({ donor, kind, amount }) {
     receiptNote,
     "",
     "皆さまからのお気持ちは、愛媛県全域で地域課題の解決や魅力づくりに取り組む団体への助成として大切に活用いたします。",
+    ...(manageUrl ? ["", manageNote, "　" + manageUrl] : []),
     "",
     "──────────",
     "公益財団法人えひめ西条つながり基金",
@@ -310,6 +316,10 @@ function buildThanksEmail({ donor, kind, amount }) {
       </table>
       <p style="margin:16px 0 0;font-size:13px;color:#5a7080;">${escapeHtml(receiptNote)}</p>
       <p style="margin:16px 0 0;">皆さまからのお気持ちは、愛媛県全域で地域課題の解決に取り組む団体への助成として大切に活用いたします。</p>
+      ${manageUrl ? `<div style="margin:20px 0 0;padding:14px 16px;background:#EDF2F4;border-radius:10px;">
+        <p style="margin:0 0 8px;font-size:13px;color:#1a3547;">${escapeHtml(manageNote)}</p>
+        <a href="${manageUrl}" style="display:inline-block;background:#1F4E5F;color:#fff;text-decoration:none;padding:9px 18px;border-radius:999px;font-size:13px;">ご登録内容の確認・解約はこちら</a>
+      </div>` : ""}
     </div>
     <div style="padding:16px 24px;background:#f8f9fa;border-top:1px solid #e2e8ea;font-size:12px;color:#5a7080;line-height:1.8;">
       公益財団法人えひめ西条つながり基金<br>TEL 0897-47-6943 ／ <a href="mailto:info@escf.jp" style="color:#2a8aaa;">info@escf.jp</a>
@@ -318,6 +328,64 @@ function buildThanksEmail({ donor, kind, amount }) {
 </body></html>`;
 
   return { subject, html, text };
+}
+
+// ===== マイページ（本人によるご登録内容の確認・解約） =====
+async function handleManageInfo(ref, env, cors) {
+  if (!ref) return json({ error: "パラメータが不正です" }, 400, cors);
+  if (!env.DONORS) return json({ error: "サーバー設定エラー" }, 500, cors);
+  const raw = await env.DONORS.get("sub:" + ref);
+  if (!raw) return json({ error: "この寄付情報は見つかりませんでした。URLをご確認ください。" }, 404, cors);
+  const donor = JSON.parse(raw);
+  return json({
+    ok: true,
+    entityType: donor.entityType,
+    billingCycle: donor.billingCycle,
+    amount: donor.amount,
+    purpose: donor.purpose || "財団運営",
+    status: donor.status || "active",
+    canceledAt: donor.canceledAt || null,
+  }, 200, cors);
+}
+
+async function handleManageCancel(ref, env, cors) {
+  if (!ref) return json({ error: "パラメータが不正です" }, 400, cors);
+  if (!env.DONORS) return json({ error: "サーバー設定エラー" }, 500, cors);
+  if (!env.PAYJP_SECRET_KEY) return json({ error: "サーバー設定エラー（鍵未設定）" }, 500, cors);
+
+  const key = "sub:" + ref;
+  const raw = await env.DONORS.get(key);
+  if (!raw) return json({ error: "この寄付情報は見つかりませんでした。URLをご確認ください。" }, 404, cors);
+  const donor = JSON.parse(raw);
+
+  if (donor.status === "canceled") {
+    return json({ ok: true, alreadyCanceled: true }, 200, cors);
+  }
+
+  const payjp = makePayjp(env.PAYJP_SECRET_KEY);
+  const res = await payjp("/subscriptions/" + ref + "/cancel", {});
+  if (!res.ok) return json({ error: "解約処理に失敗しました。時間をおいて再度お試しいただくか、お問い合わせください。" }, 400, cors);
+
+  donor.status = "canceled";
+  donor.canceledAt = new Date().toISOString();
+  try { await env.DONORS.put(key, JSON.stringify(donor)); } catch (e) { /* Pay.jp側の解約は成立しているので握りつぶす */ }
+
+  return json({ ok: true }, 200, cors);
+}
+
+function makePayjp(secretKey) {
+  const auth = "Basic " + btoa(secretKey + ":");
+  return async function payjp(path, params, method) {
+    const opt = { method: method || "POST", headers: { Authorization: auth } };
+    if (params) {
+      opt.headers["Content-Type"] = "application/x-www-form-urlencoded";
+      opt.body = formEncode(params);
+    }
+    const res = await fetch("https://api.pay.jp/v1" + path, opt);
+    let data = {};
+    try { data = await res.json(); } catch {}
+    return { ok: res.ok, status: res.status, data };
+  };
 }
 
 function escapeHtml(s) {
