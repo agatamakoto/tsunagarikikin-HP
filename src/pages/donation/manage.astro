@@ -1,0 +1,171 @@
+---
+// src/pages/donation/manage.astro
+// 寄付者ご本人によるマイページ（定期寄付の確認・解約）
+// URLの ?ref=... （メールに記載されたご本人専用リンク）でアクセスする
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<Layout title="ご登録内容の確認・解約" description="えひめ西条つながり基金 定期寄付のご登録内容の確認・解約ページ">
+  <Header />
+
+  <main>
+    <div class="container form-page">
+      <h1>ご登録内容の確認・解約</h1>
+      <p class="lead">メールに記載のリンクからアクセスされた、ご本人専用のページです。</p>
+
+      <div id="mg-loading" class="state-box">読み込んでいます…</div>
+
+      <div id="mg-error" class="state-box err hidden"></div>
+
+      <div id="mg-content" class="hidden">
+        <div class="info-card">
+          <div class="info-row"><span>種別</span><strong id="mg-entity"></strong></div>
+          <div class="info-row"><span>寄付方法</span><strong id="mg-cycle"></strong></div>
+          <div class="info-row"><span>金額</span><strong id="mg-amount"></strong></div>
+          <div class="info-row"><span>使いみち</span><strong id="mg-purpose"></strong></div>
+          <div class="info-row"><span>状態</span><strong id="mg-status"></strong></div>
+        </div>
+
+        <div id="mg-active-actions">
+          <p class="note">解約すると、<strong>今回すでにお支払いいただいた分はそのまま</strong>、<strong>次回以降の自動課金は行われません</strong>。日程等のご相談は <a href="/contact">お問い合わせ</a> からご連絡ください。</p>
+          <button type="button" id="mg-cancel-btn" class="cancel-btn">この定期寄付を解約する</button>
+        </div>
+
+        <div id="mg-canceled-box" class="state-box ok hidden">この定期寄付はすでに解約済みです。次回以降の課金は行われません。長らくのご支援、誠にありがとうございました。</div>
+      </div>
+
+      <div id="mg-msg" class="msg"></div>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+  import { DONATION_API_URL } from '../../lib/donationConfig';
+
+  const params = new URLSearchParams(location.search);
+  const ref = params.get("ref");
+
+  const loading = document.getElementById("mg-loading");
+  const errorBox = document.getElementById("mg-error");
+  const content = document.getElementById("mg-content");
+  const msg = document.getElementById("mg-msg");
+  const activeActions = document.getElementById("mg-active-actions");
+  const canceledBox = document.getElementById("mg-canceled-box");
+  const cancelBtn = document.getElementById("mg-cancel-btn");
+
+  function showError(text) {
+    loading.classList.add("hidden");
+    errorBox.textContent = text;
+    errorBox.classList.remove("hidden");
+  }
+
+  const CYCLE_LABEL = { month: "マンスリー（毎月）", year: "年額（毎年）" };
+  const ENTITY_LABEL = { individual: "個人", corporate: "法人" };
+
+  async function load() {
+    if (!ref) { showError("URLが正しくありません。メールに記載のリンクからアクセスしてください。"); return; }
+    try {
+      const res = await fetch(`${DONATION_API_URL}/manage-info?ref=${encodeURIComponent(ref)}`);
+      const data = await res.json();
+      if (!res.ok || !data.ok) { showError(data.error || "情報の取得に失敗しました。"); return; }
+
+      document.getElementById("mg-entity").textContent = ENTITY_LABEL[data.entityType] || data.entityType;
+      document.getElementById("mg-cycle").textContent = CYCLE_LABEL[data.billingCycle] || data.billingCycle;
+      document.getElementById("mg-amount").textContent = Number(data.amount).toLocaleString() + " 円";
+      document.getElementById("mg-purpose").textContent = data.purpose;
+      document.getElementById("mg-status").textContent = data.status === "canceled" ? "解約済み" : "継続中";
+
+      loading.classList.add("hidden");
+      content.classList.remove("hidden");
+      if (data.status === "canceled") {
+        activeActions.classList.add("hidden");
+        canceledBox.classList.remove("hidden");
+      }
+    } catch (e) {
+      showError("通信エラーが発生しました。時間をおいて再度お試しください。");
+    }
+  }
+
+  cancelBtn?.addEventListener("click", async () => {
+    if (!confirm("本当にこの定期寄付を解約しますか？次回以降の自動課金は行われなくなります。")) return;
+    cancelBtn.disabled = true;
+    cancelBtn.textContent = "処理中…";
+    try {
+      const res = await fetch(`${DONATION_API_URL}/manage-cancel`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ref }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        msg.className = "msg err";
+        msg.textContent = data.error || "解約に失敗しました。しばらくして再度お試しください。";
+        cancelBtn.disabled = false;
+        cancelBtn.textContent = "この定期寄付を解約する";
+        return;
+      }
+      activeActions.classList.add("hidden");
+      canceledBox.classList.remove("hidden");
+      document.getElementById("mg-status").textContent = "解約済み";
+    } catch (e) {
+      msg.className = "msg err";
+      msg.textContent = "通信エラーが発生しました。時間をおいて再度お試しください。";
+      cancelBtn.disabled = false;
+      cancelBtn.textContent = "この定期寄付を解約する";
+    }
+  });
+
+  load();
+</script>
+
+<style>
+  .form-page {
+    max-width: 560px;
+    padding: var(--spacing-2xl) var(--spacing-md);
+  }
+  .form-page h1 {
+    font-size: var(--font-size-3xl);
+    color: var(--color-dark);
+    border-bottom: 3px solid var(--color-primary);
+    padding-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+  }
+  .lead { font-size: 1rem; color: var(--color-gray); }
+
+  .state-box { padding: 16px; border-radius: 12px; font-size: 0.95rem; margin-top: var(--spacing-lg); }
+  .state-box.err { background: #fdecea; color: #b3261e; }
+  .state-box.ok { background: #e6f4ea; color: #1e7d34; }
+  .hidden { display: none; }
+
+  .info-card {
+    margin-top: var(--spacing-lg);
+    border: 1px solid #e2e8ea;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .info-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 18px; border-bottom: 1px solid #eef2f3; font-size: 0.95rem;
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-row span { color: var(--color-gray); }
+  .info-row strong { color: var(--color-dark); }
+
+  .note { font-size: 0.85rem; color: var(--color-gray); line-height: 1.7; margin-top: var(--spacing-lg); }
+  .note a { color: var(--color-primary); text-decoration: underline; }
+
+  .cancel-btn {
+    width: 100%; margin-top: var(--spacing-md); padding: 14px; border-radius: 999px;
+    background: #b3261e; color: #fff; font-size: 1rem; font-weight: 700;
+  }
+  .cancel-btn:hover { background: #96201a; }
+  .cancel-btn:disabled { background: var(--color-gray); box-shadow: none; transform: none; }
+
+  .msg { margin-top: var(--spacing-md); padding: 12px; border-radius: 10px; font-size: 0.9rem; }
+  .msg:empty { display: none; }
+  .msg.err { background: #fdecea; color: #b3261e; }
+</style>
