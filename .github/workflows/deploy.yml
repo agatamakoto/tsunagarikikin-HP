@@ -5,7 +5,9 @@ on:
     branches:
       - master
   workflow_dispatch:
-  # microCMS の Webhook → GitHub Actions の「Run workflow」URL でトリガー可能
+  repository_dispatch:
+    types: [microcms-webhook]
+  # microCMS の Webhook（GitHub Actions連携）→ repository_dispatch で自動トリガー
 
 concurrency:
   group: pages
