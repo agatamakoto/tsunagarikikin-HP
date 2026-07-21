@@ -1,0 +1,224 @@
+---
+// src/pages/grants/[id].astro
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { client } from '../../lib/microcms';
+import type { Grant } from '../../lib/microcms';
+
+export async function getStaticPaths() {
+  try {
+    const grantsData = await client.get({ endpoint: 'grants', queries: { limit: 100 } });
+    return grantsData.contents.map((grant: Grant) => ({
+      params: { id: grant.id },
+    }));
+  } catch (e) {
+    return [];
+  }
+}
+
+const { id } = Astro.params;
+let grant: Grant | null = null;
+try {
+  grant = await client.get({ endpoint: 'grants', contentId: id });
+} catch (e) {}
+
+if (!grant) return Astro.redirect('/support');
+
+const statusList = Array.isArray(grant.status) ? grant.status : [grant.status as unknown as string];
+const deadlineStr = grant.deadline
+  ? new Date(grant.deadline).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' })
+  : null;
+---
+
+<Layout title={grant.title} description={grant.title}>
+  <Header />
+
+  <main>
+    <div class="container page">
+      <nav class="breadcrumb">
+        <a href="/support">← 助成や支援を受けるに戻る</a>
+      </nav>
+
+      <article class="grant-article">
+        <header class="article-header">
+          <div class="article-meta">
+            {statusList.map((s) => <span class="tag">{s}</span>)}
+            {deadlineStr && <span class="article-date">締切：{deadlineStr}</span>}
+          </div>
+          <h1>{grant.title}</h1>
+        </header>
+
+        {grant.image && (
+          <div class="article-image-wrap">
+            <img src={grant.image.url} alt={grant.title} class="article-image" />
+          </div>
+        )}
+
+        {grant.content && (
+          <div class="article-body" set:html={grant.content} />
+        )}
+      </article>
+
+      <div class="cta-wrap">
+        <p>助成プログラムに関するお問い合わせはこちら</p>
+        <a href="/contact" class="cta-button">お問い合わせ</a>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .page {
+    padding: var(--spacing-2xl) 0;
+    max-width: 860px;
+  }
+
+  .breadcrumb {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .breadcrumb a {
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .breadcrumb a:hover {
+    color: var(--color-accent);
+  }
+
+  .grant-article {
+    background: var(--color-white);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(44, 62, 80, 0.05);
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .article-header {
+    padding: var(--spacing-2xl);
+    padding-bottom: var(--spacing-lg);
+  }
+
+  .article-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .article-date {
+    color: var(--color-gray);
+    font-size: 0.95rem;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(94, 199, 212, 0.18);
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  .article-header h1 {
+    color: var(--color-dark);
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    line-height: 1.4;
+    margin: 0 0 var(--spacing-sm) 0;
+  }
+
+  .article-image-wrap {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+
+  .article-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .article-body {
+    padding: var(--spacing-xl) var(--spacing-2xl) var(--spacing-2xl);
+    line-height: 1.9;
+    color: var(--color-dark);
+  }
+
+  .article-body :global(p) {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .article-body :global(h2),
+  .article-body :global(h3) {
+    color: var(--color-primary);
+    margin-top: var(--spacing-xl);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .article-body :global(img) {
+    border-radius: 12px;
+    margin: var(--spacing-lg) 0;
+    width: 100%;
+  }
+
+  .article-body :global(a) {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  .cta-wrap {
+    text-align: center;
+    padding: var(--spacing-xl);
+    background: linear-gradient(135deg, rgba(94, 199, 212, 0.1), rgba(255, 159, 60, 0.08));
+    border-radius: 24px;
+    border: 1px solid rgba(94, 199, 212, 0.2);
+  }
+
+  .cta-wrap p {
+    color: var(--color-dark);
+    margin-bottom: var(--spacing-lg);
+    font-size: 1.05rem;
+  }
+
+  .cta-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 1.8rem;
+    border-radius: 999px;
+    background: var(--color-accent);
+    color: var(--color-dark);
+    font-weight: 700;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .cta-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(255, 159, 60, 0.25);
+    color: var(--color-dark);
+  }
+
+  @media (max-width: 700px) {
+    .page {
+      padding: var(--spacing-xl) 0;
+    }
+
+    .article-header {
+      padding: var(--spacing-lg);
+    }
+
+    .article-body {
+      padding: var(--spacing-lg);
+    }
+  }
+</style>
