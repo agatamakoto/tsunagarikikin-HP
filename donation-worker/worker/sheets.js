@@ -50,10 +50,16 @@ function referralLabel(r) {
 }
 
 // 台帳の22列に対応した1行を作る
+// ※列を増やすと既存シートの見出し・集計タブとずれるため、列数は22のまま維持する。
+//   銀行振込は「寄付方法」を「都度（銀行振込）」とし、入金前であることは「使いみち」ではなく
+//   金額列の手前で分かるよう、寄付方法の表記で区別する。
 function donorToRow(d, txnId) {
   const isCorp = d.entityType === "corporate";
   const anon = !!d.anonymous;
-  const houhou = d.donationType === "onetime" ? "都度" : (d.billingCycle === "year" ? "年額" : "マンスリー");
+  const isBank = d.paymentMethod === "bank";
+  const houhou = d.donationType === "onetime"
+    ? (isBank ? "都度（銀行振込・入金待ち）" : "都度")
+    : (d.billingCycle === "year" ? "年額" : "マンスリー");
   return [
     jstDate(),                                                 // 日付
     isCorp ? "法人" : "個人",                                   // 種別

@@ -4,6 +4,7 @@
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import { BANK_TRANSFER } from '../../lib/donationConfig';
 ---
 
 <Layout title="ご寄付ありがとうございました" description="えひめ西条つながり基金へのご寄付、誠にありがとうございました。">
@@ -19,16 +20,32 @@ import Footer from '../../components/Footer.astro';
           </svg>
         </div>
 
-        <h1>ご寄付、ありがとうございました</h1>
+        <h1 id="thanks-title">ご寄付、ありがとうございました</h1>
         <p class="thanks-line" id="thanks-line">ご寄付を承りました。</p>
+
+        <!-- 銀行振込の場合のみ表示：振込先のご案内 -->
+        <div class="bank-guide hidden" id="bank-guide">
+          <h2>お振込先</h2>
+          <dl>
+            <div><dt>金融機関</dt><dd>{BANK_TRANSFER.bankName}　{BANK_TRANSFER.branchName}</dd></div>
+            <div><dt>口座種別</dt><dd>{BANK_TRANSFER.accountType}</dd></div>
+            <div><dt>口座番号</dt><dd>{BANK_TRANSFER.accountNumber}</dd></div>
+            <div><dt>口座名義</dt><dd>{BANK_TRANSFER.accountHolderKanji}{BANK_TRANSFER.accountHolder && <><br><span class="kana">{BANK_TRANSFER.accountHolder}</span></>}</dd></div>
+            <div id="ref-row"><dt>お申込み番号</dt><dd><span id="ref-value"></span></dd></div>
+          </dl>
+          <p class="bank-guide-note">
+            お振込みの際は、<strong>お申込み番号またはお名前</strong>を振込依頼人名に入れていただけると確認がスムーズです。<br>
+            {BANK_TRANSFER.note}
+          </p>
+        </div>
 
         <p class="thanks-body">
           皆さまからのお気持ちは、愛媛県全域で地域課題の解決や魅力づくりに取り組む団体への助成として、大切に活用させていただきます。あたたかいご支援に、心より感謝申し上げます。
         </p>
 
         <div class="thanks-note">
-          <p>ご登録のメールアドレスへ確認のメールをお送りします。しばらく経っても届かない場合は、迷惑メールフォルダをご確認のうえ <a href="/contact">お問い合わせ</a> ください。</p>
-          <p class="small">寄付金控除の証明書（受領証）が必要な方には、後日あらためてご案内いたします。</p>
+          <p id="mail-note">ご登録のメールアドレスへ確認のメールをお送りします。しばらく経っても届かない場合は、迷惑メールフォルダをご確認のうえ <a href="/contact">お問い合わせ</a> ください。</p>
+          <p class="small" id="receipt-note">寄付金控除の証明書（受領証）が必要な方には、後日あらためてご案内いたします。</p>
         </div>
 
         <div class="thanks-actions">
@@ -46,14 +63,34 @@ import Footer from '../../components/Footer.astro';
   const p = new URLSearchParams(location.search);
   const type = p.get("type");
   const amount = parseInt(p.get("amount"), 10);
+  const isBank = p.get("method") === "bank";
+  const ref = p.get("ref");
+
   let label = "ご寄付を承りました。";
   if (Number.isInteger(amount) && amount > 0) {
     const yen = amount.toLocaleString() + "円";
     if (type === "monthly") label = "毎月 " + yen + " のご寄付を承りました。";
     else if (type === "yearly") label = "年額 " + yen + " のご寄付を承りました。";
+    else if (isBank) label = yen + " のお申込みを承りました。";
     else label = yen + " のご寄付を承りました。";
+  } else if (isBank) {
+    label = "お申込みを承りました。";
   }
   document.getElementById("thanks-line").textContent = label;
+
+  // 銀行振込：まだ入金前なので、文言を「お申込み受付」に切り替えて振込先を表示する
+  if (isBank) {
+    document.getElementById("thanks-title").textContent = "お申込みありがとうございました";
+    document.getElementById("bank-guide").classList.remove("hidden");
+    document.getElementById("mail-note").innerHTML =
+      'ご登録のメールアドレスへ、お振込先を記載した確認メールをお送りします。しばらく経っても届かない場合は、迷惑メールフォルダをご確認のうえ <a href="/contact">お問い合わせ</a> ください。';
+    document.getElementById("receipt-note").textContent =
+      "寄付金受領証および税額控除に係る証明書は、ご入金を確認したのちにお送りいたします。";
+
+    const refRow = document.getElementById("ref-row");
+    if (ref) document.getElementById("ref-value").textContent = ref;
+    else refRow.style.display = "none";
+  }
 </script>
 
 <style>
@@ -111,6 +148,54 @@ import Footer from '../../components/Footer.astro';
   .thanks-note p { font-size: 0.88rem; color: var(--color-dark); margin: 0 0 var(--spacing-sm); line-height: 1.7; }
   .thanks-note p:last-child { margin-bottom: 0; }
   .thanks-note .small { font-size: 0.8rem; color: var(--color-gray); }
+
+  /* 銀行振込：振込先のご案内 */
+  .hidden { display: none; }
+  .bank-guide {
+    background: #fff;
+    border: 2px solid var(--color-accent);
+    border-radius: 16px;
+    padding: var(--spacing-md) var(--spacing-lg);
+    text-align: left;
+    margin: 0 0 var(--spacing-lg);
+  }
+  .bank-guide h2 {
+    font-size: 1rem;
+    color: var(--color-dark);
+    margin: 0 0 10px;
+  }
+  .bank-guide dl { margin: 0; }
+  .bank-guide dl > div {
+    display: flex;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid #eef1f2;
+  }
+  .bank-guide dl > div:last-child { border-bottom: none; }
+  .bank-guide dt {
+    flex: 0 0 6.5em;
+    color: var(--color-gray);
+    font-size: 0.85rem;
+    margin: 0;
+  }
+  .bank-guide dd {
+    margin: 0;
+    font-weight: 700;
+    font-size: 0.95rem;
+    word-break: break-word;
+  }
+  .bank-guide .kana { font-weight: 400; font-size: 0.8rem; color: var(--color-gray); }
+  .bank-guide-note {
+    margin: 12px 0 0;
+    font-size: 0.82rem;
+    line-height: 1.8;
+    color: var(--color-dark);
+  }
+
+  @media (max-width: 480px) {
+    .bank-guide dl > div { flex-direction: column; gap: 2px; }
+    .bank-guide dt { flex: none; }
+  }
 
   .thanks-actions {
     display: flex;
