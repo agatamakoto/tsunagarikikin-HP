@@ -43,7 +43,8 @@ try {
 
 function grantDeadline(g: Grant): string | null {
   if (!g.deadline) return null;
-  return new Date(g.deadline).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
+  // ビルド環境（GitHub Actions）はUTCのため、timeZoneを指定しないと日付が1日ずれる
+  return new Date(g.deadline).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Tokyo' });
 }
 ---
 
