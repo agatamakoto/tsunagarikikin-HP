@@ -27,7 +27,7 @@ if (!grant) return Astro.redirect('/support');
 
 const statusList = Array.isArray(grant.status) ? grant.status : [grant.status as unknown as string];
 const deadlineStr = grant.deadline
-  ? new Date(grant.deadline).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' })
+  ? new Date(grant.deadline).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Tokyo' })
   : null;
 ---
 

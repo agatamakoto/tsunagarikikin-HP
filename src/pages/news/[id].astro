@@ -25,8 +25,9 @@ try {
 
 if (!news) return Astro.redirect('/activities#news');
 
+// ビルド環境（GitHub Actions）はUTCのため、timeZoneを指定しないと日付が1日ずれる
 const dateStr = new Date(news.publishedAt).toLocaleDateString('ja-JP', {
-  year: 'numeric', month: 'long', day: 'numeric',
+  year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Tokyo',
 });
 ---
 
