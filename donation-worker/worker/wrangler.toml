@@ -6,6 +6,16 @@ compatibility_date = "2024-11-01"
 [vars]
 ALLOW_ORIGIN = "https://escf.jp"
 
+# 銀行振込（都度寄付）の振込先口座 ※振込案内メールの本文に記載されます
+# サイト側の表示は src/lib/donationConfig.ts の BANK_TRANSFER に同じ内容を設定します。
+# BANK_ACCOUNT_HOLDER（カナ名義）は空にするとメールに表示されません。
+BANK_NAME = "GMOあおぞらネット銀行"
+BANK_BRANCH = "法人第二営業部"
+BANK_ACCOUNT_TYPE = "普通"
+BANK_ACCOUNT_NUMBER = "1877830"
+BANK_ACCOUNT_HOLDER = "ザイ)エヒメサイジヨウツナガリキキン"
+BANK_ACCOUNT_HOLDER_KANJI = "公益財団法人えひめ西条つながり基金"
+
 # シークレット鍵は vars に書かず、下記コマンドで登録します（本番/テストで切替）：
 #   npx wrangler secret put PAYJP_SECRET_KEY
 #   → プロンプトに sk_test_… または sk_live_… を貼り付け

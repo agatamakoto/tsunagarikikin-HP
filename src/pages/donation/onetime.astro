@@ -4,9 +4,10 @@
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import { BANK_TRANSFER } from '../../lib/donationConfig';
 ---
 
-<Layout title="都度寄付（今回のみのご寄付）" description="えひめ西条つながり基金への今回のみのご寄付。任意の金額をクレジットカードでご寄付いただけます。">
+<Layout title="都度寄付（今回のみのご寄付）" description="えひめ西条つながり基金への今回のみのご寄付。任意の金額をクレジットカード または 銀行振込でご寄付いただけます。">
   <Header />
 
   <main>
@@ -103,12 +104,41 @@ import Footer from '../../components/Footer.astro';
           <option value="other">その他</option>
         </select>
 
-        <label class="field-label">クレジットカード<em>必須</em></label>
-        <div id="card-element"></div>
+        <fieldset class="fieldset">
+          <legend>お支払い方法</legend>
+          <label class="radio-line"><input type="radio" name="to-pay" value="card" checked>
+            <span><strong>クレジットカード</strong><small>その場でお手続きが完了します</small></span></label>
+          <label class="radio-line"><input type="radio" name="to-pay" value="bank">
+            <span><strong>銀行振込</strong><small>お申込み後、表示される口座へお振込みください</small></span></label>
+        </fieldset>
+
+        <!-- クレジットカード選択時 -->
+        <div id="card-section">
+          <label class="field-label">クレジットカード<em>必須</em></label>
+          <div id="card-element"></div>
+        </div>
+
+        <!-- 銀行振込選択時 -->
+        <div id="bank-section" class="hidden">
+          <label class="field-label">お振込先</label>
+          <div class="bank-box">
+            <dl>
+              <div><dt>金融機関</dt><dd>{BANK_TRANSFER.bankName}　{BANK_TRANSFER.branchName}</dd></div>
+              <div><dt>口座種別</dt><dd>{BANK_TRANSFER.accountType}</dd></div>
+              <div><dt>口座番号</dt><dd>{BANK_TRANSFER.accountNumber}</dd></div>
+              <div><dt>口座名義</dt><dd>{BANK_TRANSFER.accountHolderKanji}{BANK_TRANSFER.accountHolder && <><br><span class="kana">{BANK_TRANSFER.accountHolder}</span></>}</dd></div>
+            </dl>
+            <p class="bank-note">
+              下の「この内容で申し込む」を押すとお申込みが完了し、<strong>お振込先とお申込み番号をメールでお送りします</strong>。<br>
+              お振込みの際は、<strong>お申込み番号またはお名前</strong>を振込依頼人名に入れていただけると確認がスムーズです。<br>
+              {BANK_TRANSFER.note}
+            </p>
+          </div>
+        </div>
 
         <button type="submit" id="to-submit" class="submit-btn">この内容で寄付する</button>
         <div class="msg" id="to-msg"></div>
-        <p class="note">お預かりしたカード情報は決済会社（Pay.jp）が直接処理し、当基金のサーバーには保存されません。銀行振込をご希望の場合は <a href="/contact">お問い合わせ</a> ください。</p>
+        <p class="note" id="pay-note">お預かりしたカード情報は決済会社（Pay.jp）が直接処理し、当基金のサーバーには保存されません。</p>
       </form>
     </div>
   </main>
@@ -159,6 +189,28 @@ import Footer from '../../components/Footer.astro';
     });
   });
 
+  // 支払い方法（カード / 銀行振込）の切り替え
+  const cardSection = document.getElementById("card-section");
+  const bankSection = document.getElementById("bank-section");
+  const payNote = document.getElementById("pay-note");
+  const CARD_NOTE = "お預かりしたカード情報は決済会社（Pay.jp）が直接処理し、当基金のサーバーには保存されません。";
+  const BANK_NOTE = "お申込み後、ご入金を確認しましたら寄付金受領証と税額控除に係る証明書をお送りします（お振込みから数日いただく場合があります）。";
+
+  form.querySelectorAll('input[name="to-pay"]').forEach((r) => {
+    r.addEventListener("change", () => {
+      const bank = getPayMethod() === "bank";
+      cardSection.classList.toggle("hidden", bank);
+      bankSection.classList.toggle("hidden", !bank);
+      payNote.textContent = bank ? BANK_NOTE : CARD_NOTE;
+      submit.textContent = bank ? "この内容で申し込む" : "この内容で寄付する";
+    });
+  });
+
+  function getPayMethod() {
+    const el = form.querySelector('input[name="to-pay"]:checked');
+    return el && el.value === "bank" ? "bank" : "card";
+  }
+
   function getMode() { return form.querySelector('input[name="to-mode"]:checked').value; }
   function getPurposeRaw() {
     const el = form.querySelector('input[name="to-purpose"]:checked');
@@ -179,12 +231,20 @@ import Footer from '../../components/Footer.astro';
     if (!Number.isInteger(amount) || amount < 1000) { show("err", "金額は1,000円以上で指定してください。"); return; }
 
     const anonymous = getMode() === "anonymous";
+    const payMethod = getPayMethod();
     const email = document.getElementById("to-email").value.trim();
     if (!email) { show("err", "メールアドレスを入力してください。"); return; }
+
+    // 銀行振込は振込名義が当基金に通知されるため、匿名でのお申込みはお受けできない
+    if (payMethod === "bank" && anonymous) {
+      show("err", "銀行振込では振込名義が当基金に通知されるため、匿名でのお申込みはお受けできません。匿名をご希望の場合はクレジットカードをご利用ください。");
+      return;
+    }
 
     const payload = {
       entityType: "individual",
       donationType: "onetime",
+      paymentMethod: payMethod,
       anonymous,
       amount,
       email,
@@ -209,11 +269,15 @@ import Footer from '../../components/Footer.astro';
       if (!payload.zip || !payload.prefecture || !payload.address) { show("err", "ご住所を入力してください（寄付金控除の証明書発行に必要です）。"); return; }
     }
 
-    submit.disabled = true; submit.textContent = "処理中…";
+    const isBank = payMethod === "bank";
+    submit.disabled = true; submit.textContent = isBank ? "送信中…" : "処理中…";
     try {
-      const t = await payjp.createToken(card);
-      if (t.error) { show("err", "カード情報を確認してください：" + t.error.message); return; }
-      payload.token = t.id;
+      // 銀行振込はカード決済を行わない（トークンも作らない）
+      if (!isBank) {
+        const t = await payjp.createToken(card);
+        if (t.error) { show("err", "カード情報を確認してください：" + t.error.message); return; }
+        payload.token = t.id;
+      }
 
       const res = await fetch(DONATION_API_URL, {
         method: "POST",
@@ -221,13 +285,19 @@ import Footer from '../../components/Footer.astro';
         body: JSON.stringify(payload),
       });
       const data = await res.json();
-      if (!res.ok || !data.ok) { show("err", "寄付に失敗しました：" + (data.error || "しばらくして再度お試しください")); return; }
+      if (!res.ok || !data.ok) {
+        show("err", (isBank ? "お申込みに失敗しました：" : "寄付に失敗しました：") + (data.error || "しばらくして再度お試しください"));
+        return;
+      }
 
-      window.location.href = "/donation/thanks?type=onetime&amount=" + amount;
+      const params = new URLSearchParams({ type: "onetime", amount: String(amount), method: payMethod });
+      if (isBank && data.reference) params.set("ref", data.reference);
+      window.location.href = "/donation/thanks?" + params.toString();
     } catch (err) {
       show("err", "通信エラーが発生しました。時間をおいて再度お試しください。");
     } finally {
-      submit.disabled = false; submit.textContent = "この内容で寄付する";
+      submit.disabled = false;
+      submit.textContent = isBank ? "この内容で申し込む" : "この内容で寄付する";
     }
   });
 </script>
@@ -291,6 +361,46 @@ import Footer from '../../components/Footer.astro';
   .radio-inline label { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; cursor: pointer; }
 
   #card-element { padding: 12px; border: 1px solid #d5dde0; border-radius: 12px; background: var(--color-white); }
+
+  /* 銀行振込：振込先の表示 */
+  .bank-box {
+    padding: 16px;
+    border: 1px solid rgba(94, 199, 212, 0.5);
+    border-radius: 12px;
+    background: rgba(94, 199, 212, 0.07);
+  }
+  .bank-box dl { margin: 0; }
+  .bank-box dl > div {
+    display: flex;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(94, 199, 212, 0.25);
+  }
+  .bank-box dl > div:last-child { border-bottom: none; }
+  .bank-box dt {
+    flex: 0 0 5.5em;
+    color: var(--color-gray);
+    font-size: 0.85rem;
+    margin: 0;
+  }
+  .bank-box dd {
+    margin: 0;
+    font-weight: 700;
+    font-size: 0.95rem;
+    word-break: break-word;
+  }
+  .bank-box .kana { font-weight: 400; font-size: 0.8rem; color: var(--color-gray); }
+  .bank-note {
+    margin: 14px 0 0;
+    font-size: 0.8rem;
+    line-height: 1.8;
+    color: var(--color-dark);
+  }
+
+  @media (max-width: 480px) {
+    .bank-box dl > div { flex-direction: column; gap: 2px; }
+    .bank-box dt { flex: none; }
+  }
 
   .anon-note { display: none; font-size: 0.82rem; color: #2a8aaa; background: rgba(94,199,212,0.12); border-radius: 10px; padding: 10px; margin-top: 8px; }
   .anon-note.show { display: block; }

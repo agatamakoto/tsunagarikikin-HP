@@ -5,12 +5,13 @@ import Header from '../components/Header.astro';
 import QuestionFlow from '../components/QuestionFlow.astro';
 import Footer from '../components/Footer.astro';
 import { client } from '../lib/microcms';
-import type { News, Statistic, Project, Report } from '../lib/microcms';
+import type { News, Statistic, Project, Report, Grant } from '../lib/microcms';
 
 let newsList: News[] = [];
 let stats: Statistic | null = null;
 let projectsList: Project[] = [];
 let latestReport: Report | null = null;
+let openGrants: Grant[] = [];
 
 try {
   const newsData = await client.get({ endpoint: 'news', queries: { limit: 3 } });
@@ -30,6 +31,20 @@ try {
   const reportsData = await client.get({ endpoint: 'reports', queries: { limit: 1 } });
   latestReport = reportsData.contents[0] ?? null;
 } catch (e) {}
+
+// 助成プログラムのうち「募集中」のものだけをトップページに掲載する
+try {
+  const grantsData = await client.get({ endpoint: 'grants', queries: { limit: 100 } });
+  openGrants = (grantsData.contents as Grant[]).filter((g) => {
+    const s = Array.isArray(g.status) ? g.status : [g.status as unknown as string];
+    return s.includes('募集中');
+  });
+} catch (e) {}
+
+function grantDeadline(g: Grant): string | null {
+  if (!g.deadline) return null;
+  return new Date(g.deadline).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
+}
 ---
 
 <Layout title="トップページ" description="西条の地から、地域共創のプラットフォームへ">
@@ -53,6 +68,46 @@ try {
     <div id="question-flow">
       <QuestionFlow />
     </div>
+
+    <!-- 現在募集中の助成事業 -->
+    {openGrants.length > 0 && (
+      <section class="grants-section">
+        <div class="container">
+          <h2>現在募集中の助成事業</h2>
+          <p class="grants-lead">地域課題の解決に取り組む団体の皆さまへ、助成プログラムを実施しています。</p>
+          <div class="grants-grid">
+            {openGrants.map((grant) => {
+              const deadline = grantDeadline(grant);
+              const href = grant.url || '/support';
+              const external = /^https?:\/\//.test(href) && !href.includes('escf.jp');
+              return (
+                <a
+                  href={href}
+                  class="grant-card"
+                  {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}
+                >
+                  <div class="grant-image">
+                    {grant.image
+                      ? <img src={grant.image.url} alt={grant.title} />
+                      : <div class="grant-image-placeholder"></div>}
+                    <span class="grant-badge">募集中</span>
+                  </div>
+                  <div class="grant-body">
+                    <h3>{grant.title}</h3>
+                    {deadline && <p class="grant-deadline">応募締切：{deadline}</p>}
+                    <span class="link-arrow">詳しく見る →</span>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+
+          <div class="view-all">
+            <a href="/support" class="view-all-button">助成プログラム一覧を見る</a>
+          </div>
+        </div>
+      </section>
+    )}
 
     <!-- 現在進行中のプロジェクト -->
     <section class="projects-section">
@@ -149,6 +204,7 @@ try {
         </div>
       </div>
     </section>
+
 
     <!-- これからの財団について -->
     <section class="future-section">
@@ -250,6 +306,101 @@ try {
   }
 
   /* Projects Section */
+  /* ===== 現在募集中の助成事業 ===== */
+  .grants-section {
+    padding: var(--spacing-2xl) 0;
+    background: linear-gradient(180deg, rgba(255, 159, 60, 0.06), rgba(255, 255, 255, 0));
+  }
+
+  .grants-section h2 {
+    text-align: center;
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .grants-lead {
+    text-align: center;
+    color: var(--color-gray);
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .grants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .grant-card {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    background-color: var(--color-white);
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .grant-card:hover {
+    box-shadow: 0 8px 24px rgba(255, 159, 60, 0.2);
+    transform: translateY(-4px);
+    color: inherit;
+  }
+
+  .grant-image {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    background-color: rgba(94, 199, 212, 0.15);
+    overflow: hidden;
+  }
+
+  .grant-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .grant-image-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(94, 199, 212, 0.35), rgba(255, 159, 60, 0.3));
+  }
+
+  .grant-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    background-color: var(--color-accent);
+    color: var(--color-dark);
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  .grant-body {
+    padding: var(--spacing-md);
+  }
+
+  .grant-body h3 {
+    margin: 0 0 var(--spacing-sm);
+    line-height: 1.5;
+  }
+
+  .grant-deadline {
+    color: var(--color-gray);
+    font-size: 0.95rem;
+    margin: 0 0 var(--spacing-sm);
+  }
+
+  .grant-body .link-arrow {
+    padding: 0;
+  }
+
   .projects-section {
     padding: var(--spacing-2xl) 0;
   }
@@ -546,6 +697,7 @@ try {
     }
 
     .projects-grid,
+    .grants-grid,
     .news-grid {
       grid-template-columns: 1fr;
     }
@@ -567,4 +719,5 @@ try {
       font-size: var(--font-size-xl);
     }
   }
+
 </style>

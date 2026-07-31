@@ -50,19 +50,25 @@ export default {
     const anonymous = entityType === "individual" && !!body.anonymous;
     const donationType = body.donationType === "onetime" ? "onetime" : "recurring"; // 継続 or 単発
     const billingCycle = body.billingCycle === "year" ? "year" : "month"; // 個人は月額のみ、法人は月額/年額
+    // 支払い方法：銀行振込は「都度寄付」のみ対応（継続寄付はカードのみ）
+    const paymentMethod = (body.paymentMethod === "bank" && donationType === "onetime") ? "bank" : "card";
     const token = body.token;
     const amount = parseInt(body.amount, 10);
     const email = str(body.email, 200);
 
-    if (!token) return json({ error: "カード情報がありません" }, 400, cors);
+    // 銀行振込はこの時点で決済しないためカードトークンは不要
+    if (paymentMethod === "card" && !token) return json({ error: "カード情報がありません" }, 400, cors);
     if (!Number.isInteger(amount) || amount < 1000 || amount > 1000000)
       return json({ error: "金額は1,000円〜1,000,000円で指定してください" }, 400, cors);
     if (!email) return json({ error: "メールアドレスを入力してください" }, 400, cors);
+    // 銀行振込は振込名義が当基金に通知されるため、匿名では受け付けない（受領証の発行にも氏名・住所が必要）
+    if (paymentMethod === "bank" && anonymous)
+      return json({ error: "銀行振込では匿名でのお申込みはお受けできません" }, 400, cors);
 
     // ---- 属性ごとの入力整形 ----
     // 使いみち：継続寄付（マンスリー・年額）は常に「財団運営」固定。都度寄付のみフォームで選択可。
     const purpose = donationType === "onetime" ? (str(body.purpose, 100) || "財団運営") : "財団運営";
-    let donor = { entityType, anonymous, donationType, billingCycle, purpose, amount, email };
+    let donor = { entityType, anonymous, donationType, billingCycle, paymentMethod, purpose, amount, email };
     let displayName;
 
     if (entityType === "corporate") {
@@ -107,6 +113,27 @@ export default {
       // 匿名寄付：氏名・住所は受け取らない。領収書は発行しない。
       donor.publicity = "no";
       displayName = "匿名希望";
+    }
+
+    // ===== 銀行振込（都度寄付）: この時点では決済しない =====
+    // 入金はあとから銀行口座に着金するため、ここでは「お申込みの受付」のみを行う。
+    // 受領証・税額控除証明書は、事務局が入金を確認したあとに発行する（未入金の証明書を出さないため）。
+    if (paymentMethod === "bank") {
+      const reference = makeBankReference();
+      donor.status = "入金待ち";
+
+      if (env.DONORS) {
+        try {
+          await env.DONORS.put("bank:" + reference, JSON.stringify({
+            reference,
+            ...donor,
+            createdAt: new Date().toISOString(),
+          }));
+        } catch (e) { /* 記録失敗でも申込自体は受け付ける */ }
+      }
+      ctx.waitUntil(sendThanks(env, { donor, kind: "bank", amount, reference }));
+      ctx.waitUntil(appendDonationRow(env, donor, reference));
+      return json({ ok: true, reference }, 200, cors);
     }
 
     if (!env.PAYJP_SECRET_KEY) return json({ error: "サーバー設定エラー（鍵未設定）" }, 500, cors);
@@ -200,12 +227,14 @@ export default {
 // ===== サンクスメール送信（Resend経由。RESEND_API_KEY をsecretで登録） =====
 // 記名の寄付者には、受領証PDF（自動生成）＋税額控除に係る証明書PDFを添付する。
 // 匿名寄付は氏名・住所を記載できないため、受領証は発行しない（本文のみ）。
-async function sendThanks(env, { donor, kind, amount, subscriptionId }) {
+async function sendThanks(env, { donor, kind, amount, subscriptionId, reference }) {
   if (!env.RESEND_API_KEY || !donor.email) return;
-  const mail = buildThanksEmail({ donor, kind, amount, subscriptionId });
+  const mail = buildThanksEmail({ donor, kind, amount, subscriptionId, reference, bank: bankInfo(env) });
 
+  // 銀行振込はまだ入金されていないため、受領証・控除証明書は添付しない。
+  // （事務局が着金を確認したうえで発行する）
   const attachments = [];
-  if (!donor.anonymous && env.DONORS) {
+  if (kind !== "bank" && !donor.anonymous && env.DONORS) {
     try {
       const [fontBuf, certBuf] = await Promise.all([
         env.DONORS.get("asset:font-ipaex", "arrayBuffer"),
@@ -266,18 +295,76 @@ function jstDateString() {
   return d.getUTCFullYear() + "年" + (d.getUTCMonth() + 1) + "月" + d.getUTCDate() + "日";
 }
 
-function buildThanksEmail({ donor, kind, amount, subscriptionId }) {
+// 銀行振込のお申込み番号。
+// 振込依頼人名の欄はカナ・数字しか使えない銀行があるため、あえて数字だけで構成する。
+function makeBankReference(date = new Date()) {
+  const jst = new Date(date.getTime() + 9 * 3600 * 1000);
+  const y = String(jst.getUTCFullYear()).slice(-2);
+  const m = String(jst.getUTCMonth() + 1).padStart(2, "0");
+  const d = String(jst.getUTCDate()).padStart(2, "0");
+  const rand = String(Math.floor(Math.random() * 10000)).padStart(4, "0");
+  return `${y}${m}${d}${rand}`;
+}
+
+// 振込先口座（wrangler.toml の [vars] で設定。未設定でもメール自体は送れるようにする）
+function bankInfo(env) {
+  return {
+    bankName: env.BANK_NAME || "",
+    branchName: env.BANK_BRANCH || "",
+    accountType: env.BANK_ACCOUNT_TYPE || "普通",
+    accountNumber: env.BANK_ACCOUNT_NUMBER || "",
+    accountHolder: env.BANK_ACCOUNT_HOLDER || "",
+    accountHolderKanji: env.BANK_ACCOUNT_HOLDER_KANJI || "公益財団法人えひめ西条つながり基金",
+  };
+}
+
+function buildThanksEmail({ donor, kind, amount, subscriptionId, reference, bank }) {
   const anon = !!donor.anonymous;
+  const isBank = kind === "bank";
   const isCorp = donor.entityType === "corporate";
   const name = isCorp ? donor.companyName : anon ? "" : donor.name;
   const greeting = anon ? "ご支援者様" : name + (isCorp ? " 御中" : " 様");
-  const kindLabel = kind === "onetime" ? "今回のみのご寄付" : kind === "yearly" ? "年額サポーター（毎年）" : "マンスリーサポーター（毎月）";
+  const kindLabel = isBank ? "今回のみのご寄付（銀行振込）"
+    : kind === "onetime" ? "今回のみのご寄付"
+    : kind === "yearly" ? "年額サポーター（毎年）"
+    : "マンスリーサポーター（毎月）";
   const yen = "¥" + Number(amount).toLocaleString();
   const date = jstDateString();
-  const subject = "【えひめ西条つながり基金】ご寄付ありがとうございました";
-  const receiptNote = anon
-    ? "匿名でのご寄付のため、寄付金受領証は発行いたしません。"
-    : "寄付金受領証および税額控除に係る証明書は、追ってお送りいたします。";
+  const subject = isBank
+    ? "【えひめ西条つながり基金】お振込先のご案内（お申込みありがとうございました）"
+    : "【えひめ西条つながり基金】ご寄付ありがとうございました";
+  const receiptNote = isBank
+    ? "寄付金受領証および税額控除に係る証明書は、ご入金を確認したのちにお送りいたします。"
+    : anon
+      ? "匿名でのご寄付のため、寄付金受領証は発行いたしません。"
+      : "寄付金受領証および税額控除に係る証明書は、追ってお送りいたします。";
+
+  // 銀行振込：振込先のご案内ブロック
+  const bankRows = isBank && bank ? [
+    ["金融機関", [bank.bankName, bank.branchName].filter(Boolean).join("　")],
+    ["口座種別", bank.accountType],
+    ["口座番号", bank.accountNumber],
+    ["口座名義", bank.accountHolderKanji + (bank.accountHolder ? "（" + bank.accountHolder + "）" : "")],
+    ["お申込み番号", reference || ""],
+  ].filter(([, v]) => v) : [];
+
+  const bankText = isBank ? [
+    "",
+    "▼ お振込先",
+    ...bankRows.map(([k, v]) => "　" + k + "：" + v),
+    "",
+    "お振込みの際は、お申込み番号またはお名前を振込依頼人名に入れていただけると確認がスムーズです。",
+    "恐れ入りますが、振込手数料はご負担いただきますようお願いいたします。",
+  ] : [];
+
+  const bankHtml = isBank ? `
+      <div style="margin:16px 0 0;padding:14px 16px;border:2px solid #FF9F3C;border-radius:12px;">
+        <p style="margin:0 0 10px;font-weight:bold;font-size:14px;">お振込先</p>
+        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+          ${bankRows.map(([k, v], i) => `<tr><td style="padding:8px 0;color:#5a7080;width:7.5em;${i ? "border-top:1px solid #eef1f2;" : ""}">${escapeHtml(k)}</td><td style="padding:8px 0;font-weight:bold;${i ? "border-top:1px solid #eef1f2;" : ""}">${escapeHtml(v)}</td></tr>`).join("")}
+        </table>
+        <p style="margin:12px 0 0;font-size:12px;color:#5a7080;line-height:1.8;">お振込みの際は、<strong>お申込み番号またはお名前</strong>を振込依頼人名に入れていただけると確認がスムーズです。<br>恐れ入りますが、振込手数料はご負担いただきますようお願いいたします。</p>
+      </div>` : "";
   const manageUrl = subscriptionId ? `https://escf.jp/donation/manage?ref=${encodeURIComponent(subscriptionId)}` : null;
   const manageNote = manageUrl
     ? "ご登録内容の確認・金額変更のご相談・解約は、下記のご本人専用ページから行えます。このURLは第三者に共有しないようご注意ください。"
@@ -286,12 +373,15 @@ function buildThanksEmail({ donor, kind, amount, subscriptionId }) {
   const text = [
     greeting,
     "",
-    "このたびは、公益財団法人えひめ西条つながり基金へご寄付をいただき、誠にありがとうございます。",
-    "以下のとおり承りました。",
+    isBank
+      ? "このたびは、公益財団法人えひめ西条つながり基金へのご寄付をお申込みいただき、誠にありがとうございます。"
+      : "このたびは、公益財団法人えひめ西条つながり基金へご寄付をいただき、誠にありがとうございます。",
+    isBank ? "以下のとおりお申込みを承りました。下記の口座へお振込みをお願いいたします。" : "以下のとおり承りました。",
     "",
-    "　受付日：" + date,
-    "　種別　：" + kindLabel,
-    "　金額　：" + yen,
+    (isBank ? "　受付日　　：" : "　受付日：") + date,
+    (isBank ? "　種別　　　：" : "　種別　：") + kindLabel,
+    (isBank ? "　金額　　　：" : "　金額　：") + yen,
+    ...bankText,
     "",
     receiptNote,
     "",
@@ -308,12 +398,15 @@ function buildThanksEmail({ donor, kind, amount, subscriptionId }) {
     <div style="background:#1a3547;color:#fff;padding:20px 24px;font-size:16px;font-weight:bold;">公益財団法人えひめ西条つながり基金</div>
     <div style="padding:24px;line-height:1.9;">
       <p style="margin:0 0 12px;font-weight:bold;">${escapeHtml(greeting)}</p>
-      <p style="margin:0 0 16px;">このたびは、当基金へご寄付をいただき、誠にありがとうございます。以下のとおり承りました。</p>
+      <p style="margin:0 0 16px;">${isBank
+        ? "このたびは、当基金へのご寄付をお申込みいただき、誠にありがとうございます。以下のとおりお申込みを承りました。下記の口座へお振込みをお願いいたします。"
+        : "このたびは、当基金へご寄付をいただき、誠にありがとうございます。以下のとおり承りました。"}</p>
       <table style="width:100%;border-collapse:collapse;background:#f8f9fa;border-radius:10px;overflow:hidden;font-size:14px;">
         <tr><td style="padding:10px 14px;color:#5a7080;width:90px;">受付日</td><td style="padding:10px 14px;font-weight:bold;">${date}</td></tr>
         <tr><td style="padding:10px 14px;color:#5a7080;border-top:1px solid #e2e8ea;">種別</td><td style="padding:10px 14px;font-weight:bold;border-top:1px solid #e2e8ea;">${kindLabel}</td></tr>
         <tr><td style="padding:10px 14px;color:#5a7080;border-top:1px solid #e2e8ea;">金額</td><td style="padding:10px 14px;font-weight:bold;border-top:1px solid #e2e8ea;">${yen}</td></tr>
       </table>
+      ${bankHtml}
       <p style="margin:16px 0 0;font-size:13px;color:#5a7080;">${escapeHtml(receiptNote)}</p>
       <p style="margin:16px 0 0;">皆さまからのお気持ちは、愛媛県全域で地域課題の解決に取り組む団体への助成として大切に活用いたします。</p>
       ${manageUrl ? `<div style="margin:20px 0 0;padding:14px 16px;background:#EDF2F4;border-radius:10px;">

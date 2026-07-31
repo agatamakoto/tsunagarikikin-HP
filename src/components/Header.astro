@@ -20,8 +20,38 @@
           <li><a href="/contact">お問い合わせ</a></li>
         </ul>
       </nav>
+
+      <!-- スマホ用：ハンバーガーボタン -->
+      <button
+        type="button"
+        class="menu-toggle"
+        id="menu-toggle"
+        aria-label="メニューを開く"
+        aria-expanded="false"
+        aria-controls="mobile-nav"
+      >
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
     </div>
   </div>
+
+  <!-- スマホ用：開閉メニュー -->
+  <div class="mobile-nav" id="mobile-nav" hidden>
+    <nav>
+      <ul>
+        <li><a href="/about">財団について</a></li>
+        <li><a href="/donation">寄付をする</a></li>
+        <li><a href="/support">助成や支援</a></li>
+        <li><a href="/projects">協働とプロジェクト</a></li>
+        <li><a href="/activities">活動を知る</a></li>
+        <li><a href="/contact">お問い合わせ</a></li>
+      </ul>
+    </nav>
+    <a href="/donation" class="mobile-cta">寄付をする</a>
+  </div>
+  <div class="mobile-overlay" id="mobile-overlay" hidden></div>
 </header>
 
 <style>
@@ -91,13 +121,156 @@
     width: 100%;
   }
 
-  @media (max-width: 768px) {
-    .nav ul {
-      gap: var(--spacing-md);
-    }
+  /* ===== ハンバーガーボタン（スマホのみ表示） ===== */
+  .menu-toggle {
+    display: none;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+  }
 
+  .menu-toggle .bar {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background-color: var(--color-dark);
+    border-radius: 2px;
+    transition: transform 0.3s ease, opacity 0.2s ease;
+  }
+
+  /* 開いている時は×印に */
+  .menu-toggle[aria-expanded='true'] .bar:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .menu-toggle[aria-expanded='true'] .bar:nth-child(2) {
+    opacity: 0;
+  }
+  .menu-toggle[aria-expanded='true'] .bar:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* ===== スマホ用メニュー本体 ===== */
+  .mobile-nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--color-white);
+    border-top: 1px solid #e0e0e0;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    padding: var(--spacing-sm) var(--spacing-md) var(--spacing-lg);
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    z-index: 101;
+  }
+
+  .mobile-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .mobile-nav li + li {
+    border-top: 1px solid #eef1f2;
+  }
+
+  .mobile-nav a {
+    display: block;
+    padding: 16px 4px;
+    font-size: 1.05rem;
+    color: var(--color-dark);
+  }
+
+  .mobile-nav a:active {
+    color: var(--color-primary);
+  }
+
+  .mobile-cta {
+    display: block;
+    margin-top: var(--spacing-md);
+    padding: 14px 20px;
+    border-radius: 999px;
+    background-color: var(--color-accent);
+    color: var(--color-dark) !important;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .mobile-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    top: 0;
+    background: rgba(26, 53, 71, 0.35);
+    z-index: 99;
+  }
+
+  @media (max-width: 768px) {
     .nav {
       display: none;
     }
+
+    .menu-toggle {
+      display: flex;
+    }
+
+    .logo-img {
+      height: 40px;
+    }
+
+    /* hidden属性を外した時だけ表示する */
+    .mobile-nav:not([hidden]) {
+      display: block;
+    }
+
+    .mobile-overlay:not([hidden]) {
+      display: block;
+    }
   }
 </style>
+
+<script>
+  const toggle = document.getElementById('menu-toggle');
+  const mobileNav = document.getElementById('mobile-nav');
+  const overlay = document.getElementById('mobile-overlay');
+
+  function setOpen(open: boolean) {
+    if (!toggle || !mobileNav || !overlay) return;
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'メニューを閉じる' : 'メニューを開く');
+    mobileNav.hidden = !open;
+    overlay.hidden = !open;
+    // メニューを開いている間は背面をスクロールさせない
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+
+  toggle?.addEventListener('click', () => {
+    setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+  });
+
+  // 背景をタップしたら閉じる
+  overlay?.addEventListener('click', () => setOpen(false));
+
+  // メニュー内のリンクを押したら閉じる（同一ページ内リンクでも確実に閉じるように）
+  mobileNav?.querySelectorAll('a').forEach((a) => {
+    a.addEventListener('click', () => setOpen(false));
+  });
+
+  // Escキーで閉じる
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') setOpen(false);
+  });
+
+  // PC幅に戻した時は開閉状態をリセット
+  window.matchMedia('(min-width: 769px)').addEventListener('change', (e) => {
+    if (e.matches) setOpen(false);
+  });
+</script>
