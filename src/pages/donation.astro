@@ -3,6 +3,24 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { client } from '../lib/microcms';
+import type { Grant } from '../lib/microcms';
+
+// 事業指定助成プログラムのうち「募集中」のものを掲載する（/support と同じデータ）
+let openGrants: Grant[] = [];
+try {
+  const grantsData = await client.get({ endpoint: 'grants', queries: { limit: 100 } });
+  openGrants = (grantsData.contents as Grant[]).filter((g) => {
+    const s = Array.isArray(g.status) ? g.status : [g.status as unknown as string];
+    return s.includes('募集中');
+  });
+} catch (e) {}
+
+function grantDeadline(g: Grant): string | null {
+  if (!g.deadline) return null;
+  // ビルド環境（GitHub Actions）はUTCのため、timeZoneを指定しないと日付が1日ずれる
+  return new Date(g.deadline).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Tokyo' });
+}
 ---
 
 <Layout title="寄付をする" description="つながり基金への寄付方法について">
@@ -40,6 +58,54 @@ import Footer from '../components/Footer.astro';
 
       <section id="donation-methods">
         <h2>寄付方法の選択</h2>
+
+        {openGrants.length > 0 && (
+          <div class="accordion-item">
+            <button class="accordion-button" type="button" data-target="project-detail">
+              <span>プロジェクトに対して寄付をする<span class="badge-open">募集中 {openGrants.length}件</span></span>
+              <span>応援したい事業を選んで、直接ご寄付いただけます。</span>
+            </button>
+            <!-- 掲載件数が増えても見切れないよう、件数に応じて開いた時の高さ上限を伸ばす -->
+            <div
+              id="project-detail"
+              class="accordion-panel"
+              style={`--panel-max:${600 + openGrants.length * 500}px`}
+            >
+              <p>「事業指定助成プログラム」では、当基金が募集・審査した個別の事業を指定してご寄付いただけます。いただいたご寄付は、その事業のために使われます。</p>
+
+              <div class="project-grid">
+                {openGrants.map((grant) => {
+                  const deadline = grantDeadline(grant);
+                  const href = grant.url || '/support';
+                  const external = /^https?:\/\//.test(href) && !href.includes('escf.jp');
+                  return (
+                    <a
+                      class="project-donate-card"
+                      href={href}
+                      {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}
+                    >
+                      <div class="project-donate-image">
+                        {grant.image
+                          ? <img src={grant.image.url} alt={grant.title} />
+                          : <div class="project-donate-placeholder"></div>}
+                        <span class="project-donate-badge">募集中</span>
+                      </div>
+                      <div class="project-donate-body">
+                        <h3>{grant.title}</h3>
+                        {deadline && <p class="project-donate-deadline">募集締切：{deadline}</p>}
+                        <span class="project-donate-cta">このプロジェクトを支援する →</span>
+                      </div>
+                    </a>
+                  );
+                })}
+              </div>
+
+              <p class="project-note">現在ご案内中の事業指定助成プログラムへのご寄付は、外部の寄付サイト「コングラント」のページで受け付けています。各事業の詳しい内容や目標金額は、リンク先でご確認ください。</p>
+
+              <a class="donation-button" href="/support">助成プログラム一覧を見る</a>
+            </div>
+          </div>
+        )}
 
         <div class="accordion-item">
           <button class="accordion-button" type="button" data-target="personal-detail">
@@ -232,6 +298,111 @@ import Footer from '../components/Footer.astro';
     border-radius: 24px;
     border: 1px solid rgba(0, 0, 0, 0.08);
     overflow: hidden;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  /* ===== プロジェクトに対して寄付をする ===== */
+  /* 掲載件数によって中身の高さが変わるため、共通の2000px上限ではなく件数から算出した値を使う */
+  #project-detail.open {
+    max-height: var(--panel-max, 2000px);
+  }
+
+  .badge-open {
+    display: inline-block;
+    margin-left: 10px;
+    padding: 0.2rem 0.7rem;
+    border-radius: 999px;
+    background-color: var(--color-accent);
+    color: var(--color-dark);
+    font-size: 0.75rem;
+    font-weight: 700;
+    vertical-align: middle;
+  }
+
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--spacing-lg);
+    margin: var(--spacing-lg) 0;
+  }
+
+  .project-donate-card {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    background-color: var(--color-white);
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .project-donate-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 26px rgba(255, 159, 60, 0.22);
+    color: inherit;
+  }
+
+  .project-donate-image {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-color: rgba(94, 199, 212, 0.15);
+    overflow: hidden;
+  }
+
+  .project-donate-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .project-donate-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(94, 199, 212, 0.35), rgba(255, 159, 60, 0.3));
+  }
+
+  .project-donate-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    background-color: var(--color-accent);
+    color: var(--color-dark);
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  .project-donate-body {
+    padding: var(--spacing-md);
+  }
+
+  .accordion-panel .project-donate-body h3 {
+    margin: 0 0 8px;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .accordion-panel .project-donate-deadline {
+    margin: 0 0 10px;
+    font-size: 0.85rem;
+    color: var(--color-gray);
+  }
+
+  .project-donate-cta {
+    display: inline-block;
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  .accordion-panel .project-note {
+    font-size: 0.85rem;
+    color: var(--color-gray);
     margin-bottom: var(--spacing-lg);
   }
 
