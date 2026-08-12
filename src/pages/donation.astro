@@ -59,54 +59,6 @@ function grantDeadline(g: Grant): string | null {
       <section id="donation-methods">
         <h2>寄付方法の選択</h2>
 
-        {openGrants.length > 0 && (
-          <div class="accordion-item">
-            <button class="accordion-button" type="button" data-target="project-detail">
-              <span>プロジェクトに対して寄付をする<span class="badge-open">募集中 {openGrants.length}件</span></span>
-              <span>応援したい事業を選んで、直接ご寄付いただけます。</span>
-            </button>
-            <!-- 掲載件数が増えても見切れないよう、件数に応じて開いた時の高さ上限を伸ばす -->
-            <div
-              id="project-detail"
-              class="accordion-panel"
-              style={`--panel-max:${600 + openGrants.length * 500}px`}
-            >
-              <p>「事業指定助成プログラム」では、当基金が募集・審査した個別の事業を指定してご寄付いただけます。いただいたご寄付は、その事業のために使われます。</p>
-
-              <div class="project-grid">
-                {openGrants.map((grant) => {
-                  const deadline = grantDeadline(grant);
-                  const href = grant.url || '/support';
-                  const external = /^https?:\/\//.test(href) && !href.includes('escf.jp');
-                  return (
-                    <a
-                      class="project-donate-card"
-                      href={href}
-                      {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}
-                    >
-                      <div class="project-donate-image">
-                        {grant.image
-                          ? <img src={grant.image.url} alt={grant.title} />
-                          : <div class="project-donate-placeholder"></div>}
-                        <span class="project-donate-badge">募集中</span>
-                      </div>
-                      <div class="project-donate-body">
-                        <h3>{grant.title}</h3>
-                        {deadline && <p class="project-donate-deadline">募集締切：{deadline}</p>}
-                        <span class="project-donate-cta">このプロジェクトを支援する →</span>
-                      </div>
-                    </a>
-                  );
-                })}
-              </div>
-
-              <p class="project-note">現在ご案内中の事業指定助成プログラムへのご寄付は、外部の寄付サイト「コングラント」のページで受け付けています。各事業の詳しい内容や目標金額は、リンク先でご確認ください。</p>
-
-              <a class="donation-button" href="/support">助成プログラム一覧を見る</a>
-            </div>
-          </div>
-        )}
-
         <div class="accordion-item">
           <button class="accordion-button" type="button" data-target="personal-detail">
             <span>個人向け寄付</span>
@@ -160,6 +112,54 @@ function grantDeadline(g: Grant): string | null {
             </div>
           </div>
         </div>
+
+        {openGrants.length > 0 && (
+          <div class="accordion-item">
+            <button class="accordion-button" type="button" data-target="project-detail">
+              <span>プロジェクトに対して寄付をする<span class="badge-open">募集中 {openGrants.length}件</span></span>
+              <span>応援したい事業を選んで、直接ご寄付いただけます。</span>
+            </button>
+            <!-- 掲載件数が増えても見切れないよう、件数に応じて開いた時の高さ上限を伸ばす -->
+            <div
+              id="project-detail"
+              class="accordion-panel"
+              style={`--panel-max:${600 + openGrants.length * 500}px`}
+            >
+              <p>「事業指定助成プログラム」では、当基金が募集・審査した個別の事業を指定してご寄付いただけます。いただいたご寄付は、その事業のために使われます。</p>
+
+              <div class="project-grid">
+                {openGrants.map((grant) => {
+                  const deadline = grantDeadline(grant);
+                  const href = grant.url || '/support';
+                  const external = /^https?:\/\//.test(href) && !href.includes('escf.jp');
+                  return (
+                    <a
+                      class="project-donate-card"
+                      href={href}
+                      {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}
+                    >
+                      <div class="project-donate-image">
+                        {grant.image
+                          ? <img src={grant.image.url} alt={grant.title} />
+                          : <div class="project-donate-placeholder"></div>}
+                        <span class="project-donate-badge">募集中</span>
+                      </div>
+                      <div class="project-donate-body">
+                        <h3>{grant.title}</h3>
+                        {deadline && <p class="project-donate-deadline">募集締切：{deadline}</p>}
+                        <span class="project-donate-cta">このプロジェクトを支援する →</span>
+                      </div>
+                    </a>
+                  );
+                })}
+              </div>
+
+              <p class="project-note">現在ご案内中の事業指定助成プログラムへのご寄付は、外部の寄付サイト「コングラント」のページで受け付けています。各事業の詳しい内容や目標金額は、リンク先でご確認ください。</p>
+
+              <a class="donation-button" href="/support">助成プログラム一覧を見る</a>
+            </div>
+          </div>
+        )}
 
         <div class="accordion-item">
           <button class="accordion-button" type="button" data-target="crown-detail">
