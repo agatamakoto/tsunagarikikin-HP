@@ -9,11 +9,28 @@
 import OmatsuLayout from '../../../layouts/OmatsuLayout.astro';
 import {
   BASE,
+  CONTACT_EMAIL,
   findInterview,
   interviews,
   sponsorTierLabels,
   sponsorsByTier,
 } from '../../../lib/omatsu';
+
+// 協賛のお問い合わせ用。件名と本文の雛形を入れた状態でメールソフトが開く
+const sponsorMailto =
+  `mailto:${CONTACT_EMAIL}` +
+  `?subject=${encodeURIComponent('【OMATSU-RebootCAMP】協賛についてのお問い合わせ')}` +
+  `&body=${encodeURIComponent(
+    'OMATSU-RebootCAMP事務局 御中\n\n' +
+      '協賛について問い合わせます。\n\n' +
+      '――――――――――――――――――\n' +
+      '貴社名／団体名：\n' +
+      'ご担当者名：\n' +
+      'ご連絡先（電話）：\n' +
+      'ご連絡先（メール）：\n' +
+      'ご質問・ご要望：\n' +
+      '――――――――――――――――――\n'
+  )}`;
 
 const tiers = (['gold', 'silver', 'bronze'] as const).map((tier) => ({
   tier,
@@ -26,6 +43,12 @@ const tiers = (['gold', 'silver', 'bronze'] as const).map((tier) => ({
   title="協賛企業"
   description="OMATSU-Reboot CAMPは、地域のお祭りの未来を共につくる協賛企業の皆さまに支えられています。ゴールド・シルバー・ブロンズ各スポンサーのご紹介と、協賛企業インタビューを掲載しています。"
   current="sponsor"
+  breadcrumbs={[
+    { name: 'ホーム', url: '/' },
+    { name: '協働とプロジェクト', url: '/projects' },
+    { name: 'OMATSU-Reboot CAMP', url: BASE },
+    { name: '協賛企業', url: '/projects/Omatsu-RebootCAMP/sponsor' },
+  ]}
 >
   <div class="om-page-head">
     <div class="om-container">
@@ -74,8 +97,8 @@ const tiers = (['gold', 'silver', 'bronze'] as const).map((tier) => ({
       </div>
 
       <div class="purpose-cta om-appear">
-        <a href={`${BASE}/entry`} class="om-arrow-link">
-          <span class="circle material-icons-outlined">trending_flat</span>
+        <a href={sponsorMailto} class="om-arrow-link">
+          <span class="circle material-icons-outlined">mail_outline</span>
           <span class="label">協賛について問い合わせる</span>
         </a>
       </div>
@@ -133,7 +156,7 @@ const tiers = (['gold', 'silver', 'bronze'] as const).map((tier) => ({
                     <p class="logo-name">{s.name}</p>
                     {s.url && (
                       <a href={s.url} target="_blank" rel="noreferrer" class="logo-site">
-                        公式サイト
+                        {s.linkLabel || '公式サイト'}
                         <span class="material-icons-outlined">open_in_new</span>
                       </a>
                     )}
@@ -212,10 +235,14 @@ const tiers = (['gold', 'silver', 'bronze'] as const).map((tier) => ({
         100年先も祭りが続く地域を、一緒につくっていただける企業・団体さまを募集しています。<br />
         協賛の内容・特典については、事務局よりご説明いたします。
       </p>
-      <a href={`${BASE}/entry`} class="om-entry-btn is-lg">
-        <span>事務局に問い合わせる</span>
+      <a href={sponsorMailto} class="om-entry-btn is-lg">
+        <span>事務局にメールで問い合わせる</span>
         <span class="material-icons-outlined">mail_outline</span>
       </a>
+      <p class="cta-mail">
+        メールソフトが開かない場合は
+        <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> 宛にご連絡ください。
+      </p>
     </div>
   </section>
 </OmatsuLayout>
@@ -543,6 +570,18 @@ const tiers = (['gold', 'silver', 'bronze'] as const).map((tier) => ({
     font-size: 16px;
     line-height: 2;
     margin: 20px 0 32px;
+  }
+
+  .cta-mail {
+    font-size: 13px;
+    color: var(--om-gray);
+    margin-top: 16px;
+  }
+
+  .cta-mail a {
+    color: var(--om-blue);
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   .om-entry-btn.is-lg {

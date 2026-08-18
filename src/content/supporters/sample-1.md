@@ -6,7 +6,7 @@ thumbnail: /images/supporters/sample-1-thumb.svg
 interviewees: 代表取締役 山田 太郎 × 事務局 安形
 url: https://example.com
 order: 1
-published: true
+published: false  # ← 公開するとき true に戻す
 ---
 
 （このファイルは記入例です。実際の企業に合わせて書き換えてください。見出し・段落・箇条書き・太字など、Markdownで自由に構成できます。分量は多めでも大丈夫です。）

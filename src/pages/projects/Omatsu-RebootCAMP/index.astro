@@ -41,8 +41,14 @@ const steps = [
 ---
 
 <OmatsuLayout
-  title="地域と人と繋がり、お祭りを未来へ繋ぐプログラム"
+  title="愛媛県西条市でお祭りの担い手を募集"
+  description="OMATSU-Reboot CAMPは、愛媛県西条市でお祭りの担い手を募集している自治会・太鼓台・屋台の運営組織と、お祭りに関わってみたい20歳以上の方をつなぐプログラムです。西条祭り（伊曽乃神社祭礼・飯積神社祭礼）に担い手として参加できます。参加費無料・経験不問。"
   current="top"
+  breadcrumbs={[
+    { name: 'ホーム', url: '/' },
+    { name: '協働とプロジェクト', url: '/projects' },
+    { name: 'OMATSU-Reboot CAMP', url: BASE },
+  ]}
 >
   <!-- ===== ヒーロー ===== -->
   <section class="hero">
@@ -52,6 +58,15 @@ const steps = [
         お祭りを未来へ繋ぐプログラム
       </h1>
       <p class="hero-brand">OMATSU-RebootCAMP</p>
+      <!-- 検索エンジンと生成AIが最初に読む部分。
+           「誰の・どこの・何を解決するか」を冒頭に置く（AEO対策）。 -->
+      <p class="hero-summary">
+        OMATSU-Reboot CAMPは、<strong>愛媛県西条市</strong>で
+        <strong>お祭りの担い手を募集している自治会・太鼓台・屋台の運営組織</strong>と、
+        <strong>お祭りに関わってみたい20歳以上の方</strong>をつなぐプログラムです。
+        西条祭り（伊曽乃神社祭礼・飯積神社祭礼）などに、見る側ではなく担い手として参加できます。
+        参加費は無料、スキルや経歴は問いません。主催は公益財団法人えひめ西条つながり基金です。
+      </p>
     </div>
 
     <div class="hero-visual om-appear">
@@ -462,6 +477,21 @@ const steps = [
     letter-spacing: 0.2em;
     color: var(--om-blue);
     margin-top: 20px;
+  }
+
+  .hero-summary {
+    max-width: 760px;
+    margin: 24px auto 0;
+    font-size: 15px;
+    line-height: 2;
+    letter-spacing: 0.02em;
+    color: var(--om-text);
+    text-align: left;
+  }
+
+  .hero-summary strong {
+    font-weight: 700;
+    color: var(--om-black);
   }
 
   .hero-visual {

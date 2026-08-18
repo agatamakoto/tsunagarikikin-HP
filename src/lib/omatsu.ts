@@ -173,6 +173,8 @@ export interface Sponsor {
   logo?: string;
   /** 企業サイトのURL */
   url?: string;
+  /** リンクの表示名。省略時は「公式サイト」 */
+  linkLabel?: '公式サイト' | '公式SNS' | '関連サイト';
   /** インタビュー記事のslug（例: 'yada-denki'）。interviews 配列と対応させる */
   interviewSlug?: string;
 }
@@ -193,6 +195,7 @@ export const sponsors: Sponsor[] = [
     interviewSlug: 'yada-denki',
     logo: '/images/omatsu/sponsors/yada-denki.jpg',
     url: 'https://www.kensetumap.com/company/445120/',
+    linkLabel: '関連サイト',
   },
   {
     name: '㈲東新技研さま',
@@ -219,12 +222,14 @@ export const sponsors: Sponsor[] = [
     tier: 'bronze',
     logo: '/images/omatsu/sponsors/liberty.jpg',
     url: 'https://www.facebook.com/dressyliberty',
+    linkLabel: '公式SNS',
   },
   {
     name: '㈲伊予提灯工房さま',
     tier: 'bronze',
     logo: '/images/omatsu/sponsors/iyo-chochin.jpg',
     url: 'https://www.instagram.com/iyochochin/',
+    linkLabel: '公式SNS',
   },
   {
     name: 'うちだ美容室さま',
@@ -238,8 +243,13 @@ export const sponsors: Sponsor[] = [
     logo: '/images/omatsu/sponsors/kinrin.png',
     url: 'http://kinrin.jp/',
   },
-  // ※公式サイトのURLが未確認のため、リンクなしで掲載しています
-  { name: '㈱三河屋さま', tier: 'bronze', logo: '/images/omatsu/sponsors/mikawaya.png' },
+  {
+    name: '㈱三河屋さま',
+    tier: 'bronze',
+    logo: '/images/omatsu/sponsors/mikawaya.png',
+    url: 'https://www.instagram.com/mikawaya1769/',
+    linkLabel: '公式SNS',
+  },
   {
     name: '㈱三崎建築設計さま',
     tier: 'bronze',
@@ -263,12 +273,14 @@ export const sponsors: Sponsor[] = [
     tier: 'bronze',
     logo: '/images/omatsu/sponsors/kudo-sekiyu.jpg',
     url: 'https://eneos-ss.com/search/ss/pc/detail.php?SCODE=680212',
+    linkLabel: '関連サイト',
   },
   {
     name: '高橋畳センターさま',
     tier: 'bronze',
     logo: '/images/omatsu/sponsors/takahashi-tatami.png',
     url: 'https://saijo.mypl.net/shop/00000375527/',
+    linkLabel: '関連サイト',
   },
   {
     name: '樋口商店さま',
@@ -293,6 +305,7 @@ export const sponsors: Sponsor[] = [
     tier: 'bronze',
     logo: '/images/omatsu/sponsors/yomiuri-iyosaijo.jpg',
     url: 'https://www.mapion.co.jp/phonebook/M02031/38206/23830209628/',
+    linkLabel: '関連サイト',
   },
 ];
 

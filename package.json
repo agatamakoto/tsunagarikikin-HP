@@ -19,6 +19,7 @@
     "astro": "^6.1.9"
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
     "microcms-js-sdk": "^3.4.0"
   }
 }

@@ -1,7 +1,54 @@
 ---
 // src/pages/projects/Omatsu-RebootCAMP/about.astro
 import OmatsuLayout from '../../../layouts/OmatsuLayout.astro';
-import { BASE, PROGRAM_IMAGE } from '../../../lib/omatsu';
+import { BASE, CONTACT_EMAIL, PROGRAM_IMAGE } from '../../../lib/omatsu';
+
+// よくある質問。検索結果や生成AIに引用されやすいよう、
+// 一問一答で完結させ、構造化データ（FAQPage）としても出力する。
+const faqs = [
+  {
+    q: 'お祭りに参加した経験がなくても参加できますか？',
+    a: 'できます。参加者の多くははじめての方です。スキルや経歴は問いません。当日は地域の方が案内しますので、指示に従って安全にご参加いただけます。',
+  },
+  {
+    q: '参加費はかかりますか？',
+    a: 'プログラムへの参加費は無料です。ただし現地までの交通費・宿泊費は自己負担となります。また、お祭りによっては保険代や衣装代などの実費が必要な場合がありますので、各プロジェクトのページでご確認ください。',
+  },
+  {
+    q: '何歳から参加できますか？',
+    a: '20歳以上の方が対象です。上限はありません。地域のお祭りや伝統文化に関心のある方、第二の故郷と呼べる地域とのつながりを得たい方を歓迎しています。',
+  },
+  {
+    q: '愛媛県外に住んでいても参加できますか？',
+    a: '参加できます。本プログラムは地域外の人材とお祭りをつなぐことを目的としています。宿泊先は事務局からご紹介できますので、お気軽にご相談ください。',
+  },
+  {
+    q: 'どのお祭りに参加できますか？',
+    a: '愛媛県西条市の西条祭り（伊曽乃神社祭礼・飯積神社祭礼）を中心に、担い手を募集している自治会・太鼓台・屋台の運営組織とマッチングします。募集中のお祭りはプロジェクト一覧でご確認いただけます。',
+  },
+  {
+    q: '申し込んでから参加までの流れを教えてください。',
+    a: 'エントリーフォームからお申し込みいただいたあと、事務局よりオンライン面談をご案内します。その後、地域の運営メンバーとの顔合わせを経て、お祭り当日にご参加いただきます。終了後には振り返りをオンラインで実施します。',
+  },
+  {
+    q: '応募すれば必ず参加できますか？',
+    a: '応募多数の場合は事務局や地域側で選考を行います。また、本事業の趣旨と申込者のご希望が著しく異なる場合は、参加をお断りすることがあります。',
+  },
+  {
+    q: '受け入れ側として参加したいのですが、相談できますか？',
+    a: '歓迎します。担い手を増やしたい自治会・お祭り運営組織の皆さまからのご相談を随時お受けしています。事務局（' + CONTACT_EMAIL + '）までご連絡ください。',
+  },
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
 
 const targets = [
   { icon: 'person_outline', text: '20歳以上の方\n（スキル・経歴不問）' },
@@ -54,6 +101,12 @@ const flow = [
   title="プログラムについて"
   description="OMATSU-Reboot CAMPは、お祭りの担い手を増やしたい自治会・運営組織と、お祭りに関わってみたい人をマッチングする愛媛県のプログラムです。対象者・参加条件・定員・参加費・プログラムの流れをご案内します。"
   current="about"
+  breadcrumbs={[
+    { name: 'ホーム', url: '/' },
+    { name: '協働とプロジェクト', url: '/projects' },
+    { name: 'OMATSU-Reboot CAMP', url: BASE },
+    { name: 'プログラムについて', url: '/projects/Omatsu-RebootCAMP/about' },
+  ]}
 >
   <div class="om-page-head">
     <div class="om-container">
@@ -182,8 +235,28 @@ const flow = [
     </div>
   </section>
 
+  <!-- ===== よくある質問 ===== -->
+  <section class="block" id="faq">
+    <div class="om-container">
+      <h2 class="block-title om-appear">よくある質問</h2>
+
+      <dl class="faq-list om-appear">
+        {
+          faqs.map((f) => (
+            <div class="faq">
+              <dt>{f.q}</dt>
+              <dd>{f.a}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+
   <!-- ===== CTA ===== -->
-  <section class="block">
+  <section class="block is-gray">
     <div class="om-container cta om-appear">
       <p class="cta-text">参加したいお祭りを探してみませんか？</p>
       <div class="cta-links">
@@ -403,6 +476,57 @@ const flow = [
     position: absolute;
     left: 0;
     color: var(--om-blue);
+  }
+
+  /* ===== よくある質問 ===== */
+  .faq-list {
+    max-width: 880px;
+    margin: 48px auto 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .faq {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 28px 4px;
+  }
+
+  .faq dt {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.7;
+    color: var(--om-black);
+    padding-left: 34px;
+    position: relative;
+  }
+
+  .faq dt::before {
+    content: 'Q';
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-family: var(--om-font-en);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--om-blue);
+  }
+
+  .faq dd {
+    font-size: 16px;
+    line-height: 2;
+    margin-top: 14px;
+    padding-left: 34px;
+    position: relative;
+  }
+
+  .faq dd::before {
+    content: 'A';
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-family: var(--om-font-en);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--om-gray);
   }
 
   /* ===== CTA ===== */

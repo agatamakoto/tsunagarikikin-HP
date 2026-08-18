@@ -6,7 +6,7 @@ thumbnail: /images/supporters/sample-2-thumb.svg
 interviewees: 工場長 鈴木 一郎
 url: https://example.com
 order: 2
-published: true
+published: false  # ← 公開するとき true に戻す
 ---
 
 （このファイルは記入例です。実際の企業に合わせて書き換えてください。）

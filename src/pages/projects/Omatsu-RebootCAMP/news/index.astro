@@ -10,6 +10,12 @@ const sorted = [...news].sort((a, b) => (a.date < b.date ? 1 : -1));
   title="お知らせ"
   description="OMATSU-Reboot CAMPからのお知らせ・募集情報の一覧です。"
   current="news"
+  breadcrumbs={[
+    { name: 'ホーム', url: '/' },
+    { name: '協働とプロジェクト', url: '/projects' },
+    { name: 'OMATSU-Reboot CAMP', url: BASE },
+    { name: 'お知らせ', url: '/projects/Omatsu-RebootCAMP/news' },
+  ]}
 >
   <div class="om-page-head">
     <div class="om-container">

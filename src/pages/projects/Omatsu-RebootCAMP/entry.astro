@@ -11,6 +11,12 @@ const formReady = ENTRY_ENDPOINT !== '';
   title="エントリー"
   description="OMATSU-Reboot CAMPへの参加申込フォームです。参加したいお祭りを選び、必要事項をご記入のうえ送信してください。エントリー後、事務局よりオンライン面談をご案内します。"
   current="entry"
+  breadcrumbs={[
+    { name: 'ホーム', url: '/' },
+    { name: '協働とプロジェクト', url: '/projects' },
+    { name: 'OMATSU-Reboot CAMP', url: BASE },
+    { name: 'エントリー', url: '/projects/Omatsu-RebootCAMP/entry' },
+  ]}
 >
   <div class="om-page-head">
     <div class="om-container">
@@ -177,7 +183,7 @@ const formReady = ENTRY_ENDPOINT !== '';
           </div>
         </div>
 
-        <p class="form-error" id="form-error" hidden></p>
+        <p class="form-error" id="form-error" role="alert" aria-live="assertive" hidden></p>
 
         <div class="submit-wrap">
           <button type="submit" class="om-entry-btn is-lg" id="submit-btn" disabled={!formReady}>
@@ -258,14 +264,51 @@ const formReady = ENTRY_ENDPOINT !== '';
       }
     }
 
+    // 未入力の項目を画面上に明示する。
+    // ブラウザ標準の吹き出しだけだと、原因の項目が画面外にあるときに
+    // 「押しても何も起きない」ように見えてしまうため。
+    function showMissing() {
+      var fields = form.querySelectorAll('input, select, textarea');
+      var bad = [];
+      var first = null;
+      for (var i = 0; i < fields.length; i++) {
+        var el = fields[i];
+        if (el.checkValidity()) {
+          el.classList.remove('is-error');
+          continue;
+        }
+        el.classList.add('is-error');
+        if (!first) first = el;
+        var label = form.querySelector('label[for="' + el.id + '"]');
+        var text = label ? label.textContent.replace('必須', '').trim() : el.name;
+        if (el.id === 'agree') text = '個人情報の取り扱いへの同意';
+        if (bad.indexOf(text) === -1) bad.push(text);
+      }
+      if (!bad.length) return;
+      errorBox.textContent = '次の項目をご確認ください：' + bad.join('／');
+      errorBox.hidden = false;
+      errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (first) {
+        try {
+          first.focus({ preventScroll: true });
+        } catch (err) {
+          /* focus に失敗しても続行する */
+        }
+      }
+    }
+
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       errorBox.hidden = true;
 
       if (!form.checkValidity()) {
-        form.reportValidity();
+        showMissing();
         return;
       }
+
+      Array.prototype.forEach.call(form.querySelectorAll('.is-error'), function (el) {
+        el.classList.remove('is-error');
+      });
 
       btn.disabled = true;
       btn.querySelector('span').textContent = '送信中...';
@@ -394,6 +437,19 @@ const formReady = ENTRY_ENDPOINT !== '';
     outline: none;
     border-color: var(--om-blue);
     box-shadow: 0 0 0 3px rgba(31, 150, 205, 0.15);
+  }
+
+  /* 未入力の項目を赤枠で示す */
+  .field input.is-error,
+  .field select.is-error,
+  .field textarea.is-error {
+    border-color: #c0392b;
+    background: rgba(192, 57, 43, 0.04);
+  }
+
+  .agree input.is-error {
+    outline: 2px solid #c0392b;
+    outline-offset: 3px;
   }
 
   .help {
