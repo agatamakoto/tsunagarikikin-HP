@@ -1,0 +1,75 @@
+---
+// ============================================================
+// 参加自治会（お祭り）記事のひな形
+//
+// 【使い方】
+// 1. src/lib/omatsu.ts の projects 配列に1件足す
+//    （slug / お祭り名 / 自治会名 / キャッチコピー / 日程 / 締切 / サムネイル など）
+// 2. このファイルをコピーして、同じフォルダに <slug>.astro という名前で保存する
+//    例: sample-jichikai.astro
+//    → 公開URL: /projects/Omatsu-RebootCAMP/project/sample-jichikai
+//    ※ ファイル名と slug は必ず一致させてください
+//    ※ 先頭が「_」のファイルはページとして公開されません
+// 3. slug を書き換え、--- より下の HTML を自由に書く
+//
+// 見出しやテーブルの見た目は自動で整うので、CSSを書く必要はありません。
+// 本文で使えるタグ: h2 / h3 / p / ul / ol / table / blockquote / figure / img
+//
+// 写真は public/images/omatsu/project/<slug>/ に置いて
+// <img src="/images/omatsu/project/<slug>/01.jpg" alt="説明" loading="lazy" />
+// のように書きます。
+// ============================================================
+import OmatsuArticleLayout from '../../../../layouts/OmatsuArticleLayout.astro';
+---
+
+<OmatsuArticleLayout
+  slug="ここに slug"
+  heroImage="/images/omatsu/project/ここに slug/01.jpg"
+  heroAlt="メイン写真の説明"
+  capacity="1〜3名程度"
+  fee="無料（現地までの交通費・宿泊費は自己負担）"
+  outfit="服装・持ち物があれば書きます（省略可）"
+>
+  <h2>地域とお祭りについて</h2>
+  <p>ここにお祭りの由来や見どころ、地域にとっての意味を書きます。</p>
+
+  <figure>
+    <img src="/images/omatsu/project/ここに slug/02.jpg" alt="写真の説明" loading="lazy" />
+    <figcaption>写真のキャプション</figcaption>
+  </figure>
+
+  <h2>参加可能なお祭りの日程について</h2>
+
+  <ul>
+    <li>日時：2026年10月〇日（〇）</li>
+    <li>参加お祭り：〇〇神社祭礼</li>
+  </ul>
+
+  <table>
+    <tbody>
+      <tr>
+        <th>2:30</th>
+        <td>集合・出発</td>
+      </tr>
+      <tr>
+        <th>17:00</th>
+        <td>宮入り</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>事前準備・組み立てについて</h3>
+  <ul>
+    <li>準備日程：〇月〇日（〇）</li>
+    <li>場所：〇〇</li>
+  </ul>
+
+  <h2>地域側メンバーの紹介</h2>
+
+  <figure>
+    <img src="/images/omatsu/project/ここに slug/03.jpg" alt="〇〇さん" loading="lazy" />
+    <figcaption>〇〇 〇〇さん／〇〇自治会 団長</figcaption>
+  </figure>
+
+  <p>地域の方からのメッセージをここに書きます。</p>
+</OmatsuArticleLayout>

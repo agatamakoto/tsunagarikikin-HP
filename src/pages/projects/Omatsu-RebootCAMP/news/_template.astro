@@ -1,0 +1,36 @@
+---
+// ============================================================
+// お知らせ記事のひな形
+//
+// 【使い方】
+// 1. このファイルをコピーして、同じフォルダに <slug>.astro という名前で保存する
+//    例: 2026-09-01-boshu-kaishi.astro
+//        → /projects/Omatsu-RebootCAMP/news/2026-09-01-boshu-kaishi
+// 2. date / title / category を書き換える
+// 3. --- より下の HTML を自由に書く
+// 4. src/lib/omatsu.ts の news 配列に1行足すと、一覧に出ます
+// ============================================================
+import OmatsuNewsLayout from '../../../../layouts/OmatsuNewsLayout.astro';
+---
+
+<OmatsuNewsLayout
+  title="2026年度の参加者募集を開始しました"
+  date="2026-09-01"
+  category="お知らせ"
+>
+  <p>
+    ここに本文を書きます。段落は &lt;p&gt; で囲みます。
+  </p>
+
+  <h2>見出し</h2>
+  <p>本文の続きです。</p>
+
+  <ul>
+    <li>箇条書きはこう書きます</li>
+    <li>2つめの項目</li>
+  </ul>
+
+  <p>
+    詳しくは<a href="/projects/Omatsu-RebootCAMP/project">プロジェクト一覧</a>をご覧ください。
+  </p>
+</OmatsuNewsLayout>

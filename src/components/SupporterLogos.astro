@@ -1,0 +1,76 @@
+---
+// 法人サポーターのロゴを無限ループで流すスライダー
+// ロゴをクリックすると /donation/corporate 内のその企業の紹介へスクロール
+import { getCollection } from 'astro:content';
+
+const supporters = (await getCollection('supporters'))
+  .filter((s) => s.data.published)
+  .sort((a, b) => a.data.order - b.data.order);
+
+// シームレスなループのため2セット並べる
+const loop = supporters.length > 0 ? [...supporters, ...supporters] : [];
+---
+
+{supporters.length > 0 && (
+  <div class="logo-marquee">
+    <div class="logo-track">
+      {loop.map((s) => (
+        <a
+          class="logo-item"
+          href={`/supporters/${s.id}`}
+          aria-label={s.data.name}
+          title={s.data.name}
+        >
+          <img src={s.data.logo} alt={s.data.name} loading="lazy" />
+        </a>
+      ))}
+    </div>
+  </div>
+)}
+
+<style>
+  .logo-marquee {
+    overflow: hidden;
+    width: 100%;
+    padding: 10px 0;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  }
+  .logo-track {
+    display: flex;
+    width: max-content;
+    align-items: center;
+    animation: logo-scroll 25s linear infinite;
+  }
+  .logo-marquee:hover .logo-track { animation-play-state: paused; }
+
+  .logo-item {
+    flex: 0 0 auto;
+    margin-right: 56px; /* gapではなくmarginで、2セットの幅を正確に揃える（シームレスループ） */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 64px;
+    opacity: 0.92;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .logo-item:hover { opacity: 1; transform: translateY(-2px); }
+  .logo-item img {
+    height: 54px;      /* 明示的な高さ（SVGでも0サイズにならないように） */
+    width: auto;
+    max-width: 200px;
+    object-fit: contain;
+    display: block;
+  }
+
+  @keyframes logo-scroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); } /* 2セットのうち1セット分だけ動かす */
+  }
+
+  /* アニメーションを控える設定の環境では折り返し表示 */
+  @media (prefers-reduced-motion: reduce) {
+    .logo-track { animation: none; flex-wrap: wrap; justify-content: center; row-gap: 16px; }
+    .logo-item { filter: none; opacity: 1; }
+  }
+</style>

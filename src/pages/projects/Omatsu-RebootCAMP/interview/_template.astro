@@ -1,0 +1,45 @@
+---
+// ============================================================
+// 協賛企業インタビュー記事のひな形
+//
+// 【使い方】
+// 1. このファイルをコピーして、同じフォルダに <slug>.astro という名前で保存する
+//    例: yada-denki.astro
+//        → /projects/Omatsu-RebootCAMP/interview/yada-denki
+// 2. src/lib/omatsu.ts の interviews 配列に、同じ slug で1件足す
+//    （企業名・タイトル・サムネイルはそちらで管理します）
+// 3. --- より下の HTML を自由に書く
+//
+// 質問は <h3>、回答は <p> で書くと自動でインタビュー体裁になります。
+// 強調したい一言は <blockquote> で大きく見せられます。
+// ============================================================
+import OmatsuInterviewLayout from '../../../../layouts/OmatsuInterviewLayout.astro';
+---
+
+<OmatsuInterviewLayout
+  slug="ここに slug"
+  lead="記事のリード文を2〜3行で書きます。どんな方に、何を聞いたのかが分かるように。"
+>
+  <h3>まず、御社の事業について教えてください。</h3>
+  <p>ここに回答が入ります。</p>
+
+  <h3>OMATSU-RebootCAMPに協賛しようと思われたきっかけは何でしたか。</h3>
+  <p>ここに回答が入ります。</p>
+
+  <blockquote>
+    <p>印象的な一言は、この引用ブロックで大きく見せられます。</p>
+  </blockquote>
+
+  <h3>地域のお祭りに、どんな価値を感じていますか。</h3>
+  <p>ここに回答が入ります。</p>
+
+  <figure>
+    <div class="om-ph" style="aspect-ratio: 16 / 9;">
+      <span>写真<span class="note">記事中の写真</span></span>
+    </div>
+    <figcaption>写真のキャプションをここに書きます</figcaption>
+  </figure>
+
+  <h3>これから参加される方へメッセージをお願いします。</h3>
+  <p>ここに回答が入ります。</p>
+</OmatsuInterviewLayout>

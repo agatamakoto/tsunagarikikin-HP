@@ -1,0 +1,425 @@
+---
+// src/layouts/OmatsuArticleLayout.astro
+// 参加自治会（お祭り）の記事ページ用レイアウト。
+// 本文は <slot /> にそのまま HTML を書けばよい。
+import OmatsuLayout from './OmatsuLayout.astro';
+import { BASE, entryLabel, projects } from '../lib/omatsu';
+
+interface Props {
+  /** src/lib/omatsu.ts の projects に登録した slug */
+  slug: string;
+  /** 記事のメイン写真。未設定なら仮枠 */
+  heroImage?: string;
+  /** メイン写真の説明（alt） */
+  heroAlt?: string;
+  /** 募集人数 */
+  capacity?: string;
+  /** 参加費（記載がなければ「無料」） */
+  fee?: string;
+  /** 服装・持ち物など（省略可） */
+  outfit?: string;
+  /** 検索結果に出る説明文。未指定なら summary を使う */
+  description?: string;
+}
+
+const { slug, heroImage, heroAlt, capacity, fee, outfit, description } = Astro.props;
+
+const info = projects.find((p) => p.slug === slug);
+if (!info) {
+  throw new Error(
+    `お祭り "${slug}" が src/lib/omatsu.ts の projects に登録されていません。`
+  );
+}
+
+const { title, organization, catchcopy, area, period, deadline, summary, status } = info;
+const headline = catchcopy || title;
+
+const specs = [
+  { label: 'お祭り', value: title },
+  { label: '主催', value: organization },
+  { label: '開催地', value: area },
+  { label: '開催日程', value: period },
+  deadline ? { label: '応募締切', value: deadline } : null,
+  capacity ? { label: '募集人数', value: capacity } : null,
+  { label: '参加費', value: fee || '無料（現地までの交通費・宿泊費は自己負担）' },
+  outfit ? { label: '服装・持ち物', value: outfit } : null,
+].filter(Boolean) as { label: string; value: string }[];
+---
+
+<OmatsuLayout
+  title={headline}
+  description={description || summary || `${organization}が奉納する${title}の担い手を募集しています。`}
+  current="project"
+>
+  <div class="om-page-head">
+    <div class="om-container">
+      <div class="om-sec-head">
+        <span class="en">PROJECT</span>
+        <span class="ja">募集中のお祭り</span>
+        <span class="rule"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="om-container">
+    <nav class="om-breadcrumb">
+      <a href="/">ホーム</a>
+      <span>・</span>
+      <a href={BASE}>OMATSU-RebootCAMP</a>
+      <span>・</span>
+      <a href={`${BASE}/project`}>プロジェクト一覧</a>
+      <span>・</span>
+      <span>{organization}</span>
+    </nav>
+  </div>
+
+  <article class="article">
+    <div class="om-container">
+      <header class="article-head om-appear">
+        <span class={`status is-${status}`}>{status}</span>
+        <h1>{headline}</h1>
+        <p class="org">{organization}／{title}</p>
+      </header>
+
+      <div class="article-hero om-appear">
+        {
+          heroImage ? (
+            <img src={heroImage} alt={heroAlt || `${organization}の様子`} />
+          ) : (
+            <div class="om-ph" style="aspect-ratio: 16 / 9;">
+              <span>
+                メイン写真
+                <span class="note">{organization}（横長・1600×900 程度）</span>
+              </span>
+            </div>
+          )
+        }
+      </div>
+
+      <dl class="spec-table om-appear">
+        {
+          specs.map((s) => (
+            <div class="spec-row">
+              <dt>{s.label}</dt>
+              <dd>{s.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      <div class="article-body om-appear">
+        <slot />
+      </div>
+
+      <div class="article-cta om-appear">
+        <p class="cta-lead">このお祭りに参加しませんか？</p>
+        <a
+          href={`${BASE}/entry?project=${encodeURIComponent(entryLabel({ organization, title }))}`}
+          class="om-entry-btn is-lg"
+        >
+          <span>このお祭りに参加する</span>
+          <span class="material-icons-outlined">mail_outline</span>
+        </a>
+        <p class="cta-note">
+          エントリー後、事務局よりオンライン面談のご案内をお送りします。
+        </p>
+      </div>
+
+      <div class="article-back om-appear">
+        <a href={`${BASE}/project`} class="om-arrow-link is-sm">
+          <span class="circle material-icons-outlined">trending_flat</span>
+          <span class="label">プロジェクト一覧へもどる</span>
+        </a>
+      </div>
+    </div>
+  </article>
+</OmatsuLayout>
+
+<style>
+  .article {
+    padding: 32px 0 120px;
+  }
+
+  .article-head {
+    text-align: center;
+    max-width: 880px;
+    margin: 0 auto 40px;
+  }
+
+  .status {
+    display: inline-block;
+    padding: 6px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--om-white);
+    background: var(--om-blue);
+  }
+
+  .status.is-募集終了 {
+    background: var(--om-gray);
+  }
+
+  .status.is-募集準備中 {
+    background: var(--om-black);
+  }
+
+  .article-head h1 {
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1.5;
+    letter-spacing: 0.05em;
+    color: var(--om-black);
+    margin-top: 20px;
+  }
+
+  .article-head .org {
+    font-size: 16px;
+    color: var(--om-gray);
+    margin-top: 12px;
+    letter-spacing: 0.1em;
+  }
+
+  .article-hero {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .article-hero img {
+    width: 100%;
+    height: auto;
+  }
+
+  /* ===== 概要テーブル ===== */
+  .spec-table {
+    max-width: 880px;
+    margin: 56px auto 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .spec-row {
+    display: grid;
+    grid-template-columns: 160px minmax(0, 1fr);
+    gap: 24px;
+    padding: 20px 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .spec-row dt {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--om-blue);
+  }
+
+  .spec-row dd {
+    font-size: 16px;
+    line-height: 1.8;
+  }
+
+  /* ===== 本文（記事側で書いた HTML にかかるスタイル） ===== */
+  .article-body {
+    max-width: 880px;
+    margin: 72px auto 0;
+    font-size: 16px;
+    line-height: 2;
+  }
+
+  .article-body :global(h2) {
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.6;
+    color: var(--om-black);
+    margin: 64px 0 24px;
+    padding-left: 16px;
+    border-left: 5px solid var(--om-blue);
+  }
+
+  .article-body :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .article-body :global(h3) {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.6;
+    color: var(--om-blue);
+    margin: 40px 0 16px;
+  }
+
+  .article-body :global(p) {
+    margin-bottom: 24px;
+  }
+
+  .article-body :global(ul),
+  .article-body :global(ol) {
+    margin: 0 0 24px;
+    padding-left: 4px;
+  }
+
+  .article-body :global(li) {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 8px;
+  }
+
+  .article-body :global(ul li)::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 14px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--om-blue);
+  }
+
+  .article-body :global(ol) {
+    counter-reset: om-ol;
+  }
+
+  .article-body :global(ol li) {
+    counter-increment: om-ol;
+  }
+
+  .article-body :global(ol li)::before {
+    content: counter(om-ol) '.';
+    position: absolute;
+    left: 0;
+    color: var(--om-blue);
+    font-weight: 700;
+  }
+
+  .article-body :global(img) {
+    margin: 32px 0;
+  }
+
+  .article-body :global(figure) {
+    margin: 40px 0;
+  }
+
+  .article-body :global(figcaption) {
+    font-size: 13px;
+    color: var(--om-gray);
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  .article-body :global(blockquote) {
+    margin: 32px 0;
+    padding: 24px 28px;
+    background: var(--om-bg);
+    border-left: 4px solid var(--om-blue);
+    font-size: 16px;
+  }
+
+  .article-body :global(blockquote p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .article-body :global(a) {
+    color: var(--om-blue);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .article-body :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 32px 0;
+    font-size: 15px;
+  }
+
+  .article-body :global(th),
+  .article-body :global(td) {
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    padding: 12px 16px;
+    text-align: left;
+  }
+
+  .article-body :global(th) {
+    background: var(--om-bg);
+    font-weight: 700;
+  }
+
+  /* 写真の仮枠を本文でも使えるように */
+  .article-body :global(.om-ph) {
+    margin: 32px 0;
+  }
+
+  /* ===== CTA ===== */
+  .article-cta {
+    max-width: 880px;
+    margin: 88px auto 0;
+    padding: 56px 24px;
+    background: var(--om-bg);
+    text-align: center;
+  }
+
+  .cta-lead {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--om-black);
+    margin-bottom: 28px;
+  }
+
+  .om-entry-btn.is-lg {
+    height: 64px;
+    min-width: 300px;
+    font-size: 17px;
+  }
+
+  .cta-note {
+    font-size: 13px;
+    color: var(--om-gray);
+    margin-top: 20px;
+  }
+
+  .article-back {
+    max-width: 880px;
+    margin: 56px auto 0;
+  }
+
+  @media (max-width: 900px) {
+    .article {
+      padding: 24px 0 72px;
+    }
+
+    .article-head h1 {
+      font-size: 26px;
+    }
+
+    .spec-table {
+      margin-top: 40px;
+    }
+
+    .spec-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+      padding: 16px 4px;
+    }
+
+    .article-body {
+      margin-top: 48px;
+    }
+
+    .article-body :global(h2) {
+      font-size: 21px;
+      margin: 48px 0 20px;
+    }
+
+    .article-cta {
+      margin-top: 56px;
+      padding: 40px 20px;
+    }
+
+    .cta-lead {
+      font-size: 19px;
+    }
+
+    .om-entry-btn.is-lg {
+      min-width: 0;
+      width: 100%;
+    }
+  }
+</style>

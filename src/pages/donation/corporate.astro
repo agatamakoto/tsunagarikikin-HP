@@ -3,6 +3,12 @@
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import SupporterLogos from '../../components/SupporterLogos.astro';
+import { getCollection } from 'astro:content';
+
+const supporters = (await getCollection('supporters'))
+  .filter((s) => s.data.published)
+  .sort((a, b) => a.data.order - b.data.order);
 ---
 
 <Layout title="法人サポーター制度" description="えひめ西条つながり基金の法人サポーター制度。CSR・SDGs活動として、地域課題解決に直接貢献できる仕組みです。">
@@ -15,6 +21,13 @@ import Footer from '../../components/Footer.astro';
       <h1>法人サポーター制度<br>地域と共に、最優の未来を育む</h1>
       <p>えひめ西条つながり基金への法人サポートは、CSR・SDGs活動の一環として、<br>最優の地域課題解決に直接貢献できる仕組みです。</p>
     </div>
+
+    {supporters.length > 0 && (
+      <section class="supporter-band">
+        <p class="supporter-band-label">ご支援いただいている法人サポーター</p>
+        <SupporterLogos />
+      </section>
+    )}
 
     <div class="corp-container">
 
@@ -161,6 +174,29 @@ import Footer from '../../components/Footer.astro';
           </li>
         </ul>
       </section>
+
+      <!-- 法人サポーターインタビュー（カード） -->
+      {supporters.length > 0 && (
+        <section class="corp-section">
+          <h2 class="section-title">法人サポーターインタビュー</h2>
+          <div class="interview-cards">
+            {supporters.map((s) => (
+              <a class="interview-card" href={`/supporters/${s.id}`}>
+                <div class="interview-card-thumb">
+                  {s.data.thumbnail
+                    ? <img src={s.data.thumbnail} alt={s.data.name} />
+                    : <img src={s.data.logo} alt={s.data.name} class="thumb-logo-only" />}
+                </div>
+                <div class="interview-card-body">
+                  <p class="interview-card-company">{s.data.name}</p>
+                  {s.data.title && <p class="interview-card-title">{s.data.title}</p>}
+                  {s.data.interviewees && <p class="interview-card-people">{s.data.interviewees}</p>}
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
 
       <!-- CTA -->
       <section class="cta-section">
@@ -558,5 +594,56 @@ import Footer from '../../components/Footer.astro';
 
   @media (max-width: 400px) {
     .why-grid { grid-template-columns: 1fr; }
+  }
+
+  /* 法人サポーター ロゴ帯 */
+  .supporter-band {
+    background: #f4fafc;
+    border-top: 1px solid #e2eef2;
+    border-bottom: 1px solid #e2eef2;
+    padding: 22px 0 18px;
+    margin: 0;
+  }
+  .supporter-band-label {
+    text-align: center;
+    font-size: 0.82rem;
+    color: #5a7080;
+    letter-spacing: 0.06em;
+    margin: 0 0 8px 0;
+  }
+
+  /* 法人サポーター インタビューカード */
+  .interview-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+  }
+  .interview-card {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid #d0e8f0;
+    border-radius: 14px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .interview-card:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(26,53,71,0.12); }
+  .interview-card-thumb {
+    aspect-ratio: 16 / 9;
+    background: #eef4f6;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .interview-card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .interview-card-thumb .thumb-logo-only { width: auto; height: auto; max-width: 70%; max-height: 60%; object-fit: contain; }
+  .interview-card-body { padding: 16px 18px 20px; }
+  .interview-card-company { font-size: 0.82rem; color: #2a8aaa; font-weight: 700; margin: 0 0 6px; }
+  .interview-card-title { font-size: 1rem; line-height: 1.55; color: #1a3547; font-weight: 700; margin: 0 0 10px; }
+  .interview-card-people { font-size: 0.8rem; color: #5a7080; margin: 0; }
+
+  @media (max-width: 480px) {
+    .interview-cards { grid-template-columns: 1fr; }
   }
 </style>

@@ -1,0 +1,192 @@
+---
+// src/layouts/OmatsuNewsLayout.astro
+// お知らせ記事用レイアウト。本文は <slot /> に HTML をそのまま書く。
+import OmatsuLayout from './OmatsuLayout.astro';
+import { BASE, formatDate } from '../lib/omatsu';
+
+interface Props {
+  title: string;
+  /** YYYY-MM-DD */
+  date: string;
+  category?: string;
+  description?: string;
+}
+
+const { title, date, category, description } = Astro.props;
+---
+
+<OmatsuLayout title={title} description={description} current="news">
+  <div class="om-page-head">
+    <div class="om-container">
+      <div class="om-sec-head">
+        <span class="en">NEWS</span>
+        <span class="ja">お知らせ</span>
+        <span class="rule"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="om-container">
+    <nav class="om-breadcrumb">
+      <a href="/">ホーム</a>
+      <span>・</span>
+      <a href={BASE}>OMATSU-RebootCAMP</a>
+      <span>・</span>
+      <a href={`${BASE}/news`}>お知らせ</a>
+      <span>・</span>
+      <span>{title}</span>
+    </nav>
+  </div>
+
+  <article class="news-article">
+    <div class="om-container">
+      <header class="head om-appear">
+        <div class="meta">
+          <time datetime={date}>{formatDate(date)}</time>
+          {category && <span class="category">{category}</span>}
+        </div>
+        <h1>{title}</h1>
+      </header>
+
+      <div class="body om-appear">
+        <slot />
+      </div>
+
+      <div class="back om-appear">
+        <a href={`${BASE}/news`} class="om-arrow-link is-sm">
+          <span class="circle material-icons-outlined">trending_flat</span>
+          <span class="label">お知らせ一覧へもどる</span>
+        </a>
+      </div>
+    </div>
+  </article>
+</OmatsuLayout>
+
+<style>
+  .news-article {
+    padding: 32px 0 120px;
+  }
+
+  .head {
+    max-width: 880px;
+    margin: 0 auto 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .meta time {
+    font-family: var(--om-font-en);
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    color: var(--om-gray);
+  }
+
+  .category {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--om-blue);
+    border: 1px solid var(--om-blue);
+    padding: 2px 10px;
+  }
+
+  h1 {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.6;
+    letter-spacing: 0.04em;
+    color: var(--om-black);
+    margin-top: 16px;
+  }
+
+  .body {
+    max-width: 880px;
+    margin: 0 auto;
+    font-size: 16px;
+    line-height: 2;
+  }
+
+  .body :global(h2) {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.6;
+    color: var(--om-black);
+    margin: 56px 0 20px;
+    padding-left: 16px;
+    border-left: 5px solid var(--om-blue);
+  }
+
+  .body :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .body :global(h3) {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--om-blue);
+    margin: 36px 0 14px;
+  }
+
+  .body :global(p) {
+    margin-bottom: 24px;
+  }
+
+  .body :global(ul),
+  .body :global(ol) {
+    margin: 0 0 24px;
+  }
+
+  .body :global(li) {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 8px;
+  }
+
+  .body :global(ul li)::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 14px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--om-blue);
+  }
+
+  .body :global(a) {
+    color: var(--om-blue);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .body :global(img),
+  .body :global(.om-ph) {
+    margin: 32px 0;
+  }
+
+  .back {
+    max-width: 880px;
+    margin: 64px auto 0;
+  }
+
+  @media (max-width: 900px) {
+    .news-article {
+      padding: 24px 0 72px;
+    }
+
+    h1 {
+      font-size: 23px;
+    }
+
+    .head {
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+    }
+  }
+</style>

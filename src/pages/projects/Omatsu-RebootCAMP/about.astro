@@ -1,0 +1,469 @@
+---
+// src/pages/projects/Omatsu-RebootCAMP/about.astro
+import OmatsuLayout from '../../../layouts/OmatsuLayout.astro';
+import { BASE, PROGRAM_IMAGE } from '../../../lib/omatsu';
+
+const targets = [
+  { icon: 'person_outline', text: '20歳以上の方\n（スキル・経歴不問）' },
+  { icon: 'festival', text: '地域のお祭りや\n伝統文化に関心のある方' },
+  { icon: 'favorite_border', text: '第二の故郷と呼べる\n地域との繋がりを得たい方' },
+];
+
+const flow = [
+  {
+    step: 'STEP 1',
+    title: 'プログラムへのエントリー＆面談の実施＠オンライン',
+    note: '※各祭りによって実施日が異なります。募集要項をご確認の上ご応募ください。',
+    items: [
+      '事務局や地域の受入担当者の方と面談させていただき、お祭りの趣旨や注意事項をお伝えします。',
+      'その上で、当日お祭りに安全にご参加いただけるか等の確認をさせていただきます。',
+    ],
+  },
+  {
+    step: 'STEP 2',
+    title: '地域側のお祭り運営者・メンバーとの顔合わせ＠愛媛県',
+    note: '※各祭りによって実施日が異なります。募集要項をご確認の上ご応募ください。',
+    items: [
+      '地域側のチームメンバーとの顔合わせを行います。',
+      'その他、当日使用する法被等、必要なもののお渡しや参加費の必要なものは支払いを実施します。',
+      'だんじり祭りの場合は屋台の組立、盆踊りの場合などは事前の練習などを兼ねた機会で実施します。',
+    ],
+  },
+  {
+    step: 'STEP 3',
+    title: 'お祭りへの参加＠愛媛県',
+    note: '※各祭りによって実施日が異なります。募集要項をご確認の上ご応募ください。',
+    items: [
+      '地域のお祭りにご参加いただきます。',
+      '地域の方の案内に従いつつ、安全に祭りをお楽しみいただきます。',
+    ],
+  },
+  {
+    step: 'STEP 4',
+    title: '振り返りの実施＠オンライン',
+    note: '※お祭りの終了後、1週間後程度を目途に実施します。',
+    items: [
+      'お祭りに参加しての感想の共有を、地域の方や事務局に向けて実施します。',
+      'また、現時点での次年度以降のお祭りへの参加意向の確認を行います。',
+    ],
+  },
+];
+---
+
+<OmatsuLayout
+  title="プログラムについて"
+  description="OMATSU-Reboot CAMPは、お祭りの担い手を増やしたい自治会・運営組織と、お祭りに関わってみたい人をマッチングする愛媛県のプログラムです。対象者・参加条件・定員・参加費・プログラムの流れをご案内します。"
+  current="about"
+>
+  <div class="om-page-head">
+    <div class="om-container">
+      <h1 class="om-sec-head">
+        <span class="en">ABOUT</span>
+        <span class="ja">プログラムについて</span>
+        <span class="rule"></span>
+      </h1>
+    </div>
+  </div>
+
+  <div class="om-container">
+    <nav class="om-breadcrumb">
+      <a href="/">ホーム</a>
+      <span>・</span>
+      <a href="/projects">協働とプロジェクト</a>
+      <span>・</span>
+      <a href={BASE}>OMATSU-RebootCAMP</a>
+      <span>・</span>
+      <span>プログラムについて</span>
+    </nav>
+  </div>
+
+  <!-- ===== プログラムの概要 ===== -->
+  <section class="block">
+    <div class="om-container">
+      <h2 class="block-title om-appear">プログラムの概要</h2>
+
+      <p class="lead om-appear">
+        持続可能な地域のお祭りの運営を目指し<br />
+        共にお祭りを楽しみ、担い手となる人材をマッチング
+      </p>
+
+      <div class="overview om-appear">
+        <p class="text">
+          本プログラムは、愛媛県を主な舞台に「お祭りの継続に向けて担い手を増やしたいと考えている自治会・お祭り運営組織」と「お祭りに初めて関わってみたい人」や「お祭りに関わることを通して、地域でのつながりを広げたい人」等をマッチングする取り組みです。<br
+          />
+          地域内外からお祭りの担い手を繋ぐことにより、100年先も祭りが続く地域を目指しています。
+        </p>
+
+        <div class="overview-photo">
+          <img
+            src={PROGRAM_IMAGE}
+            alt="法被姿で太鼓台へ向かう参加者たち"
+            loading="lazy"
+            width="1280"
+            height="960"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 対象となる方 ===== -->
+  <section class="block is-gray">
+    <div class="om-container">
+      <h2 class="block-title om-appear">対象となる方</h2>
+
+      <ul class="target-list om-appear">
+        {
+          targets.map((t) => (
+            <li class="target">
+              <span class="material-icons-outlined">{t.icon}</span>
+              <p set:html={t.text.replace('\n', '<br />')} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== 参加条件・定員・参加費 ===== -->
+  <section class="block">
+    <div class="om-container">
+      <dl class="spec-list om-appear">
+        <div class="spec">
+          <dt>参加条件</dt>
+          <dd>
+            ・対象となる地域のお祭りの日程に参加可能であること<br />
+            ・地域側の意志を尊重しつつ、お祭りに関われること
+          </dd>
+        </div>
+
+        <div class="spec">
+          <dt>定員</dt>
+          <dd>1プロジェクトあたり1～3名程度</dd>
+        </div>
+
+        <div class="spec">
+          <dt>参加費</dt>
+          <dd>
+            <strong class="free">無料</strong>
+            <span class="spec-note">
+              ※ただし、現地訪問の際の交通費・宿泊費は自己負担いただきます。<br />
+              ※その他、お祭りへの参加費が必要なプロジェクトもございますので、詳細は各プロジェクトのページをご確認下さい。
+            </span>
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ===== プログラムの流れ ===== -->
+  <section class="block is-gray">
+    <div class="om-container">
+      <h2 class="block-title om-appear">プログラムの流れ</h2>
+
+      <ol class="flow-list">
+        {
+          flow.map((f) => (
+            <li class="flow om-appear">
+              <div class="flow-step">{f.step}</div>
+              <div class="flow-body">
+                <p class="flow-title">{f.title}</p>
+                <p class="flow-note">{f.note}</p>
+                <ul class="flow-items">
+                  {f.items.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <section class="block">
+    <div class="om-container cta om-appear">
+      <p class="cta-text">参加したいお祭りを探してみませんか？</p>
+      <div class="cta-links">
+        <a href={`${BASE}/project`} class="om-arrow-link">
+          <span class="circle material-icons-outlined">trending_flat</span>
+          <span class="label">プロジェクト一覧へ</span>
+        </a>
+        <a href={`${BASE}/entry`} class="om-entry-btn is-lg">
+          <span>エントリーする</span>
+          <span class="material-icons-outlined">mail_outline</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</OmatsuLayout>
+
+<style>
+  .block {
+    padding: 96px 0;
+    background: var(--om-white);
+  }
+
+  .block.is-gray {
+    background: var(--om-bg);
+  }
+
+  .block-title {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.5;
+    letter-spacing: 0.05em;
+    color: var(--om-black);
+    text-align: center;
+    padding-bottom: 20px;
+    position: relative;
+  }
+
+  .block-title::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 3px;
+    background: var(--om-blue);
+  }
+
+  .lead {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.8;
+    letter-spacing: 0.05em;
+    color: var(--om-blue);
+    text-align: center;
+    margin-top: 48px;
+  }
+
+  .overview {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: 56px;
+    align-items: center;
+    margin-top: 48px;
+  }
+
+  .text {
+    font-size: 16px;
+    line-height: 2;
+    letter-spacing: 0.05em;
+  }
+
+  .overview-photo img {
+    width: 100%;
+    height: auto;
+  }
+
+  /* ===== 対象となる方 ===== */
+  .target-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px;
+    margin-top: 48px;
+  }
+
+  .target {
+    background: var(--om-white);
+    padding: 40px 24px;
+    text-align: center;
+  }
+
+  .target .material-icons-outlined {
+    font-size: 44px;
+    color: var(--om-blue);
+  }
+
+  .target p {
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.8;
+    margin-top: 16px;
+    color: var(--om-black);
+  }
+
+  /* ===== 参加条件など ===== */
+  .spec-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .spec {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 32px;
+    padding: 32px 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .spec dt {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--om-blue);
+  }
+
+  .spec dd {
+    font-size: 16px;
+    line-height: 1.9;
+  }
+
+  .free {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--om-black);
+  }
+
+  .spec-note {
+    display: block;
+    font-size: 14px;
+    line-height: 1.9;
+    color: var(--om-gray);
+    margin-top: 12px;
+  }
+
+  /* ===== 流れ ===== */
+  .flow-list {
+    max-width: 880px;
+    margin: 48px auto 0;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .flow {
+    background: var(--om-white);
+    padding: 32px 40px;
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 32px;
+    position: relative;
+  }
+
+  .flow:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -18px;
+    transform: translateX(-50%);
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 12px solid var(--om-blue);
+  }
+
+  .flow-step {
+    font-family: var(--om-font-en);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--om-white);
+    background: var(--om-blue);
+    height: 40px;
+    display: grid;
+    place-items: center;
+  }
+
+  .flow-title {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.6;
+    color: var(--om-black);
+  }
+
+  .flow-note {
+    font-size: 13px;
+    color: var(--om-gray);
+    margin-top: 8px;
+  }
+
+  .flow-items {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .flow-items li {
+    font-size: 15px;
+    line-height: 1.8;
+    padding-left: 18px;
+    position: relative;
+  }
+
+  .flow-items li::before {
+    content: '・';
+    position: absolute;
+    left: 0;
+    color: var(--om-blue);
+  }
+
+  /* ===== CTA ===== */
+  .cta {
+    text-align: center;
+  }
+
+  .cta-text {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--om-black);
+  }
+
+  .cta-links {
+    margin-top: 32px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .om-entry-btn.is-lg {
+    height: 64px;
+    min-width: 280px;
+    font-size: 17px;
+  }
+
+  @media (max-width: 900px) {
+    .block {
+      padding: 64px 0;
+    }
+
+    .block-title {
+      font-size: 24px;
+    }
+
+    .lead {
+      font-size: 20px;
+      margin-top: 32px;
+    }
+
+    .overview,
+    .target-list {
+      grid-template-columns: 1fr;
+      gap: 24px;
+      margin-top: 32px;
+    }
+
+    .spec,
+    .flow {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .flow {
+      padding: 24px;
+    }
+
+    .flow-step {
+      width: 120px;
+    }
+  }
+</style>
