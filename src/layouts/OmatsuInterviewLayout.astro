@@ -1,0 +1,355 @@
+---
+// src/layouts/OmatsuInterviewLayout.astro
+// 協賛企業インタビューの詳細ページ用レイアウト。
+// 本文は <slot /> にそのまま HTML を書けばよい。
+import OmatsuLayout from './OmatsuLayout.astro';
+import { BASE, findInterview, sponsorTierLabels, formatDate } from '../lib/omatsu';
+
+interface Props {
+  /** src/lib/omatsu.ts の interviews に登録した slug */
+  slug: string;
+  /** リード文（記事冒頭の要約。2〜3行） */
+  lead?: string;
+  /** 検索結果に出る説明文。未指定なら lead を使う */
+  description?: string;
+}
+
+const { slug, lead, description } = Astro.props;
+
+const info = findInterview(slug);
+if (!info) {
+  throw new Error(
+    `インタビュー "${slug}" が src/lib/omatsu.ts の interviews に登録されていません。`
+  );
+}
+
+const tier = sponsorTierLabels[info.tier];
+---
+
+<OmatsuLayout
+  title={info.title}
+  description={description || lead || `${info.company}へのインタビュー記事です。`}
+  current="sponsor"
+>
+  <div class="om-page-head">
+    <div class="om-container">
+      <div class="om-sec-head">
+        <span class="en">INTERVIEW</span>
+        <span class="ja">協賛企業インタビュー</span>
+        <span class="rule"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="om-container">
+    <nav class="om-breadcrumb">
+      <a href="/">ホーム</a>
+      <span>・</span>
+      <a href={BASE}>OMATSU-RebootCAMP</a>
+      <span>・</span>
+      <a href={`${BASE}/sponsor`}>協賛企業</a>
+      <span>・</span>
+      <span>{info.company}</span>
+    </nav>
+  </div>
+
+  <article class="interview">
+    <div class="om-container">
+      <header class="head">
+        <span class={`tier is-${info.tier}`}>{tier.en} SPONSOR</span>
+        <h1>{info.title}</h1>
+        <p class="company">{info.company}</p>
+        {info.date && <time datetime={info.date}>{formatDate(info.date)}</time>}
+        {lead && <p class="lead">{lead}</p>}
+      </header>
+
+      <div class="hero">
+        {
+          info.thumbnail ? (
+            <img src={info.thumbnail} alt={`${info.company} インタビュー`} />
+          ) : (
+            <div class="om-ph" style="aspect-ratio: 16 / 9;">
+              <span>
+                メイン写真
+                <span class="note">インタビューカット（1600×900 程度）</span>
+              </span>
+            </div>
+          )
+        }
+      </div>
+
+      <div class="body">
+        <slot />
+      </div>
+
+      <div class="back">
+        <a href={`${BASE}/sponsor`} class="om-arrow-link is-sm">
+          <span class="circle material-icons-outlined">trending_flat</span>
+          <span class="label">協賛企業一覧へもどる</span>
+        </a>
+      </div>
+    </div>
+  </article>
+</OmatsuLayout>
+
+<style>
+  .interview {
+    padding: 32px 0 120px;
+  }
+
+  .head {
+    max-width: 880px;
+    margin: 0 auto 40px;
+    text-align: center;
+  }
+
+  .tier {
+    display: inline-block;
+    font-family: var(--om-font-en);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--om-white);
+    padding: 5px 18px;
+  }
+
+  .tier.is-gold {
+    background: #c8a03c;
+  }
+
+  .tier.is-silver {
+    background: #8c9199;
+  }
+
+  .tier.is-bronze {
+    background: #a4703f;
+  }
+
+  .head h1 {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.5;
+    letter-spacing: 0.04em;
+    color: var(--om-black);
+    margin-top: 20px;
+  }
+
+  .company {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--om-blue);
+    margin-top: 14px;
+  }
+
+  .head time {
+    display: block;
+    font-family: var(--om-font-en);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    color: var(--om-gray);
+    margin-top: 10px;
+  }
+
+  .lead {
+    font-size: 17px;
+    line-height: 2;
+    text-align: left;
+    margin-top: 28px;
+    padding: 24px 28px;
+    background: var(--om-bg);
+    border-left: 5px solid var(--om-blue);
+  }
+
+  .hero {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .hero img {
+    width: 100%;
+    height: auto;
+  }
+
+  /* ===== 本文（記事側で書いた HTML にかかるスタイル） ===== */
+  .body {
+    max-width: 880px;
+    margin: 72px auto 0;
+    font-size: 16px;
+    line-height: 2;
+  }
+
+  .body :global(h2) {
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.6;
+    color: var(--om-black);
+    margin: 64px 0 24px;
+    padding-left: 16px;
+    border-left: 5px solid var(--om-blue);
+  }
+
+  .body :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  /* 質問文。インタビュー記事なので h3 を「問い」として使う */
+  .body :global(h3) {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.7;
+    color: var(--om-blue);
+    margin: 48px 0 16px;
+    padding-left: 30px;
+    position: relative;
+  }
+
+  .body :global(h3)::before {
+    content: '―';
+    position: absolute;
+    left: 0;
+  }
+
+  .body :global(h3:first-child) {
+    margin-top: 0;
+  }
+
+  .body :global(p) {
+    margin-bottom: 24px;
+  }
+
+  .body :global(ul),
+  .body :global(ol) {
+    margin: 0 0 24px;
+  }
+
+  .body :global(li) {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 8px;
+  }
+
+  .body :global(ul li)::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 14px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--om-blue);
+  }
+
+  .body :global(ol) {
+    counter-reset: om-ol;
+  }
+
+  .body :global(ol li) {
+    counter-increment: om-ol;
+  }
+
+  .body :global(ol li)::before {
+    content: counter(om-ol) '.';
+    position: absolute;
+    left: 0;
+    color: var(--om-blue);
+    font-weight: 700;
+  }
+
+  .body :global(blockquote) {
+    margin: 40px 0;
+    padding: 28px 32px;
+    background: var(--om-bg);
+    border-left: 4px solid var(--om-blue);
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.9;
+    color: var(--om-black);
+  }
+
+  .body :global(blockquote p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .body :global(figure) {
+    margin: 40px 0;
+  }
+
+  .body :global(figcaption) {
+    font-size: 13px;
+    color: var(--om-gray);
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  .body :global(img),
+  .body :global(.om-ph) {
+    margin: 32px 0;
+  }
+
+  .body :global(a) {
+    color: var(--om-blue);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .body :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 32px 0;
+    font-size: 15px;
+  }
+
+  .body :global(th),
+  .body :global(td) {
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    padding: 12px 16px;
+    text-align: left;
+  }
+
+  .body :global(th) {
+    background: var(--om-bg);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .back {
+    max-width: 880px;
+    margin: 72px auto 0;
+  }
+
+  @media (max-width: 900px) {
+    .interview {
+      padding: 24px 0 72px;
+    }
+
+    .head h1 {
+      font-size: 24px;
+    }
+
+    .lead {
+      font-size: 15px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .body {
+      margin-top: 48px;
+    }
+
+    .body :global(h2) {
+      font-size: 21px;
+      margin: 48px 0 20px;
+    }
+
+    .body :global(h3) {
+      font-size: 18px;
+      margin: 36px 0 14px;
+    }
+
+    .body :global(blockquote) {
+      font-size: 17px;
+      padding: 20px 22px;
+    }
+  }
+</style>

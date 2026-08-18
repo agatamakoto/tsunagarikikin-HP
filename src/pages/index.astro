@@ -4,8 +4,12 @@ import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import QuestionFlow from '../components/QuestionFlow.astro';
 import Footer from '../components/Footer.astro';
+import SupporterLogos from '../components/SupporterLogos.astro';
 import { client } from '../lib/microcms';
 import type { News, Statistic, Project, Report, Grant } from '../lib/microcms';
+import { getCollection } from 'astro:content';
+
+const supporters = (await getCollection('supporters')).filter((s) => s.data.published);
 
 let newsList: News[] = [];
 let stats: Statistic | null = null;
@@ -206,6 +210,17 @@ function grantDeadline(g: Grant): string | null {
       </div>
     </section>
 
+    <!-- 法人サポーター -->
+    {supporters.length > 0 && (
+      <section class="supporters-section">
+        <div class="container">
+          <h2>法人サポーター</h2>
+          <p class="supporters-lead">地域の未来を、企業・団体の皆さまと共に育んでいます。</p>
+          <SupporterLogos />
+          <a href="/donation/corporate" class="supporters-button">法人サポーターについて詳しく →</a>
+        </div>
+      </section>
+    )}
 
     <!-- これからの財団について -->
     <section class="future-section">
@@ -721,4 +736,25 @@ function grantDeadline(g: Grant): string | null {
     }
   }
 
+  /* 法人サポーター */
+  .supporters-section {
+    padding: var(--spacing-2xl) 0;
+    background: var(--color-white);
+    text-align: center;
+  }
+  .supporters-section h2 {
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-sm);
+  }
+  .supporters-lead {
+    color: var(--color-gray);
+    margin-bottom: var(--spacing-lg);
+  }
+  .supporters-button {
+    display: inline-block;
+    margin-top: var(--spacing-lg);
+    color: var(--color-primary);
+    font-weight: 700;
+  }
+  .supporters-button:hover { color: var(--color-accent); }
 </style>

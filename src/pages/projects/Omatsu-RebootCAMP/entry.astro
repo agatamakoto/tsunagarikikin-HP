@@ -1,0 +1,578 @@
+---
+// src/pages/projects/Omatsu-RebootCAMP/entry.astro
+import OmatsuLayout from '../../../layouts/OmatsuLayout.astro';
+import { BASE, CONTACT_EMAIL, ENTRY_ENDPOINT, entryLabel, projects } from '../../../lib/omatsu';
+
+const openProjects = projects.filter((p) => p.status !== '募集終了');
+const formReady = ENTRY_ENDPOINT !== '';
+---
+
+<OmatsuLayout
+  title="エントリー"
+  description="OMATSU-Reboot CAMPへの参加申込フォームです。参加したいお祭りを選び、必要事項をご記入のうえ送信してください。エントリー後、事務局よりオンライン面談をご案内します。"
+  current="entry"
+>
+  <div class="om-page-head">
+    <div class="om-container">
+      <h1 class="om-sec-head">
+        <span class="en">ENTRY</span>
+        <span class="ja">エントリー</span>
+        <span class="rule"></span>
+      </h1>
+    </div>
+  </div>
+
+  <div class="om-container">
+    <nav class="om-breadcrumb">
+      <a href="/">ホーム</a>
+      <span>・</span>
+      <a href="/projects">協働とプロジェクト</a>
+      <span>・</span>
+      <a href={BASE}>OMATSU-RebootCAMP</a>
+      <span>・</span>
+      <span>エントリー</span>
+    </nav>
+  </div>
+
+  <section class="entry-section">
+    <div class="om-container">
+      <p class="intro om-appear">
+        参加をご希望の方は、以下のフォームよりお申し込みください。<br />
+        エントリー後、事務局よりオンライン面談のご案内をお送りします。
+      </p>
+
+      {
+        !formReady && (
+          <div class="notice om-appear">
+            <p class="notice-title">現在、フォームを準備中です</p>
+            <p class="notice-text">
+              お手数ですが、当面は下記メールアドレスまでご連絡ください。
+              <br />
+              <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+            </p>
+          </div>
+        )
+      }
+
+      <form class="form om-appear" id="entry-form" novalidate>
+        <div class="field">
+          <label for="name">お名前<span class="req">必須</span></label>
+          <input type="text" id="name" name="name" autocomplete="name" required />
+        </div>
+
+        <div class="field">
+          <label for="kana">フリガナ<span class="req">必須</span></label>
+          <input type="text" id="kana" name="kana" required />
+        </div>
+
+        <div class="field">
+          <label for="email">メールアドレス<span class="req">必須</span></label>
+          <input type="email" id="email" name="email" autocomplete="email" required />
+        </div>
+
+        <div class="field">
+          <label for="tel">電話番号<span class="req">必須</span></label>
+          <input type="tel" id="tel" name="tel" autocomplete="tel" required />
+        </div>
+
+        <div class="field">
+          <label for="birthdate">生年月日<span class="req">必須</span></label>
+          <input type="date" id="birthdate" name="birthdate" max="2100-12-31" required />
+          <p class="help">
+            保険の加入手続きに必要です。本プログラムは20歳以上の方が対象です。
+          </p>
+        </div>
+
+        <div class="field">
+          <label for="age">年齢</label>
+          <input type="text" id="age" name="age" readonly placeholder="生年月日から自動で入ります" />
+        </div>
+
+        <div class="field">
+          <label for="gender">性別<span class="req">必須</span></label>
+          <select id="gender" name="gender" required>
+            <option value="">選択してください</option>
+            <option value="男性">男性</option>
+            <option value="女性">女性</option>
+            <option value="その他・回答しない">その他・回答しない</option>
+          </select>
+          <p class="help">保険の加入手続きに必要です。</p>
+        </div>
+
+        <div class="field">
+          <label for="address">住所<span class="req">必須</span></label>
+          <input
+            type="text"
+            id="address"
+            name="address"
+            autocomplete="street-address"
+            placeholder="例）愛媛県西条市大町1663番地"
+            required
+          />
+          <p class="help">保険の加入手続きに必要です。番地までご記入ください。</p>
+        </div>
+
+        <div class="field">
+          <label for="project">参加を希望するお祭り<span class="req">必須</span></label>
+          <select id="project" name="project" required>
+            <option value="">選択してください</option>
+            {
+              openProjects.map((p) => (
+                <option value={entryLabel(p)}>{entryLabel(p)}</option>
+              ))
+            }
+            <option value="まだ決めていない">まだ決めていない／相談したい</option>
+          </select>
+          <p class="help">
+            募集中のお祭りが自動で並びます（表記は「自治会名_お祭り名」）。
+          </p>
+        </div>
+
+        <div class="field">
+          <label for="experience">お祭りへの参加経験</label>
+          <select id="experience" name="experience">
+            <option value="">選択してください</option>
+            <option value="ない">ない（はじめて）</option>
+            <option value="ある">ある</option>
+            <option value="運営経験あり">運営側として関わったことがある</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="motivation">参加を希望する理由<span class="req">必須</span></label>
+          <textarea id="motivation" name="motivation" rows="6" required></textarea>
+        </div>
+
+        <div class="field">
+          <label for="note">その他ご質問・事務局に伝えておきたいこと</label>
+          <textarea id="note" name="note" rows="4"></textarea>
+        </div>
+
+        <div class="privacy-box">
+          <p class="privacy-title">個人情報の取り扱いについて</p>
+          <p class="privacy-text">
+            ご記入いただいた個人情報は、次の目的で利用します。
+          </p>
+          <ul class="privacy-list">
+            <li>本プログラムの参加受付・面談のご案内・当日のご連絡</li>
+            <li>参加者を対象とする傷害保険の加入手続き</li>
+            <li>受け入れ地域における参加者の受け入れ調整および緊急時の連絡</li>
+          </ul>
+          <p class="privacy-text">
+            この目的の範囲内で、<strong>公益財団法人えひめ西条つながり基金と、参加先の自治会・お祭り運営組織が共同で利用します。</strong>
+            上記以外の目的では利用せず、他の第三者へ提供することはありません。
+            管理責任は当財団が負い、開示・訂正・削除のご請求は
+            <a href="/privacy">個人情報保護方針</a>に記載の窓口で承ります。
+          </p>
+
+          <div class="agree">
+            <label>
+              <input type="checkbox" id="agree" name="agree" required />
+              <span>
+                上記の取り扱いと<a href="/privacy" target="_blank" rel="noreferrer"
+                  >個人情報保護方針</a
+                >に同意します<span class="req">必須</span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <p class="form-error" id="form-error" hidden></p>
+
+        <div class="submit-wrap">
+          <button type="submit" class="om-entry-btn is-lg" id="submit-btn" disabled={!formReady}>
+            <span>{formReady ? 'この内容で申し込む' : 'フォーム準備中'}</span>
+            <span class="material-icons-outlined">mail_outline</span>
+          </button>
+          {
+            !formReady && (
+              <p class="submit-note">
+                フォームの送信機能は準備中です。お手数ですが
+                <a href={`mailto:${CONTACT_EMAIL}`}>メール</a>にてご連絡ください。
+              </p>
+            )
+          }
+        </div>
+      </form>
+
+      <div class="thanks" id="entry-thanks" hidden>
+        <p class="thanks-title">エントリーを受け付けました</p>
+        <p class="thanks-text">
+          ご入力いただいたメールアドレス宛に確認メールをお送りしています。<br />
+          数日以内に事務局よりオンライン面談のご案内をお送りしますので、今しばらくお待ちください。
+        </p>
+        <a href={BASE} class="om-arrow-link">
+          <span class="circle material-icons-outlined">trending_flat</span>
+          <span class="label">トップへもどる</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</OmatsuLayout>
+
+<script is:inline define:vars={{ ENTRY_ENDPOINT, CONTACT_EMAIL }}>
+  (function () {
+    var form = document.getElementById('entry-form');
+    if (!form || !ENTRY_ENDPOINT) return;
+
+    var btn = document.getElementById('submit-btn');
+    var errorBox = document.getElementById('form-error');
+    var thanks = document.getElementById('entry-thanks');
+
+    // 生年月日から年齢を自動計算して表示する
+    var birth = document.getElementById('birthdate');
+    var age = document.getElementById('age');
+    function calcAge() {
+      if (!birth.value) {
+        age.value = '';
+        return;
+      }
+      var b = new Date(birth.value);
+      if (isNaN(b.getTime())) {
+        age.value = '';
+        return;
+      }
+      var now = new Date();
+      var a = now.getFullYear() - b.getFullYear();
+      var m = now.getMonth() - b.getMonth();
+      if (m < 0 || (m === 0 && now.getDate() < b.getDate())) a--;
+      age.value = a >= 0 && a < 130 ? a + '歳' : '';
+      birth.setCustomValidity(
+        a >= 0 && a < 20 ? '本プログラムは20歳以上の方が対象です。' : ''
+      );
+    }
+    birth.addEventListener('change', calcAge);
+    birth.addEventListener('input', calcAge);
+    calcAge();
+
+    // 記事ページから ?project=... で飛んできたとき、お祭りを初期選択する
+    var params = new URLSearchParams(location.search);
+    var preset = params.get('project');
+    if (preset) {
+      var select = document.getElementById('project');
+      for (var i = 0; i < select.options.length; i++) {
+        if (select.options[i].value === preset) {
+          select.selectedIndex = i;
+          break;
+        }
+      }
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      errorBox.hidden = true;
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      btn.disabled = true;
+      btn.querySelector('span').textContent = '送信中...';
+
+      var data = {};
+      new FormData(form).forEach(function (value, key) {
+        data[key] = value;
+      });
+
+      fetch(ENTRY_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+        .then(function (res) {
+          return res.json().then(function (data) {
+            if (!res.ok) throw new Error(data && data.error ? data.error : '送信に失敗しました');
+            form.hidden = true;
+            thanks.hidden = false;
+            thanks.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          });
+        })
+        .catch(function (err) {
+          errorBox.textContent =
+            (err && err.message ? err.message : '送信に失敗しました。') +
+            '　解決しない場合はお手数ですが ' +
+            CONTACT_EMAIL +
+            ' までご連絡ください。';
+          errorBox.hidden = false;
+          btn.disabled = false;
+          btn.querySelector('span').textContent = 'この内容で申し込む';
+        });
+    });
+  })();
+</script>
+
+<style>
+  .entry-section {
+    padding: 32px 0 120px;
+  }
+
+  .intro {
+    font-size: 16px;
+    line-height: 2;
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .notice {
+    max-width: 760px;
+    margin: 0 auto 48px;
+    padding: 28px 32px;
+    background: var(--om-bg);
+    border-left: 5px solid var(--om-blue);
+  }
+
+  .notice-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--om-black);
+  }
+
+  .notice-text {
+    font-size: 15px;
+    line-height: 1.9;
+    margin-top: 10px;
+  }
+
+  .notice-text a {
+    color: var(--om-blue);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* ===== フォーム ===== */
+  .form {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .field {
+    margin-bottom: 32px;
+  }
+
+  .field label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--om-black);
+    margin-bottom: 10px;
+  }
+
+  .req {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--om-white);
+    background: var(--om-blue);
+    padding: 2px 8px;
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    font-family: var(--om-font);
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--om-text);
+    background: var(--om-white);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    padding: 14px 16px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .field textarea {
+    resize: vertical;
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: var(--om-blue);
+    box-shadow: 0 0 0 3px rgba(31, 150, 205, 0.15);
+  }
+
+  .help {
+    font-size: 13px;
+    color: var(--om-gray);
+    margin-top: 8px;
+  }
+
+  .field input[readonly] {
+    background: var(--om-bg);
+    color: var(--om-gray);
+    cursor: default;
+  }
+
+  /* ===== 個人情報の取り扱い ===== */
+  .privacy-box {
+    margin: 40px 0 32px;
+    padding: 28px 32px;
+    background: var(--om-bg);
+    border-left: 5px solid var(--om-blue);
+  }
+
+  .privacy-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--om-black);
+    margin-bottom: 14px;
+  }
+
+  .privacy-text {
+    font-size: 14px;
+    line-height: 1.9;
+  }
+
+  .privacy-text a {
+    color: var(--om-blue);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .privacy-list {
+    margin: 10px 0 16px;
+  }
+
+  .privacy-list li {
+    position: relative;
+    padding-left: 18px;
+    font-size: 14px;
+    line-height: 1.9;
+  }
+
+  .privacy-list li::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 11px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--om-blue);
+  }
+
+  .agree {
+    margin-top: 20px;
+    padding: 18px 20px;
+    background: var(--om-white);
+  }
+
+  .agree label {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .agree input {
+    margin-top: 5px;
+    width: 18px;
+    height: 18px;
+    flex: none;
+    accent-color: var(--om-blue);
+  }
+
+  .agree a {
+    color: var(--om-blue);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .agree .req {
+    margin-left: 8px;
+  }
+
+  .form-error {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #c0392b;
+    background: rgba(192, 57, 43, 0.08);
+    border-left: 4px solid #c0392b;
+    padding: 14px 18px;
+    margin-bottom: 24px;
+  }
+
+  .submit-wrap {
+    text-align: center;
+  }
+
+  .om-entry-btn.is-lg {
+    height: 64px;
+    min-width: 300px;
+    font-size: 17px;
+    border: none;
+    cursor: pointer;
+  }
+
+  .om-entry-btn.is-lg:disabled {
+    background: var(--om-gray);
+    cursor: not-allowed;
+    transform: none;
+    opacity: 1;
+  }
+
+  .submit-note {
+    font-size: 13px;
+    color: var(--om-gray);
+    margin-top: 16px;
+  }
+
+  .submit-note a {
+    color: var(--om-blue);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* ===== 送信完了 ===== */
+  .thanks {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 72px 24px;
+    background: var(--om-bg);
+    text-align: center;
+  }
+
+  .thanks-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--om-black);
+  }
+
+  .thanks-text {
+    font-size: 15px;
+    line-height: 2;
+    margin: 16px 0 32px;
+  }
+
+  .thanks .om-arrow-link {
+    justify-content: center;
+  }
+
+  @media (max-width: 900px) {
+    .entry-section {
+      padding: 24px 0 72px;
+    }
+
+    .intro {
+      text-align: left;
+      margin-bottom: 32px;
+    }
+
+    .notice {
+      padding: 20px;
+      margin-bottom: 32px;
+    }
+
+    .om-entry-btn.is-lg {
+      min-width: 0;
+      width: 100%;
+    }
+  }
+</style>

@@ -1,0 +1,1058 @@
+---
+// src/pages/projects/Omatsu-RebootCAMP/index.astro
+import OmatsuLayout from '../../../layouts/OmatsuLayout.astro';
+import {
+  BASE,
+  HERO_IMAGES,
+  PROGRAM_IMAGE,
+  projects,
+  shorts,
+  shortThumbnail,
+  shortThumbnailFallback,
+  YOUTUBE_CHANNEL_URL,
+} from '../../../lib/omatsu';
+
+const steps = [
+  {
+    no: '1',
+    title: '参加したいお祭りを選択する',
+    body: '祭りの特色や住民の想い等をご覧いただき、ご自身の参加してみたいお祭りを選択してください。',
+    link: { href: `${BASE}/project`, label: 'プロジェクト一覧へ' },
+  },
+  {
+    no: '2',
+    title: '応募フォームより申込',
+    body: 'お祭り一覧から、参加したいお祭りを選択し、お祭りの紹介ページ下部の「このお祭りに参加する」ボタンから応募を行ってください。',
+  },
+  {
+    no: '3',
+    title: '事務局・受入地域担当者との面談',
+    body: 'エントリー後に事務局からオンラインでの面談をご案内させていただきます。祭りの雰囲気や注意事項をご紹介させていただく他、本事業の趣旨にご理解・同意いただけているかを確認します。',
+  },
+  {
+    no: '4',
+    title: 'お祭りへの参加決定！',
+    notes: [
+      '※本事業趣旨と申込者の希望が著しく異なる場合は参加をお断りさせていただく場合がございます',
+      '※応募多数の場合は、事務局や地域側で選考を行います',
+    ],
+  },
+];
+---
+
+<OmatsuLayout
+  title="地域と人と繋がり、お祭りを未来へ繋ぐプログラム"
+  current="top"
+>
+  <!-- ===== ヒーロー ===== -->
+  <section class="hero">
+    <div class="hero-copy om-appear">
+      <h1>
+        地域と人と繋がり、<br />
+        お祭りを未来へ繋ぐプログラム
+      </h1>
+      <p class="hero-brand">OMATSU-RebootCAMP</p>
+    </div>
+
+    <div class="hero-visual om-appear">
+      <!-- 写真はJSで順番をシャッフルし、ゆっくり切り替える -->
+      <div class="hero-slideshow" id="hero-slideshow">
+        {
+          HERO_IMAGES.map((src, i) => (
+            <img
+              src={src}
+              alt={i === 0 ? 'お祭りの様子' : ''}
+              class={i === 0 ? 'is-active' : ''}
+              loading={i === 0 ? 'eager' : 'lazy'}
+              fetchpriority={i === 0 ? 'high' : 'auto'}
+              width="1600"
+              height="900"
+            />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ABOUT ===== -->
+  <section class="about">
+    <div class="om-container about-inner">
+      <div class="about-head om-appear">
+        <div class="om-sec-head is-left">
+          <span class="en">ABOUT</span>
+          <span class="ja">プログラムについて</span>
+          <span class="rule"></span>
+        </div>
+
+        <div class="about-photo">
+          <img
+            src={PROGRAM_IMAGE}
+            alt="法被姿で太鼓台へ向かう参加者たち"
+            loading="lazy"
+            width="1280"
+            height="960"
+          />
+        </div>
+      </div>
+
+      <div class="about-body om-appear">
+        <p class="lead">人口減少社会でも続く<br />祭りの在り方を考える</p>
+        <p class="text">
+          「OMATSU-Reboot CAMP」は、祭りの未来を守りたい地域住民と、祭りを通じて地域に関わりたい地域外の人材を繋ぐプログラムです。<br
+          />
+          お祭りに参加いただくことで「お祭りへの参加による地域文化の体験」「共にお祭りに参加する地域住民との繋がり」等の機会を提供し、参加者の皆さんがよりディープに地域と繋がる機会を創出します。
+        </p>
+
+        <a href={`${BASE}/about`} class="om-arrow-link">
+          <span class="circle material-icons-outlined">trending_flat</span>
+          <span class="label">プログラムについて</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PROJECT ===== -->
+  <section class="project">
+    <div class="om-container">
+      <div class="om-sec-head om-appear">
+        <span class="en">PROJECT</span>
+        <span class="ja">募集中のお祭り</span>
+        <span class="rule"></span>
+      </div>
+
+      <h2 class="project-lead om-appear">
+        一緒に汗を流すからこそ得られる、まちとのディープな繋がり
+      </h2>
+      <p class="project-text om-appear">
+        祭りを見る側として参加するのではなく、祭りの担い手として共に汗を流すことで、<br />
+        地域やお祭りへの深い理解と会いに行きたいと思える人とのつながりを創出します。
+      </p>
+
+      {
+        projects.length > 0 ? (
+          <div class="project-grid om-appear">
+            {projects.slice(0, 3).map((p) => (
+              <a href={`${BASE}/project/${p.slug}`} class="project-card">
+                <div class="project-thumb">
+                  {p.thumbnail ? (
+                    <img src={p.thumbnail} alt={`${p.organization}の様子`} loading="lazy" />
+                  ) : (
+                    <div class="om-ph">
+                      <span>
+                        写真
+                        <span class="note">{p.organization}</span>
+                      </span>
+                    </div>
+                  )}
+                  <span class="status">{p.status}</span>
+                </div>
+                <div class="project-card-body">
+                  <h3>{p.catchcopy || p.title}</h3>
+                  <p class="org">{p.organization}／{p.period}</p>
+                  <p class="summary">{p.summary}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <div class="project-empty om-appear">
+            <p>
+              現在、募集中のお祭りを準備しています。
+              <br />
+              公開まで今しばらくお待ちください。
+            </p>
+          </div>
+        )
+      }
+
+      <div class="project-more om-appear">
+        <a href={`${BASE}/project`} class="om-arrow-link">
+          <span class="circle material-icons-outlined">trending_flat</span>
+          <span class="label">プロジェクト一覧へ</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== INTERVIEW（YouTubeショート） ===== -->
+  <section class="interview">
+    <div class="om-container">
+      <div class="om-sec-head om-appear">
+        <span class="en">INTERVIEW</span>
+        <span class="ja">インタビュー</span>
+        <span class="rule"></span>
+      </div>
+
+      <p class="interview-lead om-appear">
+        お祭りに関わる人たちの声を、ショート動画でお届けしています。
+      </p>
+    </div>
+
+    <!-- 横に流れる帯。JSで順番をシャッフルし、同じ並びを複製して繋ぎ目なく回す -->
+    <div class="marquee" id="shorts-marquee">
+      <ul class="marquee-track" id="shorts-track">
+        {
+          shorts.map((s) => (
+            <li class="short">
+              <button
+                type="button"
+                class="short-card"
+                data-video={s.id}
+                data-title={s.title}
+                aria-label={`${s.title} を再生する`}
+              >
+                <img
+                  src={shortThumbnail(s.id)}
+                  data-fallback={shortThumbnailFallback(s.id)}
+                  alt=""
+                  loading="lazy"
+                  width="270"
+                  height="480"
+                />
+                <span class="short-play material-icons-outlined">play_arrow</span>
+                <span class="short-title">{s.title}</span>
+              </button>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="om-container">
+      <div class="interview-more om-appear">
+        <a href={YOUTUBE_CHANNEL_URL} target="_blank" rel="noreferrer" class="om-arrow-link">
+          <span class="circle material-icons-outlined">trending_flat</span>
+          <span class="label">YouTubeチャンネルで見る</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ショート動画の再生（クリックで開く） -->
+  <div class="video-modal" id="video-modal" hidden>
+    <div class="video-modal-backdrop" data-close></div>
+    <div class="video-modal-inner" role="dialog" aria-modal="true" aria-label="ショート動画">
+      <button type="button" class="video-modal-close" data-close aria-label="閉じる">
+        <span class="material-icons-outlined">close</span>
+      </button>
+      <div class="video-frame" id="video-frame"></div>
+      <p class="video-modal-title" id="video-modal-title"></p>
+    </div>
+  </div>
+
+  <!-- ===== ENTRY ===== -->
+  <section class="entry">
+    <div class="om-container">
+      <div class="om-sec-head om-appear">
+        <span class="en">ENTRY</span>
+        <span class="ja">参加方法について</span>
+        <span class="rule"></span>
+      </div>
+
+      <ol class="step-list">
+        {
+          steps.map((step) => (
+            <li class="step om-appear">
+              <div class="step-no">{step.no}</div>
+              <div class="step-body">
+                <p class="step-title">{step.title}</p>
+                {step.body && <p class="step-text">{step.body}</p>}
+                {step.notes && (
+                  <p class="step-note">
+                    {step.notes.map((n, i) => (
+                      <>
+                        {i > 0 && <br />}
+                        {n}
+                      </>
+                    ))}
+                  </p>
+                )}
+                {step.link && (
+                  <a href={step.link.href} class="om-arrow-link is-sm">
+                    <span class="circle material-icons-outlined">trending_flat</span>
+                    <span class="label">{step.link.label}</span>
+                  </a>
+                )}
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+
+      <div class="entry-cta om-appear">
+        <a href={`${BASE}/entry`} class="om-entry-btn is-lg">
+          <span>エントリーする</span>
+          <span class="material-icons-outlined">mail_outline</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== NEWS ===== -->
+  <section class="news">
+    <div class="om-container news-inner">
+      <div class="om-sec-head is-left om-appear">
+        <span class="en">NEWS</span>
+        <span class="ja">お知らせ</span>
+        <span class="rule"></span>
+      </div>
+
+      <div class="news-body om-appear">
+        <p class="news-empty">お知らせは準備中です。</p>
+        <a href={`${BASE}/news`} class="om-arrow-link">
+          <span class="circle material-icons-outlined">trending_flat</span>
+          <span class="label">一覧を見る</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</OmatsuLayout>
+
+<script is:inline>
+  // ===== メインビジュアル：順番をランダムにしてゆっくり切り替える =====
+  (function () {
+    var box = document.getElementById('hero-slideshow');
+    if (!box) return;
+    var imgs = Array.prototype.slice.call(box.querySelectorAll('img'));
+    if (imgs.length < 2) return;
+
+    // 表示順をシャッフルしてDOMに並べ直す
+    for (var i = imgs.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = imgs[i];
+      imgs[i] = imgs[j];
+      imgs[j] = t;
+    }
+    imgs.forEach(function (img) {
+      img.classList.remove('is-active');
+      img.loading = 'eager';
+      box.appendChild(img);
+    });
+
+    var idx = 0;
+    imgs[0].classList.add('is-active');
+
+    var reduce =
+      window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var interval = reduce ? 6700 : 4600;
+
+    setInterval(function () {
+      if (document.hidden) return;
+      imgs[idx].classList.remove('is-active');
+      idx = (idx + 1) % imgs.length;
+      imgs[idx].classList.add('is-active');
+    }, interval);
+  })();
+
+  (function () {
+    var track = document.getElementById('shorts-track');
+    var marquee = document.getElementById('shorts-marquee');
+    if (!track || !marquee) return;
+
+    // --- サムネイルが無い動画は代替画像に切り替える ---
+    track.querySelectorAll('img[data-fallback]').forEach(function (img) {
+      img.addEventListener(
+        'error',
+        function () {
+          var fb = img.getAttribute('data-fallback');
+          if (fb && img.src !== fb) img.src = fb;
+        },
+        { once: true }
+      );
+    });
+
+    // --- 表示順をランダムに入れ替える ---
+    var items = Array.prototype.slice.call(track.children);
+    for (var i = items.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      track.appendChild(items[j]);
+      items.splice(j, 1);
+    }
+    if (items.length) track.appendChild(items[0]);
+
+    // --- 繋ぎ目なく流すため、同じ並びをもう一組複製する ---
+    var originals = Array.prototype.slice.call(track.children);
+    originals.forEach(function (li) {
+      var clone = li.cloneNode(true);
+      clone.setAttribute('aria-hidden', 'true');
+      clone.querySelectorAll('button').forEach(function (b) {
+        b.tabIndex = -1;
+      });
+      track.appendChild(clone);
+    });
+
+    // --- 動画の本数に応じて一定の速さになるよう時間を決める ---
+    var reduce =
+      window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduce) {
+      track.style.animationDuration = originals.length * 6 + 's';
+      marquee.classList.add('is-running');
+    }
+
+    // --- クリックで再生 ---
+    var modal = document.getElementById('video-modal');
+    var frame = document.getElementById('video-frame');
+    var modalTitle = document.getElementById('video-modal-title');
+
+    function openVideo(id, title) {
+      if (!modal || !frame) return;
+      frame.innerHTML =
+        '<iframe src="https://www.youtube-nocookie.com/embed/' +
+        encodeURIComponent(id) +
+        '?autoplay=1&rel=0&playsinline=1" title="' +
+        String(title).replace(/"/g, '&quot;') +
+        '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
+      if (modalTitle) modalTitle.textContent = title;
+      modal.hidden = false;
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeVideo() {
+      if (!modal || !frame) return;
+      modal.hidden = true;
+      frame.innerHTML = '';
+      document.body.style.overflow = '';
+    }
+
+    track.addEventListener('click', function (e) {
+      var btn = e.target.closest('.short-card');
+      if (!btn) return;
+      openVideo(btn.getAttribute('data-video'), btn.getAttribute('data-title') || '');
+    });
+
+    if (modal) {
+      modal.addEventListener('click', function (e) {
+        if (e.target.closest('[data-close]')) closeVideo();
+      });
+    }
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal && !modal.hidden) closeVideo();
+    });
+  })();
+</script>
+
+<style>
+  /* ===== ヒーロー ===== */
+  .hero {
+    background: var(--om-bg);
+    padding: 50px 24px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero-copy {
+    text-align: center;
+    max-width: 900px;
+  }
+
+  .hero h1 {
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: 0.1em;
+    color: var(--om-black);
+  }
+
+  .hero-brand {
+    font-family: var(--om-font-en);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.7;
+    letter-spacing: 0.2em;
+    color: var(--om-blue);
+    margin-top: 20px;
+  }
+
+  .hero-visual {
+    width: 100%;
+    max-width: 1000px;
+    margin-top: 56px;
+    /* 下半分を白背景に食い込ませる（STUDIO版の重なり表現） */
+    background: linear-gradient(var(--om-bg) 50%, var(--om-white) 50%);
+  }
+
+  /* ===== メインビジュアル（写真の入れ替え） ===== */
+  .hero-slideshow {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--om-bg);
+  }
+
+  .hero-slideshow img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transform: scale(1.06);
+    transition: opacity 1.35s ease, transform 6.7s linear;
+  }
+
+  .hero-slideshow img.is-active {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-slideshow img {
+      transition: opacity 0.4s ease;
+      transform: none;
+    }
+
+    .hero-slideshow img.is-active {
+      transform: none;
+    }
+  }
+
+  /* ===== ABOUT ===== */
+  .about {
+    background: var(--om-bg);
+    padding: 130px 0;
+  }
+
+  .about-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 64px;
+    align-items: center;
+  }
+
+  .about-photo {
+    margin-top: 48px;
+  }
+
+  .about-photo img {
+    width: 100%;
+    height: auto;
+  }
+
+  .about .lead {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.6;
+    letter-spacing: 0.05em;
+    color: var(--om-black);
+  }
+
+  .about .text {
+    font-size: 16px;
+    line-height: 1.7;
+    letter-spacing: 0.05em;
+    color: #000;
+    margin: 24px 0 40px;
+  }
+
+  /* ===== PROJECT ===== */
+  .project {
+    background: var(--om-white);
+    padding: 130px 0;
+    text-align: center;
+  }
+
+  .project-lead {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.6;
+    letter-spacing: 0.05em;
+    color: var(--om-black);
+    margin-top: 56px;
+  }
+
+  .project-text {
+    font-size: 16px;
+    line-height: 1.7;
+    letter-spacing: 0.05em;
+    color: var(--om-black);
+    margin-top: 16px;
+  }
+
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px;
+    margin-top: 56px;
+    text-align: left;
+  }
+
+  .project-card {
+    display: block;
+    height: 100%;
+    background: var(--om-white);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .project-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  .project-thumb {
+    position: relative;
+    aspect-ratio: 3 / 2;
+    background: var(--om-bg);
+    overflow: hidden;
+  }
+
+  .project-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .project-thumb .om-ph {
+    height: 100%;
+    border: none;
+  }
+
+  .project-card-body {
+    padding: 24px;
+  }
+
+  .project-card .status {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    padding: 5px 16px;
+    border-radius: 999px;
+    background: var(--om-blue);
+    color: var(--om-white);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+
+  .project-card h3 {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.6;
+    color: var(--om-black);
+  }
+
+  .project-card .org {
+    font-size: 13px;
+    color: var(--om-gray);
+    margin-top: 6px;
+  }
+
+  .project-card .summary {
+    font-size: 15px;
+    line-height: 1.7;
+    margin-top: 12px;
+  }
+
+  .project-empty {
+    margin-top: 56px;
+    padding: 56px 24px;
+    background: var(--om-bg);
+    font-size: 16px;
+    line-height: 2;
+  }
+
+  .project-more {
+    margin-top: 56px;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* ===== INTERVIEW（YouTubeショート） ===== */
+  .interview {
+    background: var(--om-white);
+    padding: 130px 0;
+    overflow: hidden;
+  }
+
+  .interview-lead {
+    font-size: 16px;
+    line-height: 2;
+    text-align: center;
+    margin-top: 32px;
+  }
+
+  .marquee {
+    margin-top: 56px;
+    /* 帯の両端をふわっと消す */
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent 0,
+      #000 8%,
+      #000 92%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+  }
+
+  .marquee-track {
+    display: flex;
+    gap: 24px;
+    width: max-content;
+    padding: 8px 0;
+  }
+
+  /* 左から右へ流す */
+  .marquee.is-running .marquee-track {
+    animation-name: om-marquee-right;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+
+  @keyframes om-marquee-right {
+    from {
+      transform: translateX(-50%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  /* 触れているあいだは止める */
+  .marquee:hover .marquee-track,
+  .marquee:focus-within .marquee-track {
+    animation-play-state: paused;
+  }
+
+  .short {
+    flex: none;
+  }
+
+  .short-card {
+    position: relative;
+    display: block;
+    width: 200px;
+    padding: 0;
+    border: none;
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--om-bg);
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .short-card:hover,
+  .short-card:focus-visible {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.16);
+  }
+
+  .short-card img {
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    object-fit: cover;
+    display: block;
+  }
+
+  .short-play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.55);
+    color: var(--om-white);
+    font-size: 32px;
+    display: grid;
+    place-items: center;
+    transition: background 0.2s ease;
+  }
+
+  .short-card:hover .short-play {
+    background: var(--om-blue);
+  }
+
+  .short-title {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 28px 12px 12px;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    color: var(--om-white);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.6;
+    text-align: left;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .interview-more {
+    margin-top: 48px;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* ===== 動画モーダル ===== */
+  .video-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+  }
+
+  .video-modal[hidden] {
+    display: none;
+  }
+
+  .video-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+  }
+
+  .video-modal-inner {
+    position: relative;
+    width: min(400px, 100%);
+  }
+
+  .video-frame {
+    aspect-ratio: 9 / 16;
+    max-height: 80vh;
+    margin: 0 auto;
+    background: #000;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .video-frame :global(iframe) {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border: 0;
+  }
+
+  .video-modal-title {
+    color: var(--om-white);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.7;
+    text-align: center;
+    margin-top: 16px;
+  }
+
+  .video-modal-close {
+    position: absolute;
+    top: -52px;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--om-white);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .video-modal-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  /* ===== ENTRY ===== */
+  .entry {
+    background: var(--om-bg);
+    padding: 130px 0;
+  }
+
+  .step-list {
+    max-width: 810px;
+    margin: 56px auto 0;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .step {
+    background: var(--om-white);
+    display: flex;
+    gap: 32px;
+    padding: 40px;
+  }
+
+  .step-no {
+    flex: none;
+    width: 80px;
+    height: 80px;
+    background: var(--om-blue);
+    color: var(--om-white);
+    display: grid;
+    place-items: center;
+    font-family: var(--om-font-en);
+    font-size: 36px;
+    font-weight: 700;
+  }
+
+  .step-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .step-title {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--om-blue);
+  }
+
+  .step-text {
+    font-size: 18px;
+    line-height: 1.4;
+    color: var(--om-text);
+    margin-top: 20px;
+  }
+
+  .step-note {
+    font-size: 15px;
+    line-height: 1.4;
+    color: var(--om-text);
+    margin-top: 20px;
+  }
+
+  .step .om-arrow-link {
+    margin-top: 24px;
+  }
+
+  .entry-cta {
+    margin-top: 56px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .om-entry-btn.is-lg {
+    height: 64px;
+    min-width: 280px;
+    font-size: 17px;
+  }
+
+  /* ===== NEWS ===== */
+  .news {
+    background: var(--om-white);
+    padding: 130px 0;
+  }
+
+  .news-inner {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 64px;
+    align-items: center;
+  }
+
+  .news-empty {
+    font-size: 16px;
+    color: var(--om-text);
+    margin-bottom: 32px;
+  }
+
+  /* ===== レスポンシブ ===== */
+  @media (max-width: 900px) {
+    .hero {
+      padding: 40px 16px 0;
+    }
+
+    .hero h1 {
+      font-size: 26px;
+      letter-spacing: 0.06em;
+    }
+
+    .hero-brand {
+      font-size: 16px;
+    }
+
+    .hero-visual {
+      margin-top: 32px;
+    }
+
+    .about,
+    .project,
+    .interview,
+    .entry,
+    .news {
+      padding: 72px 0;
+    }
+
+    .marquee {
+      margin-top: 32px;
+    }
+
+    .marquee-track {
+      gap: 16px;
+    }
+
+    .short-card {
+      width: 150px;
+    }
+
+    .short-play {
+      width: 42px;
+      height: 42px;
+      font-size: 26px;
+    }
+
+    .interview-more {
+      margin-top: 32px;
+    }
+
+    .video-modal-close {
+      top: -48px;
+    }
+
+    .about-inner,
+    .news-inner {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
+    .about-photo {
+      margin-top: 24px;
+    }
+
+    .about .lead {
+      font-size: 24px;
+    }
+
+    .project-lead {
+      font-size: 22px;
+      margin-top: 40px;
+    }
+
+    .project-grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+      margin-top: 40px;
+    }
+
+    .step {
+      flex-direction: column;
+      gap: 20px;
+      padding: 24px;
+    }
+
+    .step-no {
+      width: 56px;
+      height: 56px;
+      font-size: 26px;
+    }
+
+    .step-title {
+      font-size: 20px;
+    }
+
+    .step-text {
+      font-size: 16px;
+      margin-top: 12px;
+    }
+  }
+</style>

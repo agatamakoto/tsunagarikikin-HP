@@ -64,6 +64,28 @@ try {
 
         <div class="case-card">
           <div class="case-image">
+            <div class="case-placeholder">
+              <span>写真</span>
+              <span class="case-placeholder-note">OMATSU-RebootCAMP<br />お祭りの様子</span>
+            </div>
+          </div>
+          <div class="case-body">
+            <span class="case-label">事例: OMATSU-RebootCAMP</span>
+            <p>「お祭りの継続に向けて担い手を増やしたい自治会・お祭り運営組織」と「お祭りに関わってみたい人」をマッチングするプログラムです。祭りを見る側としてではなく担い手として共に汗を流すことで、地域文化の体験と、会いに行きたいと思える人とのつながりを創出します。地域内外から担い手を繋ぐことにより、100年先も祭りが続く地域を目指しています。</p>
+
+            <div class="badge-list">
+              <span class="badge">事務局: えひめ西条つながり基金</span>
+              <span class="badge">対象: 20歳以上（スキル・経歴不問）</span>
+              <span class="badge">参加費: 無料</span>
+              <span class="badge">舞台: 愛媛県内のお祭り</span>
+            </div>
+
+            <a class="case-button" href="/projects/Omatsu-RebootCAMP">OMATSU-RebootCAMP 詳細へ</a>
+          </div>
+        </div>
+
+        <div class="case-card">
+          <div class="case-image">
             <img src="/saijo-social.png.png" alt="さいじょうソーシャルビジネスサポーターズ" class="case-img" />
           </div>
           <div class="case-body">
@@ -214,6 +236,37 @@ try {
     display: block;
   }
 
+  /* 写真差し替え前の仮枠 */
+  .case-placeholder {
+    width: 100%;
+    height: 100%;
+    min-height: 220px;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 6px;
+    text-align: center;
+    padding: 16px;
+    border: 2px dashed rgba(94, 199, 212, 0.6);
+    background: repeating-linear-gradient(
+      45deg,
+      rgba(94, 199, 212, 0.06),
+      rgba(94, 199, 212, 0.06) 10px,
+      rgba(94, 199, 212, 0.12) 10px,
+      rgba(94, 199, 212, 0.12) 20px
+    );
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
+  .case-placeholder-note {
+    font-size: 0.72rem;
+    font-weight: 400;
+    line-height: 1.6;
+    opacity: 0.75;
+  }
+
   .project-body,
   .case-body {
     padding: var(--spacing-lg);
@@ -305,6 +358,10 @@ try {
     gap: var(--spacing-lg);
     align-items: center;
     padding: var(--spacing-lg);
+  }
+
+  .case-card + .case-card {
+    margin-top: var(--spacing-lg);
   }
 
   .cta-card {

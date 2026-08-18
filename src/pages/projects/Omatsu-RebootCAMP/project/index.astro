@@ -1,0 +1,320 @@
+---
+// src/pages/projects/Omatsu-RebootCAMP/project/index.astro
+import OmatsuLayout from '../../../../layouts/OmatsuLayout.astro';
+import { BASE, projects } from '../../../../lib/omatsu';
+
+const open = projects.filter((p) => p.status !== '募集終了');
+const closed = projects.filter((p) => p.status === '募集終了');
+---
+
+<OmatsuLayout
+  title="プロジェクト一覧"
+  description="OMATSU-Reboot CAMPで担い手を募集している愛媛県内のお祭り一覧です。祭りの特色や地域の想いをご覧いただき、参加したいお祭りをお選びください。"
+  current="project"
+>
+  <div class="om-page-head">
+    <div class="om-container">
+      <h1 class="om-sec-head">
+        <span class="en">PROJECT</span>
+        <span class="ja">募集中のお祭り</span>
+        <span class="rule"></span>
+      </h1>
+    </div>
+  </div>
+
+  <div class="om-container">
+    <nav class="om-breadcrumb">
+      <a href="/">ホーム</a>
+      <span>・</span>
+      <a href="/projects">協働とプロジェクト</a>
+      <span>・</span>
+      <a href={BASE}>OMATSU-RebootCAMP</a>
+      <span>・</span>
+      <span>プロジェクト一覧</span>
+    </nav>
+  </div>
+
+  <section class="list-section">
+    <div class="om-container">
+      <p class="intro om-appear">
+        祭りを見る側として参加するのではなく、祭りの担い手として共に汗を流すことで、<br />
+        地域やお祭りへの深い理解と会いに行きたいと思える人とのつながりを創出します。
+      </p>
+
+      {
+        open.length > 0 ? (
+          <div class="card-grid om-appear">
+            {open.map((p) => (
+              <a href={`${BASE}/project/${p.slug}`} class="card">
+                <div class="card-thumb">
+                  {p.thumbnail ? (
+                    <img src={p.thumbnail} alt={`${p.organization}の様子`} loading="lazy" />
+                  ) : (
+                    <div class="om-ph">
+                      <span>
+                        写真
+                        <span class="note">{p.organization}</span>
+                      </span>
+                    </div>
+                  )}
+                  <span class={`status is-${p.status}`}>{p.status}</span>
+                </div>
+                <div class="card-body">
+                  <h2>{p.catchcopy || p.title}</h2>
+                  <p class="meta">
+                    {p.organization}／{p.title}
+                    <br />
+                    {p.area}
+                    <br />
+                    {p.period}
+                  </p>
+                  <p class="summary">{p.summary}</p>
+                  {p.deadline && <p class="deadline">応募締切：{p.deadline}</p>}
+                  <span class="more">詳しく見る →</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <div class="empty om-appear">
+            <p class="empty-title">現在、募集中のお祭りはありません</p>
+            <p class="empty-text">
+              次の募集は準備が整い次第、このページとお知らせでご案内します。
+              <br />
+              「受け入れ側として参加してみたい」という自治会・お祭り運営組織の皆さまからのご相談もお待ちしています。
+            </p>
+            <a href={`${BASE}/entry`} class="om-arrow-link">
+              <span class="circle material-icons-outlined">trending_flat</span>
+              <span class="label">事務局に問い合わせる</span>
+            </a>
+          </div>
+        )
+      }
+
+      {
+        closed.length > 0 && (
+          <div class="closed om-appear">
+            <h2 class="closed-title">過去のプロジェクト</h2>
+            <ul class="closed-list">
+              {closed.map((p) => (
+                <li>
+                  <a href={`${BASE}/project/${p.slug}`}>
+                    <span class="closed-name">{p.title}</span>
+                    <span class="closed-meta">
+                      {p.organization}／{p.period}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+    </div>
+  </section>
+</OmatsuLayout>
+
+<style>
+  .list-section {
+    padding: 32px 0 120px;
+  }
+
+  .intro {
+    font-size: 16px;
+    line-height: 2;
+    text-align: center;
+    margin-bottom: 64px;
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--om-white);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  .card-thumb {
+    position: relative;
+    aspect-ratio: 3 / 2;
+    background: var(--om-bg);
+    overflow: hidden;
+  }
+
+  .card-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .card-thumb .om-ph {
+    height: 100%;
+    border: none;
+  }
+
+  .card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+  }
+
+  .status {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    padding: 5px 16px;
+    border-radius: 999px;
+    background: var(--om-blue);
+    color: var(--om-white);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+
+  .status.is-募集準備中 {
+    background: var(--om-black);
+  }
+
+  .card h2 {
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1.6;
+    color: var(--om-black);
+  }
+
+  .meta {
+    font-size: 13px;
+    line-height: 1.9;
+    color: var(--om-gray);
+    margin-top: 12px;
+  }
+
+  .summary {
+    font-size: 15px;
+    line-height: 1.8;
+    margin-top: 14px;
+  }
+
+  .deadline {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--om-blue);
+    margin-top: 12px;
+  }
+
+  .card .more {
+    margin-top: auto;
+    padding-top: 16px;
+  }
+
+  .more {
+    display: inline-block;
+    margin-top: 16px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--om-blue);
+  }
+
+  /* ===== 0件のとき ===== */
+  .empty {
+    background: var(--om-bg);
+    padding: 72px 24px;
+    text-align: center;
+  }
+
+  .empty-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--om-black);
+  }
+
+  .empty-text {
+    font-size: 15px;
+    line-height: 2;
+    margin: 20px 0 32px;
+  }
+
+  .empty .om-arrow-link {
+    justify-content: center;
+  }
+
+  /* ===== 過去のプロジェクト ===== */
+  .closed {
+    margin-top: 96px;
+  }
+
+  .closed-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--om-black);
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--om-blue);
+  }
+
+  .closed-list {
+    margin-top: 8px;
+  }
+
+  .closed-list a {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 24px;
+    align-items: baseline;
+    padding: 20px 4px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    transition: color 0.2s ease;
+  }
+
+  .closed-list a:hover {
+    color: var(--om-blue);
+  }
+
+  .closed-name {
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  .closed-meta {
+    font-size: 13px;
+    color: var(--om-gray);
+  }
+
+  @media (max-width: 900px) {
+    .list-section {
+      padding: 24px 0 72px;
+    }
+
+    .intro {
+      text-align: left;
+      margin-bottom: 40px;
+    }
+
+    .card-grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .empty {
+      padding: 48px 20px;
+    }
+
+    .closed {
+      margin-top: 64px;
+    }
+  }
+</style>

@@ -41,6 +41,15 @@ export default {
       return handleManageCancel(cbody.ref, env, cors);
     }
 
+    // ===== OMATSU-RebootCAMP 参加エントリーの受付 =====
+    // フォームの内容を事務局(info@escf.jp)にメールで転送し、応募者には受付確認を返す。
+    // 台帳は事務局が手作業で作成するため、ここでは保存しない。
+    if (url.pathname === "/omatsu-entry" && request.method === "POST") {
+      let ebody;
+      try { ebody = await request.json(); } catch { return json({ error: "invalid json" }, 400, cors); }
+      return handleOmatsuEntry(ebody, env, ctx, cors);
+    }
+
     if (request.method !== "POST") return json({ error: "method not allowed" }, 405, cors);
 
     let body;
@@ -223,6 +232,156 @@ export default {
     return json({ ok: true, subscriptionId: sub.data.id, customerId: cust.data.id }, 200, cors);
   },
 };
+
+// ===== OMATSU-RebootCAMP エントリーの受付 =====
+// 受け取った内容を事務局(info@escf.jp)にメール転送する。応募者には受付確認メールを返す。
+// 応募者データの保存はしない（台帳は事務局が手作業で作成する運用）。
+const OMATSU_OFFICE_TO = "info@escf.jp";
+
+// 生年月日・性別・住所は、参加者を対象とする傷害保険の加入手続きに必要な項目。
+// 当財団と参加先の自治会・お祭り運営組織で共同利用する旨をフォームで明示し、同意を得ている。
+const OMATSU_ENTRY_FIELDS = [
+  { key: "project", label: "参加希望のお祭り", max: 200, required: true },
+  { key: "name", label: "お名前", max: 100, required: true },
+  { key: "kana", label: "フリガナ", max: 100, required: true },
+  { key: "birthdate", label: "生年月日", max: 20, required: true },
+  { key: "age", label: "年齢", max: 10 },
+  { key: "gender", label: "性別", max: 20, required: true },
+  { key: "address", label: "住所", max: 200, required: true },
+  { key: "email", label: "メールアドレス", max: 200, required: true },
+  { key: "tel", label: "電話番号", max: 40, required: true },
+  { key: "experience", label: "お祭りへの参加経験", max: 100 },
+  { key: "motivation", label: "参加を希望する理由", max: 4000, required: true },
+  { key: "note", label: "その他・ご質問", max: 4000 },
+];
+
+async function handleOmatsuEntry(body, env, ctx, cors) {
+  const entry = {};
+  for (const f of OMATSU_ENTRY_FIELDS) {
+    entry[f.key] = str(body[f.key], f.max);
+  }
+
+  // 必須項目のチェック
+  const missing = OMATSU_ENTRY_FIELDS.filter((f) => f.required && !entry[f.key]).map((f) => f.label);
+  if (missing.length) {
+    return json({ error: "未入力の項目があります：" + missing.join("、") }, 400, cors);
+  }
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(entry.email)) {
+    return json({ error: "メールアドレスの形式が正しくありません" }, 400, cors);
+  }
+  if (!body.agree) {
+    return json({ error: "個人情報保護方針への同意が必要です" }, 400, cors);
+  }
+  if (!env.RESEND_API_KEY) {
+    return json({ error: "現在フォームをご利用いただけません。お手数ですがメールにてご連絡ください。" }, 503, cors);
+  }
+
+  const receivedAt = jstDateTimeString();
+
+  // --- 事務局宛の通知メール ---
+  const rows = OMATSU_ENTRY_FIELDS
+    .filter((f) => entry[f.key])
+    .map(
+      (f) =>
+        `<tr><th align="left" style="padding:8px 12px;background:#f6f6f6;white-space:nowrap;vertical-align:top;">${escapeHtml(f.label)}</th>` +
+        `<td style="padding:8px 12px;">${escapeHtml(entry[f.key]).replace(/\n/g, "<br>")}</td></tr>`
+    )
+    .join("");
+
+  const officeHtml =
+    `<p>OMATSU-RebootCAMPの参加エントリーがありました。</p>` +
+    `<p>受付日時：${escapeHtml(receivedAt)}</p>` +
+    `<table border="1" cellspacing="0" cellpadding="0" style="border-collapse:collapse;font-size:14px;">${rows}</table>` +
+    `<p style="font-size:13px;color:#666;">※このメールに返信すると応募者ご本人に届きます。</p>`;
+
+  const officeText =
+    "OMATSU-RebootCAMPの参加エントリーがありました。\n" +
+    "受付日時：" + receivedAt + "\n\n" +
+    OMATSU_ENTRY_FIELDS.filter((f) => entry[f.key])
+      .map((f) => f.label + "：" + entry[f.key])
+      .join("\n");
+
+  const officeSent = await sendResendMail(env, {
+    to: [OMATSU_OFFICE_TO],
+    replyTo: entry.email,
+    subject: `【OMATSU-RebootCAMP】参加エントリー：${entry.name}様（${entry.project}）`,
+    html: officeHtml,
+    text: officeText,
+  });
+
+  // 事務局に届かなければ受付できたことにしない
+  if (!officeSent) {
+    return json({ error: "送信に失敗しました。時間をおいて再度お試しください。" }, 502, cors);
+  }
+
+  // --- 応募者宛の受付確認メール（失敗しても受付自体は成立させる） ---
+  const applicantText =
+    `${entry.name} 様\n\n` +
+    "OMATSU-RebootCAMPへのエントリーをありがとうございます。\n" +
+    "以下の内容で受け付けました。\n\n" +
+    "――――――――――――――――――\n" +
+    OMATSU_ENTRY_FIELDS.filter((f) => entry[f.key])
+      .map((f) => f.label + "：" + entry[f.key])
+      .join("\n") +
+    "\n――――――――――――――――――\n\n" +
+    "数日以内に事務局より、オンライン面談のご案内をお送りします。\n" +
+    "今しばらくお待ちください。\n\n" +
+    "※このメールは自動送信です。ご不明な点はこのままご返信ください。\n" +
+    "※ご記入いただいた個人情報は、参加受付・保険の加入手続き・受け入れ地域との\n" +
+    "　連絡調整の目的で、当財団と参加先の自治会・お祭り運営組織が共同で利用します。\n" +
+    "　開示・訂正・削除のご請求は https://escf.jp/privacy の窓口で承ります。\n\n" +
+    "――――――――――――――――――\n" +
+    "OMATSU-RebootCAMP ～100年後も楽しめる地域をつくろう～\n" +
+    "事務局：公益財団法人えひめ西条つながり基金\n" +
+    "〒793-0030 愛媛県西条市大町1663番地\n" +
+    "https://escf.jp/projects/Omatsu-RebootCAMP\n";
+
+  ctx.waitUntil(
+    sendResendMail(env, {
+      to: [entry.email],
+      replyTo: OMATSU_OFFICE_TO,
+      subject: "【OMATSU-RebootCAMP】エントリーを受け付けました",
+      html: `<pre style="font-family:sans-serif;font-size:14px;line-height:1.8;white-space:pre-wrap;">${escapeHtml(applicantText)}</pre>`,
+      text: applicantText,
+    })
+  );
+
+  return json({ ok: true }, 200, cors);
+}
+
+// Resendでメールを1通送る。成功したら true。
+async function sendResendMail(env, { to, replyTo, subject, html, text }) {
+  if (!env.RESEND_API_KEY) return false;
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + env.RESEND_API_KEY,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: "公益財団法人えひめ西条つながり基金 <info@escf.jp>",
+        to,
+        reply_to: replyTo,
+        subject,
+        html,
+        text,
+      }),
+    });
+    return res.ok;
+  } catch (e) {
+    return false;
+  }
+}
+
+function jstDateTimeString() {
+  const d = new Date(Date.now() + 9 * 3600 * 1000); // JST
+  const p = (n) => String(n).padStart(2, "0");
+  return (
+    d.getUTCFullYear() + "年" + (d.getUTCMonth() + 1) + "月" + d.getUTCDate() + "日 " +
+    p(d.getUTCHours()) + ":" + p(d.getUTCMinutes())
+  );
+}
 
 // ===== サンクスメール送信（Resend経由。RESEND_API_KEY をsecretで登録） =====
 // 記名の寄付者には、受領証PDF（自動生成）＋税額控除に係る証明書PDFを添付する。

@@ -1,0 +1,132 @@
+---
+// src/pages/supporters/[slug].astro
+// 法人サポーターの個別インタビュー記事ページ（長文の読み物）
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const supporters = (await getCollection('supporters')).filter((s) => s.data.published);
+  return supporters.map((s) => ({ params: { slug: s.id }, props: { entry: s } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+---
+
+<Layout title={`${d.name}｜法人サポーターインタビュー`} description={d.title || `${d.name}の法人サポーターインタビュー`}>
+  <Header />
+
+  <main>
+    <article class="article">
+      {d.thumbnail && (
+        <div class="article-hero">
+          <img src={d.thumbnail} alt={d.name} />
+        </div>
+      )}
+
+      <div class="article-container">
+        <p class="article-label">法人サポーターインタビュー</p>
+        {d.title && <h1 class="article-title">{d.title}</h1>}
+
+        <div class="article-company">
+          <img src={d.logo} alt={d.name} class="article-logo" />
+          <div>
+            <p class="article-company-name">{d.name}</p>
+            {d.interviewees && <p class="article-people">{d.interviewees}</p>}
+            {d.url && <a href={d.url} target="_blank" rel="noreferrer" class="article-url">{d.url}</a>}
+          </div>
+        </div>
+
+        <div class="article-body">
+          <Content />
+        </div>
+
+        <div class="article-foot">
+          <a href="/donation/corporate" class="article-back">← 法人サポーター一覧へ</a>
+          <a href="/donation/corporate-monthly" class="article-cta">法人サポーターになる</a>
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .article-hero {
+    width: 100%;
+    max-height: 420px;
+    overflow: hidden;
+    background: #eef4f6;
+  }
+  .article-hero img { width: 100%; height: auto; display: block; object-fit: cover; }
+
+  .article-container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  .article-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    letter-spacing: 0.08em;
+    margin: 0 0 10px;
+  }
+  .article-title {
+    font-size: clamp(1.4rem, 3.5vw, 2rem);
+    line-height: 1.5;
+    color: #1a3547;
+    margin: 0 0 24px;
+  }
+
+  .article-company {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0 24px;
+    border-bottom: 1px solid #e6eef1;
+    margin-bottom: 28px;
+  }
+  .article-logo { height: 48px; max-width: 150px; width: auto; object-fit: contain; }
+  .article-company-name { font-weight: 700; color: #1a3547; margin: 0; }
+  .article-people { font-size: 0.85rem; color: #5a7080; margin: 2px 0 0; }
+  .article-url { font-size: 0.8rem; color: #2a8aaa; word-break: break-all; }
+
+  /* 本文（長文の読み物）タイポグラフィ */
+  .article-body { color: #2f4048; line-height: 2; font-size: 1rem; }
+  .article-body :global(h2) {
+    font-size: 1.25rem; color: #1a3547; margin: 40px 0 14px;
+    padding-left: 12px; border-left: 4px solid var(--color-primary);
+  }
+  .article-body :global(h3) { font-size: 1.05rem; color: #2a8aaa; margin: 28px 0 10px; }
+  .article-body :global(p) { margin: 0 0 20px; }
+  .article-body :global(ul), .article-body :global(ol) { padding-left: 1.4rem; margin: 0 0 20px; }
+  .article-body :global(li) { margin-bottom: 8px; }
+  .article-body :global(strong) { color: #1a3547; background: linear-gradient(transparent 60%, rgba(94,199,212,0.3) 60%); }
+  .article-body :global(blockquote) {
+    margin: 24px 0; padding: 14px 20px; background: #f4fafc;
+    border-left: 4px solid var(--color-primary); border-radius: 0 10px 10px 0; color: #33454f;
+  }
+  .article-body :global(img) { max-width: 100%; height: auto; border-radius: 12px; margin: 16px 0; }
+  .article-body :global(a) { color: #2a8aaa; text-decoration: underline; }
+
+  .article-foot {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 12px; margin-top: 48px; padding-top: 24px; border-top: 1px solid #e6eef1;
+  }
+  .article-back { color: #5a7080; font-size: 0.9rem; }
+  .article-cta {
+    background: var(--color-primary); color: #fff; font-weight: 700;
+    padding: 12px 28px; border-radius: 999px; font-size: 0.92rem;
+  }
+  .article-cta:hover { background: #4baab3; color: #fff; }
+
+  @media (max-width: 480px) {
+    .article-company { flex-direction: column; align-items: flex-start; }
+  }
+</style>
