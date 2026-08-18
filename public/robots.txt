@@ -1,0 +1,30 @@
+User-agent: *
+Allow: /
+
+# 生成AIのクローラーにも読み取りを許可する
+# （ChatGPT・Claude・Perplexity 等に正しく引用してもらうため）
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+Sitemap: https://escf.jp/sitemap-index.xml

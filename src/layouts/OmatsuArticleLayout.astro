@@ -44,13 +44,46 @@ const specs = [
   { label: '参加費', value: fee || '無料（現地までの交通費・宿泊費は自己負担）' },
   outfit ? { label: '服装・持ち物', value: outfit } : null,
 ].filter(Boolean) as { label: string; value: string }[];
+
+// 検索エンジン・生成AIに「どこで・いつ・誰が募集しているか」を伝える
+const eventSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'VolunteerOpportunity',
+  name: `${organization}（${title}）の担い手募集`,
+  description: summary,
+  url: new URL(`${BASE}/project/${slug}`, Astro.site ?? 'https://escf.jp').href,
+  inLanguage: 'ja',
+  datePosted: undefined,
+  applicationDeadline: deadline,
+  isAccessibleForFree: !fee || fee.includes('無料'),
+  locationCreated: { '@type': 'Place', name: area },
+  areaServed: { '@type': 'AdministrativeArea', name: area },
+  organizer: {
+    '@type': 'NGO',
+    name: '公益財団法人えひめ西条つながり基金',
+    url: 'https://escf.jp',
+  },
+  audience: { '@type': 'Audience', audienceType: '20歳以上の方', suggestedMinAge: 20 },
+};
 ---
 
 <OmatsuLayout
   title={headline}
   description={description || summary || `${organization}が奉納する${title}の担い手を募集しています。`}
   current="project"
+  ogType="article"
+  ogImage={heroImage}
+  breadcrumbs={[
+    { name: 'ホーム', url: '/' },
+    { name: '協働とプロジェクト', url: '/projects' },
+    { name: 'OMATSU-Reboot CAMP', url: BASE },
+    { name: 'プロジェクト一覧', url: `${BASE}/project` },
+    { name: organization, url: `${BASE}/project/${slug}` },
+  ]}
 >
+  <!-- 募集要項として検索エンジン・生成AIに読ませる構造化データ -->
+  <script type="application/ld+json" set:html={JSON.stringify(eventSchema)} />
+
   <div class="om-page-head">
     <div class="om-container">
       <div class="om-sec-head">

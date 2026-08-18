@@ -11,6 +11,12 @@ const closed = projects.filter((p) => p.status === '募集終了');
   title="プロジェクト一覧"
   description="OMATSU-Reboot CAMPで担い手を募集している愛媛県内のお祭り一覧です。祭りの特色や地域の想いをご覧いただき、参加したいお祭りをお選びください。"
   current="project"
+  breadcrumbs={[
+    { name: 'ホーム', url: '/' },
+    { name: '協働とプロジェクト', url: '/projects' },
+    { name: 'OMATSU-Reboot CAMP', url: BASE },
+    { name: 'プロジェクト一覧', url: '/projects/Omatsu-RebootCAMP/project' },
+  ]}
 >
   <div class="om-page-head">
     <div class="om-container">

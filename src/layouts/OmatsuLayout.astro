@@ -2,15 +2,37 @@
 // src/layouts/OmatsuLayout.astro
 // OMATSU-RebootCAMP 専用レイアウト（STUDIO版のデザインを再現）
 // 基金サイト本体（Layout.astro）とは別系統。グローバルCSSを共有しない。
-import { BASE, CONTACT_EMAIL, LOGO, SITE_DESCRIPTION } from '../lib/omatsu';
+import {
+  BASE,
+  CONTACT_EMAIL,
+  HERO_IMAGES,
+  LOGO,
+  SITE_DESCRIPTION,
+} from '../lib/omatsu';
 
 interface Props {
   title: string;
   description?: string;
   current?: 'top' | 'about' | 'project' | 'sponsor' | 'news' | 'entry';
+  /** SNSシェア用の画像（省略時はメインビジュアル） */
+  ogImage?: string;
+  /** 記事ページなら 'article'。省略時は 'website' */
+  ogType?: 'website' | 'article';
+  /** パンくずの構造化データ用。[{name, url}] を上位から順に */
+  breadcrumbs?: { name: string; url: string }[];
+  /** 検索結果に出したくないページは true */
+  noindex?: boolean;
 }
 
-const { title, description, current } = Astro.props;
+const {
+  title,
+  description,
+  current,
+  ogImage,
+  ogType = 'website',
+  breadcrumbs,
+  noindex = false,
+} = Astro.props;
 
 const nav = [
   { en: 'ABOUT', ja: 'プログラムについて', href: `${BASE}/about`, key: 'about' },
@@ -18,6 +40,61 @@ const nav = [
   { en: 'SPONSOR', ja: '協賛企業', href: `${BASE}/sponsor`, key: 'sponsor' },
   { en: 'NEWS', ja: 'お知らせ', href: `${BASE}/news`, key: 'news' },
 ];
+
+// ===== 検索エンジン・生成AI向けの情報 =====
+const site = Astro.site ?? new URL('https://escf.jp');
+const canonical = new URL(Astro.url.pathname, site).href.replace(/\/$/, '') || site.href;
+const metaDescription = description || SITE_DESCRIPTION;
+const pageTitle = `${title} | OMATSU-Reboot CAMP`;
+const ogImageUrl = new URL(ogImage || HERO_IMAGES[0], site).href;
+
+// プログラム本体の説明。生成AIや検索エンジンが「何の取り組みか」を
+// 正確に読み取れるよう、主催者・対象・地域・費用まで明示する。
+const programSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'VolunteerOpportunity',
+  name: 'OMATSU-Reboot CAMP',
+  alternateName: 'OMATSU-RebootCAMP／オマツリブートキャンプ',
+  description: SITE_DESCRIPTION,
+  url: new URL(BASE, site).href,
+  inLanguage: 'ja',
+  provider: {
+    '@type': 'NGO',
+    name: '公益財団法人えひめ西条つながり基金',
+    url: site.href,
+    email: CONTACT_EMAIL,
+    address: {
+      '@type': 'PostalAddress',
+      postalCode: '793-0030',
+      addressCountry: 'JP',
+      addressRegion: '愛媛県',
+      addressLocality: '西条市',
+      streetAddress: '大町1663番地',
+    },
+  },
+  areaServed: { '@type': 'AdministrativeArea', name: '愛媛県西条市' },
+  audience: {
+    '@type': 'Audience',
+    audienceType: '20歳以上で地域のお祭りや伝統文化に関心のある方',
+    suggestedMinAge: 20,
+  },
+  isAccessibleForFree: true,
+  keywords:
+    '西条祭り, 飯積神社祭礼, 伊曽乃神社祭礼, 太鼓台, だんじり, 屋台, 祭りの担い手, 愛媛県西条市, 地域おこし, 関係人口',
+};
+
+const breadcrumbSchema = breadcrumbs?.length
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: breadcrumbs.map((b, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: b.name,
+        item: new URL(b.url, site).href,
+      })),
+    }
+  : null;
 ---
 
 <!doctype html>
@@ -25,8 +102,45 @@ const nav = [
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content={description || SITE_DESCRIPTION} />
-    <title>{title} | OMATSU-Reboot CAMP</title>
+    <meta name="description" content={metaDescription} />
+    <title>{pageTitle}</title>
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    {
+      !noindex && (
+        <meta
+          name="robots"
+          content="index, follow, max-image-preview:large, max-snippet:-1"
+        />
+      )
+    }
+
+    <!-- SNSでシェアされたときの見え方 -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content="OMATSU-Reboot CAMP" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={metaDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:locale" content="ja_JP" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={metaDescription} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <!-- 検索エンジン・生成AI向けの構造化データ -->
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(programSchema)}
+    />
+    {
+      breadcrumbSchema && (
+        <script
+          type="application/ld+json"
+          set:html={JSON.stringify(breadcrumbSchema)}
+        />
+      )
+    }
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
