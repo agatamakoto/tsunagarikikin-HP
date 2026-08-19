@@ -103,7 +103,7 @@ export const projects: OmatsuProject[] = [
     slug: 'hongo',
     title: '西条祭り（飯積神社祭礼）',
     organization: '飯岡本郷太鼓台',
-    catchcopy: '龍の物語が美しい、本郷スタイルのかき夫参加者募集！',
+    catchcopy: '龍の物語が美しい本郷スタイルの秋祭りに参加しよう！',
     area: '愛媛県西条市飯岡本郷',
     period: '2026年10月16日（金）〜17日（土）',
     deadline: '2026年10月7日（水）',
