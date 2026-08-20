@@ -36,3 +36,14 @@ id = "7c1fa034d2964acebc8319982a9b3428"
 #   3. npx wrangler secret put SHEETS_WEBHOOK_SECRET  → スクリプトと同じ合言葉を貼り付け
 #   4. npx wrangler deploy
 #   （SHEETS_WEBHOOK_URL が無い間、台帳追記は自動的にスキップされます。決済には影響しません）
+
+# 継続寄付の「2回目以降」を台帳に残すための Pay.jp Webhook
+#   継続寄付の更新課金はPay.jpが自動で行うためWorkerが動かず、そのままでは台帳に残りません。
+#   Pay.jpからの通知を受けて追記するため、以下を設定します。
+#   1. Pay.jp管理画面 → Webhook で通知先URLを登録
+#        https://saijo-monthly-donation.agata-a57.workers.dev/payjp-webhook
+#        （送信するイベントに subscription.renewed を含めること）
+#   2. 同画面に表示される Webhookトークン（whook_… ）を控える
+#   3. npx wrangler secret put PAYJP_WEBHOOK_TOKEN  → そのトークンを貼り付け
+#   4. npx wrangler deploy
+#   （PAYJP_WEBHOOK_TOKEN が未設定の間、なりすまし防止のため通知は受け付けません）
