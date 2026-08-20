@@ -9,10 +9,13 @@
  *   - SHEETS_WEBHOOK_SECRET : Apps Script側と一致させる合言葉（なりすまし防止）
  */
 
+// 追記できたかを true / false で返す。
+// 決済フローからの呼び出しは戻り値を見ない（従来どおり、失敗しても決済は成立させる）。
+// Pay.jp Webhook からの呼び出しだけは、失敗時にPay.jpへ再送させるため結果を必要とする。
 export async function appendDonationRow(env, donor, txnId) {
-  if (!env.SHEETS_WEBHOOK_URL) return;
+  if (!env.SHEETS_WEBHOOK_URL) return false;
   try {
-    await fetch(env.SHEETS_WEBHOOK_URL, {
+    const res = await fetch(env.SHEETS_WEBHOOK_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -21,7 +24,11 @@ export async function appendDonationRow(env, donor, txnId) {
         row: donorToRow(donor, txnId),
       }),
     });
-  } catch (e) { /* 追記失敗はKVに残っているので握りつぶす */ }
+    return res.ok;
+  } catch (e) {
+    /* 追記失敗はKVに残っているので、決済フロー側では握りつぶす */
+    return false;
+  }
 }
 
 // 4月始まりの年度タブ名（例：2026年4月〜2027年3月 → "2026年度"）

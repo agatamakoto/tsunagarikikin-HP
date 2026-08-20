@@ -41,6 +41,13 @@ export default {
       return handleManageCancel(cbody.ref, env, cors);
     }
 
+    // ===== Pay.jp からの通知（Webhook） =====
+    // 継続寄付の2回目以降はPay.jpが自動で課金するため、このWorkerは呼ばれない。
+    // その更新分を台帳に残すため、Pay.jpからの通知を受けてここで追記する。
+    if (url.pathname === "/payjp-webhook" && request.method === "POST") {
+      return handlePayjpWebhook(request, env, ctx);
+    }
+
     // ===== OMATSU-RebootCAMP 参加エントリーの受付 =====
     // フォームの内容を事務局(info@escf.jp)にメールで転送し、応募者には受付確認を返す。
     // 台帳は事務局が手作業で作成するため、ここでは保存しない。
@@ -580,6 +587,88 @@ function buildThanksEmail({ donor, kind, amount, subscriptionId, reference, bank
 </body></html>`;
 
   return { subject, html, text };
+}
+
+// ===== Pay.jp からの通知（Webhook）=====
+//
+// なぜ必要か：
+//   継続寄付は「申込時」にこのWorkerが台帳へ1行追記する。しかし2回目以降の課金は
+//   Pay.jpが自動で行うためWorkerが動かず、そのままでは台帳に一切残らない。
+//   （＝毎月の更新分が台帳から抜け、寄付総額が実際より少なくなる）
+//   そこでPay.jpからの通知を受け取り、更新分をここで追記する。
+//
+// 扱うイベント：
+//   subscription.renewed … 定期課金の「期間更新」＝2回目以降の課金
+//   初回申込は subscription.created という別イベントなので、
+//   申込時の追記と二重にならない。
+//
+// なりすまし対策：
+//   Pay.jpは全ての通知に X-Payjp-Webhook-Token を付ける。
+//   管理画面で確認できる値を PAYJP_WEBHOOK_TOKEN に設定し、一致しない通知は拒否する。
+//   （未設定のまま公開すると誰でも台帳に書き込めてしまうため、未設定なら受け付けない）
+async function handlePayjpWebhook(request, env, ctx) {
+  if (!env.PAYJP_WEBHOOK_TOKEN) return new Response("webhook token not configured", { status: 500 });
+  if (request.headers.get("X-Payjp-Webhook-Token") !== env.PAYJP_WEBHOOK_TOKEN) {
+    return new Response("forbidden", { status: 403 });
+  }
+
+  let event;
+  try { event = await request.json(); } catch { return new Response("invalid json", { status: 400 }); }
+
+  // 対象外のイベントは200で返す（Pay.jpに再送させないため）
+  if (event.type !== "subscription.renewed") return new Response("ignored", { status: 200 });
+  // テストモードの通知を本番の台帳に混ぜない
+  if (event.livemode === false) return new Response("ignored: test mode", { status: 200 });
+
+  const result = await recordSubscriptionRenewal(env, event);
+  // 失敗時は5xxを返してPay.jpに再送させる。重複は下の dedupeKey で防いでいるので再送は安全。
+  return new Response(result.message, { status: result.ok ? 200 : 500 });
+}
+
+async function recordSubscriptionRenewal(env, event) {
+  const sub = event.data || {};
+  const subId = sub.id;
+  if (!subId) return { ok: true, message: "no subscription id" };
+  if (!env.DONORS) return { ok: false, message: "kv unavailable" };
+
+  // 同じ課金期間の通知が二重に記録されないようにする（Pay.jpは通知を再送することがある）
+  const periodStart = sub.current_period_start;
+  const dedupeKey = `ledger:renewed:${subId}:${periodStart}`;
+  try {
+    if (await env.DONORS.get(dedupeKey)) return { ok: true, message: "already recorded" };
+  } catch (e) { /* KV読み取り失敗時は追記を試みる（取りこぼしより重複の方が発見しやすい） */ }
+
+  // 申込時に保存した寄付者情報（氏名・住所・使いみち等）を引く
+  let donor = null;
+  try {
+    const raw = await env.DONORS.get("sub:" + subId);
+    if (raw) donor = JSON.parse(raw);
+  } catch (e) { /* 引けなくても金額だけは台帳に残す */ }
+
+  // 金額はPay.jp側のプラン金額を正とする（申込後に金額変更があってもズレない）
+  const amount = (sub.plan && sub.plan.amount) || (donor && donor.amount) || 0;
+  if (!amount) return { ok: true, message: "amount unknown, skipped" };
+
+  const row = donor
+    ? { ...donor, amount }
+    : {
+        // KVに寄付者情報が無い場合でも、入金の事実は台帳に残す
+        entityType: "individual", anonymous: false, donationType: "recurring",
+        billingCycle: "month", purpose: "財団運営", amount, email: "",
+      };
+
+  const appended = await appendDonationRow(env, row, `${subId}（${periodLabel(periodStart)}分）`);
+  if (!appended) return { ok: false, message: "sheet append failed" };
+
+  try { await env.DONORS.put(dedupeKey, new Date().toISOString()); } catch (e) { /* 重複防止の記録漏れは許容 */ }
+  return { ok: true, message: "recorded" };
+}
+
+// Unix秒（Pay.jpの課金期間開始）を「2026/08」形式にする
+function periodLabel(unixSeconds) {
+  if (!unixSeconds) return "";
+  const jst = new Date(unixSeconds * 1000 + 9 * 3600 * 1000);
+  return jst.getUTCFullYear() + "/" + String(jst.getUTCMonth() + 1).padStart(2, "0");
 }
 
 // ===== マイページ（本人によるご登録内容の確認・解約） =====

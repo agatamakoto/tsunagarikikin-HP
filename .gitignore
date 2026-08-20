@@ -35,3 +35,7 @@ dist-ssr/
 donation-worker/assets/
 donation-worker/worker/node_modules/
 donation-worker/worker/dist-check/
+
+# Cloudflare Worker のローカル用シークレット（絶対にコミットしない）
+.dev.vars
+**/.dev.vars
