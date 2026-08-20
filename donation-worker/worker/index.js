@@ -360,7 +360,7 @@ async function handleOmatsuEntry(body, env, ctx, cors) {
 async function sendResendMail(env, { to, replyTo, subject, html, text }) {
   if (!env.RESEND_API_KEY) return false;
   try {
-    const res = await fetch("https://api.resend.com/emails", {
+    const res = await fetch(resendEndpoint(env), {
       method: "POST",
       headers: {
         Authorization: "Bearer " + env.RESEND_API_KEY,
@@ -395,7 +395,6 @@ function jstDateTimeString() {
 // 匿名寄付は氏名・住所を記載できないため、受領証は発行しない（本文のみ）。
 async function sendThanks(env, { donor, kind, amount, subscriptionId, reference }) {
   if (!env.RESEND_API_KEY || !donor.email) return;
-  const mail = buildThanksEmail({ donor, kind, amount, subscriptionId, reference, bank: bankInfo(env) });
 
   // 銀行振込はまだ入金されていないため、受領証・控除証明書は添付しない。
   // （事務局が着金を確認したうえで発行する）
@@ -426,8 +425,18 @@ async function sendThanks(env, { donor, kind, amount, subscriptionId, reference 
     } catch (e) { /* 添付生成に失敗しても本文メールは送る */ }
   }
 
+  // 本文の案内は「実際に添付できたか」に合わせる。
+  // 先に文面を作ってしまうと、添付に失敗したときに
+  // 「添付しました」と書いてあるのに添付が無いメールになるため。
+  const receiptAttached = attachments.some((a) => a.filename.startsWith("寄付金受領証"));
+  const certAttached = attachments.some((a) => a.filename.startsWith("税額控除"));
+  const mail = buildThanksEmail({
+    donor, kind, amount, subscriptionId, reference,
+    bank: bankInfo(env), receiptAttached, certAttached,
+  });
+
   try {
-    await fetch("https://api.resend.com/emails", {
+    await fetch(resendEndpoint(env), {
       method: "POST",
       headers: {
         Authorization: "Bearer " + env.RESEND_API_KEY,
@@ -484,7 +493,7 @@ function bankInfo(env) {
   };
 }
 
-function buildThanksEmail({ donor, kind, amount, subscriptionId, reference, bank }) {
+function buildThanksEmail({ donor, kind, amount, subscriptionId, reference, bank, receiptAttached, certAttached }) {
   const anon = !!donor.anonymous;
   const isBank = kind === "bank";
   const isCorp = donor.entityType === "corporate";
@@ -499,11 +508,20 @@ function buildThanksEmail({ donor, kind, amount, subscriptionId, reference, bank
   const subject = isBank
     ? "【えひめ西条つながり基金】お振込先のご案内（お申込みありがとうございました）"
     : "【えひめ西条つながり基金】ご寄付ありがとうございました";
+  // 実際に添付できたものだけを案内する
+  const attachedNote =
+    receiptAttached && certAttached
+      ? "寄付金受領証および税額控除に係る証明書を、このメールに添付しております。確定申告の際にご利用ください。"
+      : receiptAttached
+        ? "寄付金受領証を、このメールに添付しております。税額控除に係る証明書は追ってお送りいたします。"
+        : certAttached
+          ? "税額控除に係る証明書を、このメールに添付しております。寄付金受領証は追ってお送りいたします。"
+          : "寄付金受領証および税額控除に係る証明書は、追ってお送りいたします。";
   const receiptNote = isBank
     ? "寄付金受領証および税額控除に係る証明書は、ご入金を確認したのちにお送りいたします。"
     : anon
       ? "匿名でのご寄付のため、寄付金受領証は発行いたしません。"
-      : "寄付金受領証および税額控除に係る証明書は、追ってお送りいたします。";
+      : attachedNote;
 
   // 銀行振込：振込先のご案内ブロック
   const bankRows = isBank && bank ? [
@@ -658,10 +676,29 @@ async function recordSubscriptionRenewal(env, event) {
       };
 
   const appended = await appendDonationRow(env, row, `${subId}（${periodLabel(periodStart)}分）`);
+  // 追記に失敗した場合はここで終了し、Pay.jpに再送させる。
+  // このあとのメール送信まで進まないので、再送で二重にメールが届くことはない。
   if (!appended) return { ok: false, message: "sheet append failed" };
 
   try { await env.DONORS.put(dedupeKey, new Date().toISOString()); } catch (e) { /* 重複防止の記録漏れは許容 */ }
+
+  // 毎月の課金でも、初回と同じようにお礼メール（受領証・控除証明書つき）を送る。
+  // Pay.jpが自動で課金するだけでは寄付者に何の連絡も届かないため。
+  if (donor && donor.email) {
+    await sendThanks(env, {
+      donor: row,
+      kind: donor.billingCycle === "year" ? "yearly" : "monthly",
+      amount,
+      subscriptionId: subId,
+    });
+  }
+
   return { ok: true, message: "recorded" };
+}
+
+// メール送信先。通常はResend。ローカル検証時のみ RESEND_API_URL で差し替える。
+function resendEndpoint(env) {
+  return env.RESEND_API_URL || "https://api.resend.com/emails";
 }
 
 // Unix秒（Pay.jpの課金期間開始）を「2026/08」形式にする

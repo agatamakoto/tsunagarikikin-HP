@@ -101,7 +101,7 @@ export async function buildReceiptPdf({ donor, kind, amount, receiptNo, issuedAt
   // 発行者情報
   const issuerLines = [
     "公益財団法人えひめ西条つながり基金",
-    "愛媛県西条市（本部所在地）",
+    "愛媛県西条市大町1663番地",
     "TEL 0897-47-6943 ／ info@escf.jp",
   ];
   issuerLines.forEach((line, i) => {
