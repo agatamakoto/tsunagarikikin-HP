@@ -112,6 +112,19 @@ export const projects: OmatsuProject[] = [
     thumbnail: '/images/omatsu/project/hongo/01.jpg',
     status: '募集中',
   },
+  {
+    slug: 'ishizuchi',
+    title: '石鎚神社秋季例大祭',
+    organization: '石鎚神社',
+    catchcopy: '西日本最高峰・石鎚山の秋季例大祭で「おかげ神輿」を共に担ごう！',
+    area: '愛媛県西条市（石鎚神社）',
+    period: '2026年10月5日（月）11:30〜15:00頃',
+    deadline: '2026年9月25日（金）',
+    summary:
+      '御神像をお乗せした「おかげ神輿」の担ぎ手を募集。地域を練り歩いたのち、石鎚神社でしか行われない特殊神事「御神像拝戴」を体験できます。',
+    thumbnail: '/images/omatsu/project/ishizuchi/01.jpg',
+    status: '募集中',
+  },
 ];
 
 /** エントリーフォームの選択肢や申込データに使う表記。
