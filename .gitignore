@@ -39,3 +39,8 @@ donation-worker/worker/dist-check/
 # Cloudflare Worker のローカル用シークレット（絶対にコミットしない）
 .dev.vars
 **/.dev.vars
+
+# Wrangler のローカル実行状態（KVのローカルコピー・寄付テストデータ・
+# 証明書/フォント等の実バイナリが入るため、絶対にコミットしない）
+.wrangler/
+**/.wrangler/
