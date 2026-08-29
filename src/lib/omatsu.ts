@@ -113,6 +113,20 @@ export const projects: OmatsuProject[] = [
     status: '募集中',
   },
   {
+    slug: 'konyamachi',
+    title: '西条まつり（伊曽乃神社祭礼）',
+    organization: '紺屋町',
+    catchcopy: '担いでこそ西条の祭り、紺屋町だ！',
+    area: '愛媛県西条市紺屋町',
+    period: '2026年10月15日（木）〜16日（金）',
+    deadline: '2026年9月29日（火）',
+    summary:
+      '約80台あるだんじりの中でも珍しい「台車がない」スタイル。最後まで人の力だけで舁き続ける紺屋町流の祭りを、共に担う仲間を募集します。',
+    // 写真の受領後にコメントを外す
+    // thumbnail: '/images/omatsu/project/konyamachi/01.jpg',
+    status: '募集中',
+  },
+  {
     slug: 'ishizuchi',
     title: '石鎚神社秋季例大祭',
     organization: '石鎚神社',
