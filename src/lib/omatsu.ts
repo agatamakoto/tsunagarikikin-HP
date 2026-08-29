@@ -75,20 +75,20 @@ export interface OmatsuProject {
 export const projects: OmatsuProject[] = [
   {
     slug: 'daishimachi',
-    title: '西条祭り（伊曽乃神社祭礼）',
+    title: '西条まつり（伊曽乃神社祭礼）',
     organization: '大師町屋台',
     catchcopy: '絆が燃える！絵巻にのこる大師町屋台で、忘れられない秋祭りを！',
     area: '愛媛県西条市大師町',
     period: '2026年10月15日（木）〜16日（金）',
     deadline: '2026年9月22日（火）',
     summary:
-      '西条藩の陣屋跡のそばに残る、住む人20軒に満たない町。それでも思いを繋いだ人々が毎年集います。町の一員として西条祭りに参加しませんか。',
+      '西条藩の陣屋跡のそばに残る、住む人20軒に満たない町。それでも思いを繋いだ人々が毎年集います。町の一員として西条まつりに参加しませんか。',
     thumbnail: '/images/omatsu/project/daishimachi/01.jpg',
     status: '募集中',
   },
   {
     slug: 'otani',
-    title: '西条祭り（飯積神社祭礼）',
+    title: '西条まつり（飯積神社祭礼）',
     organization: '大谷太鼓台',
     catchcopy: '寄せ太鼓が魅せる！迫力と一体感の【大谷太鼓台】のお祭り！',
     area: '愛媛県西条市大谷',
@@ -101,7 +101,7 @@ export const projects: OmatsuProject[] = [
   },
   {
     slug: 'hongo',
-    title: '西条祭り（飯積神社祭礼）',
+    title: '西条まつり（飯積神社祭礼）',
     organization: '飯岡本郷太鼓台',
     catchcopy: 'あなたの差し上げが今年の本郷太鼓台をつくる！',
     area: '愛媛県西条市飯岡本郷',
@@ -122,8 +122,7 @@ export const projects: OmatsuProject[] = [
     deadline: '2026年9月29日（火）',
     summary:
       '約80台あるだんじりの中でも珍しい「台車がない」スタイル。最後まで人の力だけで舁き続ける紺屋町流の祭りを、共に担う仲間を募集します。',
-    // 写真の受領後にコメントを外す
-    // thumbnail: '/images/omatsu/project/konyamachi/01.jpg',
+    thumbnail: '/images/omatsu/project/konyamachi/01.jpg',
     status: '募集中',
   },
   {
