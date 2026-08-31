@@ -116,13 +116,26 @@ export const projects: OmatsuProject[] = [
     slug: 'konyamachi',
     title: '西条まつり（伊曽乃神社祭礼）',
     organization: '紺屋町',
-    catchcopy: '担いでこそ西条の祭り、紺屋町だ！',
+    catchcopy: '絵巻に残る歴史を今に継ぐ！担いでこそが西条伝統の祭り！',
     area: '愛媛県西条市紺屋町',
     period: '2026年10月15日（木）〜16日（金）',
     deadline: '2026年9月29日（火）',
     summary:
-      '約80台あるだんじりの中でも珍しい「台車がない」スタイル。最後まで人の力だけで舁き続ける紺屋町流の祭りを、共に担う仲間を募集します。',
+      '約80台あるだんじりの中でも珍しい「台車がない」スタイル。江戸時代から絵巻に残る伝統的な担ぎ方を今に伝える紺屋町屋台の、あつい仲間を募集します。',
     thumbnail: '/images/omatsu/project/konyamachi/01.jpg',
+    status: '募集中',
+  },
+  {
+    slug: 'kamigawara',
+    title: '西条まつり（伊曽乃神社祭礼）',
+    organization: '上川原屋台',
+    catchcopy: '黒塗りの彫刻が映える！自分達で歴伝を紡ぎ始めた上川原屋台のお祭りを堪能しよう！',
+    area: '愛媛県西条市喜多川（神拝校区）',
+    period: '2026年10月15日（木）〜16日（金）',
+    deadline: '2026年9月20日（日）',
+    summary:
+      '1985年の奉納開始から40年。自治会ではなく市内外の有志による「上川原屋台保存会」が運営し、老若男女みんなが楽しめる祭りを心掛けています。',
+    thumbnail: '/images/omatsu/project/kamigawara/01.jpg',
     status: '募集中',
   },
   {
