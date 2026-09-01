@@ -139,6 +139,19 @@ export const projects: OmatsuProject[] = [
     status: '募集中',
   },
   {
+    slug: 'hagyunishi',
+    title: '萩岡神社秋季例大祭・山根グラウンドかきくらべ',
+    organization: '萩生西太鼓台',
+    catchcopy: '120年余の歴史を持つ！新居浜・萩生西太鼓台の「本物の担ぎ」で最高の秋祭りを一緒に作ろう！',
+    area: '愛媛県新居浜市中萩校区（萩生西）',
+    period: '2026年10月16日（金）〜18日（日）',
+    deadline: '2026年9月28日（月）',
+    summary:
+      '2尺5寸の大太鼓と、自分たちの手で担ぎきる豪快な「担ぎ太鼓」。120年以上引き継がれてきた新居浜の太鼓台を、全力で担いでみませんか。1日だけの参加も可能です。',
+    thumbnail: '/images/omatsu/project/hagyunishi/01.jpg',
+    status: '募集中',
+  },
+  {
     slug: 'ishizuchi',
     title: '石鎚神社秋季例大祭',
     organization: '石鎚神社',
