@@ -132,7 +132,7 @@ export const projects: OmatsuProject[] = [
     catchcopy: '黒塗りの彫刻が映える！自分達で歴伝を紡ぎ始めた上川原屋台のお祭りを堪能しよう！',
     area: '愛媛県西条市喜多川（神拝校区）',
     period: '2026年10月15日（木）〜16日（金）',
-    deadline: '2026年9月20日（日）',
+    deadline: '2026年9月末日',
     summary:
       '1985年の奉納開始から40年。自治会ではなく市内外の有志による「上川原屋台保存会」が運営し、老若男女みんなが楽しめる祭りを心掛けています。',
     thumbnail: '/images/omatsu/project/kamigawara/01.jpg',
