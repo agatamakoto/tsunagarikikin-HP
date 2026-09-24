@@ -359,6 +359,12 @@ export const sponsors: Sponsor[] = [
     url: 'https://www.mapion.co.jp/phonebook/M02031/38206/23830209628/',
     linkLabel: '関連サイト',
   },
+  {
+    name: 'スタジオ華縁さま',
+    tier: 'bronze',
+    logo: '/images/omatsu/sponsors/hana-enishi.png',
+    url: 'https://hana-enishi.co.jp/',
+  },
 ];
 
 /** 指定した階級の協賛企業を取り出す */
