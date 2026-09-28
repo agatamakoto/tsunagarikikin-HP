@@ -62,13 +62,20 @@ export interface OmatsuProject {
   area: string;
   /** 開催時期（表示用の自由文） */
   period: string;
-  /** 応募の締切（省略可） */
+  /** 応募の締切（省略可・表示用の文） */
   deadline?: string;
+  /** 応募締切の最終日（日本時間・YYYY-MM-DD）。
+   *  この日を過ぎると、下の status が '募集中' のままでも
+   *  自動的に「募集終了」の表示に切り替わる（締切日当日はまだ募集中）。
+   *  上の deadline と必ず同じ日付にしておくこと。 */
+  deadlineDate?: string;
   /** 一覧カードに出す短い紹介文 */
   summary: string;
   /** 一覧カードのサムネイル画像。未設定なら仮枠 */
   thumbnail?: string;
-  /** 募集状況 */
+  /** 募集状況。
+   *  締切日より前に募集を打ち切るときだけ '募集終了' を手で入れる。
+   *  締切日を過ぎた分は deadlineDate から自動で終了になるので、書き換え不要。 */
   status: '募集中' | '募集準備中' | '募集終了';
 }
 
@@ -81,6 +88,7 @@ export const projects: OmatsuProject[] = [
     area: '愛媛県西条市大師町',
     period: '2026年10月15日（木）〜16日（金）',
     deadline: '2026年9月22日（火）',
+    deadlineDate: '2026-09-22',
     summary:
       '西条藩の陣屋跡のそばに残る、住む人20軒に満たない町。それでも思いを繋いだ人々が毎年集います。町の一員として西条まつりに参加しませんか。',
     thumbnail: '/images/omatsu/project/daishimachi/01.jpg',
@@ -94,6 +102,7 @@ export const projects: OmatsuProject[] = [
     area: '愛媛県西条市大谷',
     period: '2026年10月17日（土）午前2時〜',
     deadline: '2026年9月末日',
+    deadlineDate: '2026-09-30',
     summary:
       '11台の太鼓台が一斉に差し上げる「寄せ太鼓」発祥の地。誰もが気軽に肩を並べられる温かさが魅力の大谷太鼓台で、共に担ぐ仲間を募集します。',
     thumbnail: '/images/omatsu/project/otani/01.jpg',
@@ -107,6 +116,7 @@ export const projects: OmatsuProject[] = [
     area: '愛媛県西条市飯岡本郷',
     period: '2026年10月16日（金）〜17日（土）',
     deadline: '2026年10月7日（水）',
+    deadlineDate: '2026-10-07',
     summary:
       '寄せ担き発祥の地・飯積神社秋季祭礼で、飯岡地区11台の一斉差し上げに挑みます。100人以上のかき夫で担ぐ本郷太鼓台。みんな初めてから始まります。',
     thumbnail: '/images/omatsu/project/hongo/01.jpg',
@@ -120,6 +130,7 @@ export const projects: OmatsuProject[] = [
     area: '愛媛県西条市紺屋町',
     period: '2026年10月15日（木）〜16日（金）',
     deadline: '2026年9月29日（火）',
+    deadlineDate: '2026-09-29',
     summary:
       '約80台あるだんじりの中でも珍しい「台車がない」スタイル。江戸時代から絵巻に残る伝統的な担ぎ方を今に伝える紺屋町屋台の、あつい仲間を募集します。',
     thumbnail: '/images/omatsu/project/konyamachi/01.jpg',
@@ -133,6 +144,7 @@ export const projects: OmatsuProject[] = [
     area: '愛媛県西条市喜多川（神拝校区）',
     period: '2026年10月15日（木）〜16日（金）',
     deadline: '2026年9月末日',
+    deadlineDate: '2026-09-30',
     summary:
       '1985年の奉納開始から40年。自治会ではなく市内外の有志による「上川原屋台保存会」が運営し、老若男女みんなが楽しめる祭りを心掛けています。',
     thumbnail: '/images/omatsu/project/kamigawara/01.jpg',
@@ -146,6 +158,7 @@ export const projects: OmatsuProject[] = [
     area: '愛媛県新居浜市中萩校区（萩生西）',
     period: '2026年10月16日（金）〜18日（日）',
     deadline: '2026年9月28日（月）',
+    deadlineDate: '2026-09-28',
     summary:
       '2尺5寸の大太鼓と、自分たちの手で担ぎきる豪快な「担ぎ太鼓」。120年以上引き継がれてきた新居浜の太鼓台を、全力で担いでみませんか。1日だけの参加も可能です。',
     thumbnail: '/images/omatsu/project/hagyunishi/01.jpg',
@@ -159,12 +172,48 @@ export const projects: OmatsuProject[] = [
     area: '愛媛県西条市（石鎚神社）',
     period: '2026年10月5日（月）11:30〜15:00頃',
     deadline: '2026年9月25日（金）',
+    deadlineDate: '2026-09-25',
     summary:
       '御神像をお乗せした「おかげ神輿」の担ぎ手を募集。地域を練り歩いたのち、石鎚神社でしか行われない特殊神事「御神像拝戴」を体験できます。',
     thumbnail: '/images/omatsu/project/ishizuchi/01.jpg',
     status: '募集中',
   },
 ];
+
+/* ============================================================
+   募集状況の自動切り替え
+
+   deadlineDate（締切日）を過ぎたプロジェクトは、status を書き換えなくても
+   自動的に「募集終了」の扱いになる。締切日当日はまだ「募集中」のまま。
+
+   このサイトは静的生成なので、日付が変わっただけでは表示は変わらない。
+   GitHub Actions が毎日0時すぎ（日本時間）に再ビルドすることで切り替わる。
+   → .github/workflows/deploy.yml の schedule
+   ============================================================ */
+
+/** 日本時間の「今日」を YYYY-MM-DD で返す */
+export function todayJST(now: Date = new Date()): string {
+  return new Date(now.getTime() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
+}
+
+/** 締切日を過ぎているか（締切日当日は false ＝まだ募集中） */
+export function isPastDeadline(p: OmatsuProject, now: Date = new Date()): boolean {
+  return !!p.deadlineDate && todayJST(now) > p.deadlineDate;
+}
+
+/** 画面に表示する募集状況。手入力の status と締切日の両方を見て決める */
+export function projectStatus(
+  p: OmatsuProject,
+  now: Date = new Date()
+): OmatsuProject['status'] {
+  if (p.status === '募集中' && isPastDeadline(p, now)) return '募集終了';
+  return p.status;
+}
+
+/** まだエントリーを受け付けているか */
+export function isRecruiting(p: OmatsuProject, now: Date = new Date()): boolean {
+  return projectStatus(p, now) === '募集中';
+}
 
 /** エントリーフォームの選択肢や申込データに使う表記。
  *  「自治会名_お祭り名」の形に統一する。

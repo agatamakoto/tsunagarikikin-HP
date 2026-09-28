@@ -1,10 +1,10 @@
 ---
 // src/pages/projects/Omatsu-RebootCAMP/project/index.astro
 import OmatsuLayout from '../../../../layouts/OmatsuLayout.astro';
-import { BASE, projects } from '../../../../lib/omatsu';
+import { BASE, projectStatus, projects } from '../../../../lib/omatsu';
 
-const open = projects.filter((p) => p.status !== '募集終了');
-const closed = projects.filter((p) => p.status === '募集終了');
+const open = projects.filter((p) => projectStatus(p) !== '募集終了');
+const closed = projects.filter((p) => projectStatus(p) === '募集終了');
 ---
 
 <OmatsuLayout
@@ -63,7 +63,7 @@ const closed = projects.filter((p) => p.status === '募集終了');
                       </span>
                     </div>
                   )}
-                  <span class={`status is-${p.status}`}>{p.status}</span>
+                  <span class={`status is-${projectStatus(p)}`}>{projectStatus(p)}</span>
                 </div>
                 <div class="card-body">
                   <h2>{p.catchcopy || p.title}</h2>
@@ -100,7 +100,7 @@ const closed = projects.filter((p) => p.status === '募集終了');
       {
         closed.length > 0 && (
           <div class="closed om-appear">
-            <h2 class="closed-title">過去のプロジェクト</h2>
+            <h2 class="closed-title">募集を終了したお祭り</h2>
             <ul class="closed-list">
               {closed.map((p) => (
                 <li>

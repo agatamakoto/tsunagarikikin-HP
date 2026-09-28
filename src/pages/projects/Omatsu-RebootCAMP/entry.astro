@@ -1,9 +1,16 @@
 ---
 // src/pages/projects/Omatsu-RebootCAMP/entry.astro
 import OmatsuLayout from '../../../layouts/OmatsuLayout.astro';
-import { BASE, CONTACT_EMAIL, ENTRY_ENDPOINT, entryLabel, projects } from '../../../lib/omatsu';
+import {
+  BASE,
+  CONTACT_EMAIL,
+  ENTRY_ENDPOINT,
+  entryLabel,
+  projectStatus,
+  projects,
+} from '../../../lib/omatsu';
 
-const openProjects = projects.filter((p) => p.status !== '募集終了');
+const openProjects = projects.filter((p) => projectStatus(p) !== '募集終了');
 const formReady = ENTRY_ENDPOINT !== '';
 ---
 

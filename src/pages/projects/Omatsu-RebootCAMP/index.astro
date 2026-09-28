@@ -5,12 +5,16 @@ import {
   BASE,
   HERO_IMAGES,
   PROGRAM_IMAGE,
+  projectStatus,
   projects,
   shorts,
   shortThumbnail,
   shortThumbnailFallback,
   YOUTUBE_CHANNEL_URL,
 } from '../../../lib/omatsu';
+
+// 「募集中のお祭り」の欄なので、締切を過ぎたものは載せない
+const openProjects = projects.filter((p) => projectStatus(p) !== '募集終了');
 
 const steps = [
   {
@@ -145,9 +149,9 @@ const steps = [
       </p>
 
       {
-        projects.length > 0 ? (
+        openProjects.length > 0 ? (
           <div class="project-grid om-appear">
-            {projects.slice(0, 3).map((p) => (
+            {openProjects.slice(0, 3).map((p) => (
               <a href={`${BASE}/project/${p.slug}`} class="project-card">
                 <div class="project-thumb">
                   {p.thumbnail ? (
@@ -160,7 +164,7 @@ const steps = [
                       </span>
                     </div>
                   )}
-                  <span class="status">{p.status}</span>
+                  <span class="status">{projectStatus(p)}</span>
                 </div>
                 <div class="project-card-body">
                   <h3>{p.catchcopy || p.title}</h3>
