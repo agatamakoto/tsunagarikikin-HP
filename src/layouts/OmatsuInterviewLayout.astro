@@ -1,4 +1,4 @@
----
+﻿---
 // src/layouts/OmatsuInterviewLayout.astro
 // 協賛企業インタビューの詳細ページ用レイアウト。
 // 本文は <slot /> にそのまま HTML を書けばよい。
@@ -30,6 +30,9 @@ const tier = sponsorTierLabels[info.tier];
   title={info.title}
   description={description || lead || `${info.company}へのインタビュー記事です。`}
   current="sponsor"
+  ogType="article"
+  ogImage={info.thumbnail}
+  noindex={info.hidden}
 >
   <div class="om-page-head">
     <div class="om-container">

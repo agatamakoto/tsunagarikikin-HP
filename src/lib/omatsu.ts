@@ -440,6 +440,11 @@ export interface OmatsuInterview {
   thumbnail?: string;
   /** 掲載日 YYYY-MM-DD（省略可） */
   date?: string;
+  /** true にすると「限定公開」。記事ページは本番に出るが、協賛企業ページの
+   *  カードにもロゴ下のリンクにも出ず、検索エンジンにも登録されない。
+   *  URLを知っている人だけが読める状態で、先方に確認してもらうときに使う。
+   *  正式に公開するときは、この1行を消すだけでよい。 */
+  hidden?: boolean;
 }
 
 /* ============================================================
@@ -467,19 +472,27 @@ export const interviews: OmatsuInterview[] = [
   //   thumbnail: '/images/omatsu/interviews/yada-denki.jpg',
   //   date: '2026-09-01',
   // },
-  // {
-  //   slug: 'toshin-giken',
-  //   company: '㈲東新技研さま',
-  //   tier: 'silver',
-  //   title: '記事のタイトル',
-  //   thumbnail: '/images/omatsu/interviews/toshin-giken.jpg',
-  // },
+  {
+    slug: 'toshin-giken',
+    company: '㈲東新技研さま',
+    tier: 'silver',
+    title: '祭りの原風景ー父がかき夫、私が指揮者、息子が太鼓ー',
+    summary:
+      '飯積神社祭礼・大谷太鼓台。父と自分と息子が同じ台に立った日のことから、担い手が減るなかで受け入れる側にできることまで伺いました。',
+    thumbnail: '/images/omatsu/interviews/toshin-giken/main.jpg',
+    date: '2026-09-26',
+    // 先方確認中のため限定公開（URLを知っている人だけ）。公開時はこの行を消す。
+    hidden: true,
+  },
 ];
 
 /** slug からインタビュー記事の情報を引く */
 export function findInterview(slug: string): OmatsuInterview | undefined {
   return interviews.find((i) => i.slug === slug);
 }
+
+/** 協賛企業ページに出すインタビュー（限定公開のものを除いた一覧） */
+export const publicInterviews: OmatsuInterview[] = interviews.filter((i) => !i.hidden);
 
 /** お知らせ記事の一覧
  *  記事を追加したら、ここに1行足す。ページ本体は

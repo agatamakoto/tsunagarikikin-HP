@@ -4,17 +4,19 @@
 //
 // 【編集の仕方】
 //   ロゴの追加・並び順      … src/lib/omatsu.ts の sponsors 配列
-//   インタビューのカード    … src/lib/omatsu.ts の interviews 配列
+//   インタビューのカード    … src/lib/omatsu.ts の interviews 配列（hidden: true のものは出ません）
 //   インタビューの本文      … src/pages/projects/Omatsu-RebootCAMP/interview/<slug>.astro
 import OmatsuLayout from '../../../layouts/OmatsuLayout.astro';
 import {
   BASE,
   CONTACT_EMAIL,
-  findInterview,
-  interviews,
+  publicInterviews,
   sponsorTierLabels,
   sponsorsByTier,
 } from '../../../lib/omatsu';
+
+// ロゴ下に「インタビューを読む →」を出してよい企業（限定公開の記事は除く）
+const publicSlugs = new Set(publicInterviews.map((iv) => iv.slug));
 
 // 協賛のお問い合わせ用。件名と本文の雛形を入れた状態でメールソフトが開く
 const sponsorMailto =
@@ -160,7 +162,7 @@ const tiers = (['gold', 'silver', 'bronze'] as const).map((tier) => ({
                         <span class="material-icons-outlined">open_in_new</span>
                       </a>
                     )}
-                    {s.interviewSlug && findInterview(s.interviewSlug) && (
+                    {s.interviewSlug && publicSlugs.has(s.interviewSlug) && (
                       <a href={`${BASE}/interview/${s.interviewSlug}`} class="logo-interview">
                         インタビューを読む →
                       </a>
@@ -178,10 +180,10 @@ const tiers = (['gold', 'silver', 'bronze'] as const).map((tier) => ({
   </section>
 
   <!-- ===== ③ インタビュー記事 =====
-       src/lib/omatsu.ts の interviews が空のあいだは、この欄ごと表示されません。
+       src/lib/omatsu.ts の interviews が空（または hidden: true だけ）のあいだは、この欄ごと表示されません。
        記事を1件でも登録すると自動的に現れます。 -->
   {
-    interviews.length > 0 && (
+    publicInterviews.length > 0 && (
       <section class="interviews">
         <div class="om-container">
           <div class="om-sec-head om-appear">
@@ -195,7 +197,7 @@ const tiers = (['gold', 'silver', 'bronze'] as const).map((tier) => ({
           </p>
 
           <ul class="interview-grid om-appear">
-            {interviews.map((iv) => (
+            {publicInterviews.map((iv) => (
               <li>
                 <a href={`${BASE}/interview/${iv.slug}`} class="iv-card">
                   <div class="iv-thumb">
