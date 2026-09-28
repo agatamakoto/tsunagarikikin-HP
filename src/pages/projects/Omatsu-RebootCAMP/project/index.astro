@@ -101,18 +101,42 @@ const closed = projects.filter((p) => projectStatus(p) === '募集終了');
         closed.length > 0 && (
           <div class="closed om-appear">
             <h2 class="closed-title">募集を終了したお祭り</h2>
-            <ul class="closed-list">
+            <p class="closed-lead">
+              今年の募集は終了しましたが、これまでに担い手を募集したお祭りとして掲載しています。
+              <br />
+              来年以降の募集にご関心のある方は、事務局までお問い合わせください。
+            </p>
+            <div class="card-grid">
               {closed.map((p) => (
-                <li>
-                  <a href={`${BASE}/project/${p.slug}`}>
-                    <span class="closed-name">{p.title}</span>
-                    <span class="closed-meta">
-                      {p.organization}／{p.period}
-                    </span>
-                  </a>
-                </li>
+                <a href={`${BASE}/project/${p.slug}`} class="card is-closed">
+                  <div class="card-thumb">
+                    {p.thumbnail ? (
+                      <img src={p.thumbnail} alt={`${p.organization}の様子`} loading="lazy" />
+                    ) : (
+                      <div class="om-ph">
+                        <span>
+                          写真
+                          <span class="note">{p.organization}</span>
+                        </span>
+                      </div>
+                    )}
+                    <span class="status is-募集終了">募集終了</span>
+                  </div>
+                  <div class="card-body">
+                    <h2>{p.catchcopy || p.title}</h2>
+                    <p class="meta">
+                      {p.organization}／{p.title}
+                      <br />
+                      {p.area}
+                      <br />
+                      {p.period}
+                    </p>
+                    <p class="summary">{p.summary}</p>
+                    <span class="more">お祭りの紹介を見る →</span>
+                  </div>
+                </a>
               ))}
-            </ul>
+            </div>
           </div>
         )
       }
@@ -196,6 +220,10 @@ const closed = projects.filter((p) => projectStatus(p) === '募集終了');
     background: var(--om-black);
   }
 
+  .status.is-募集終了 {
+    background: #8c8c8c;
+  }
+
   .card h2 {
     font-size: 21px;
     font-weight: 700;
@@ -272,32 +300,29 @@ const closed = projects.filter((p) => projectStatus(p) === '募集終了');
     border-bottom: 2px solid var(--om-blue);
   }
 
-  .closed-list {
-    margin-top: 8px;
-  }
-
-  .closed-list a {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px 24px;
-    align-items: baseline;
-    padding: 20px 4px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    transition: color 0.2s ease;
-  }
-
-  .closed-list a:hover {
-    color: var(--om-blue);
-  }
-
-  .closed-name {
-    font-size: 17px;
-    font-weight: 700;
-  }
-
-  .closed-meta {
-    font-size: 13px;
+  .closed-lead {
+    font-size: 15px;
+    line-height: 2;
     color: var(--om-gray);
+    margin: 20px 0 32px;
+  }
+
+  /* 募集が終わったお祭りのカード。記録として残すので、
+     募集中のものと見分けがつくよう少し落ち着かせる */
+  .card.is-closed {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  }
+
+  .card.is-closed .card-thumb img {
+    filter: grayscale(0.55);
+  }
+
+  .card.is-closed:hover .card-thumb img {
+    filter: grayscale(0);
+  }
+
+  .card.is-closed h2 {
+    color: var(--om-black);
   }
 
   @media (max-width: 900px) {
