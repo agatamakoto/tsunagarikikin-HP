@@ -505,23 +505,40 @@ import Footer from '../../components/Footer.astro';
     calc();
   }
 
+  // 給与収入 → 給与所得（給与所得控除後）。令和7年分以降の表（最低控除額65万円）
   function getNetIncome(income: number) {
-    if (income <= 1625000) return income * 0.4;
-    if (income <= 1800000) return income - 650000;
-    if (income <= 3600000) return income * 0.7 - 180000;
-    if (income <= 6600000) return income * 0.8 - 540000;
+    if (income <= 1900000) return Math.max(0, income - 650000);
+    if (income <= 3600000) return income * 0.7 - 80000;
+    if (income <= 6600000) return income * 0.8 - 440000;
     if (income <= 8500000) return income * 0.9 - 1100000;
     return income - 1950000;
   }
 
+  // 所得税の速算表：[課税所得の上限, 税率, 控除額]
+  const TAX_TABLE: [number, number, number][] = [
+    [1950000, 0.05, 0],
+    [3300000, 0.10, 97500],
+    [6950000, 0.20, 427500],
+    [9000000, 0.23, 636000],
+    [18000000, 0.33, 1536000],
+    [40000000, 0.40, 2796000],
+    [Infinity, 0.45, 4796000],
+  ];
+
+  function getTaxable(netIncome: number) {
+    return Math.max(0, netIncome - 480000);
+  }
+
   function getTaxRate(netIncome: number) {
-    const taxable = Math.max(0, netIncome - 480000);
-    if (taxable <= 1950000) return 0.05;
-    if (taxable <= 3300000) return 0.10;
-    if (taxable <= 6950000) return 0.20;
-    if (taxable <= 9000000) return 0.23;
-    if (taxable <= 18000000) return 0.33;
-    return 0.40;
+    const taxable = getTaxable(netIncome);
+    return TAX_TABLE.find(([limit]) => taxable <= limit)![1];
+  }
+
+  // その年の所得税額（概算）。税額控除の上限（所得税額の25%）の計算に使う
+  function getIncomeTax(netIncome: number) {
+    const taxable = getTaxable(netIncome);
+    const [, rate, deduction] = TAX_TABLE.find(([limit]) => taxable <= limit)!;
+    return Math.max(0, taxable * rate - deduction);
   }
 
   function fmt(n: number) {
@@ -531,19 +548,21 @@ import Footer from '../../components/Footer.astro';
   function calc() {
     const income = parseInt((document.getElementById('income') as HTMLInputElement).value) || 0;
     const donation = parseInt((document.getElementById('donation') as HTMLInputElement).value) || 0;
-    const base = Math.max(0, donation - 2000);
     const netIncome = getNetIncome(income);
     const taxRate = getTaxRate(netIncome);
+    // 控除の対象になる寄付額は所得の40%（住民税は30%）まで。そこから2,000円を引く
+    const incomeBase = Math.max(0, Math.min(donation, netIncome * 0.40) - 2000);
+    const juminBase = Math.max(0, Math.min(donation, netIncome * 0.30) - 2000);
 
     let incomeTaxRefund: number, juminzeiRefund: number;
 
     if (method === 'tax') {
-      incomeTaxRefund = Math.min(base * 0.40, netIncome * 0.40 * taxRate);
-      juminzeiRefund = Math.min(base * 0.10, netIncome * 0.30 * 0.10);
+      // 税額控除：40%を控除。ただし所得税額の25%が上限
+      incomeTaxRefund = Math.min(incomeBase * 0.40, getIncomeTax(netIncome) * 0.25);
     } else {
-      incomeTaxRefund = Math.min(base, netIncome * 0.40) * taxRate;
-      juminzeiRefund = Math.min(base, netIncome * 0.30) * 0.10;
+      incomeTaxRefund = incomeBase * taxRate;
     }
+    juminzeiRefund = juminBase * 0.10;
 
     const totalRefund = incomeTaxRefund + juminzeiRefund;
     const net = Math.max(0, donation - totalRefund);
