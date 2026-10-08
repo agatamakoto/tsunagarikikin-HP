@@ -101,9 +101,9 @@ import Footer from '../../components/Footer.astro';
           <li>税額控除の場合、所得税の控除額はその年の所得税額の<strong>25%が上限</strong>となります。</li>
           <li>所得控除：（寄付額－2,000円）を課税所得から差し引き、税率を乗じた額を軽減します。</li>
           <li>控除の対象となる寄付金額の上限は、その年の総所得金額等の40%（住民税は30%）が目安となります。</li>
-          <li>給与所得者の場合、給与所得控除後の所得を基準に計算しています。</li>
+          <li>給与所得者の場合、給与所得控除後の所得を基準に計算しています。給与所得控除・基礎控除は、令和7年度・令和8年度税制改正後の金額（寄付をする年の分）を使っています。</li>
           <li>住民税の控除（最大10%）は、当財団が<strong>条例指定されている自治体（愛媛県・西条市など）にお住まいの方のみ</strong>適用されます。それ以外の地域にお住まいの方は、住民税の控除は受けられません。</li>
-          <li>本シミュレーションは他の控除（扶養控除・医療費控除・住宅ローン控除・ふるさと納税など）を考慮していません。これらを利用される場合、実際の軽減額がシミュレーション結果より少なくなる場合があります。</li>
+          <li>本シミュレーションは他の控除（社会保険料控除・扶養控除・医療費控除・住宅ローン控除・ふるさと納税など）を考慮していません。これらを利用される場合、実際の軽減額がシミュレーション結果より少なくなる場合があります。</li>
           <li>当財団は税額控除対象法人としての証明を受けています。</li>
           <li>本シミュレーションでは、復興特別所得税の軽減分は考慮していません。</li>
         </ul>
@@ -505,13 +505,51 @@ import Footer from '../../components/Footer.astro';
     calc();
   }
 
-  // 給与収入 → 給与所得（給与所得控除後）。令和7年分以降の表（最低控除額65万円）
+  // 計算の基準にする年分（寄付をする年＝今年。令和7年分より前は令和7年分の制度で計算）
+  const TAX_YEAR = Math.max(2025, new Date().getFullYear());
+
+  // 給与所得控除の最低保障額（令和7年度・令和8年度税制改正）
+  //   令和7年分：65万円／令和8・9年分：74万円（本則69万円＋特例5万円）／令和10年分～：69万円
+  function getMinKyuyoKojo() {
+    if (TAX_YEAR <= 2025) return 650000;
+    if (TAX_YEAR <= 2027) return 740000;
+    return 690000;
+  }
+
+  // 給与収入 → 給与所得（給与所得控除後）
   function getNetIncome(income: number) {
-    if (income <= 1900000) return Math.max(0, income - 650000);
-    if (income <= 3600000) return income * 0.7 - 80000;
-    if (income <= 6600000) return income * 0.8 - 440000;
-    if (income <= 8500000) return income * 0.9 - 1100000;
-    return income - 1950000;
+    let kojo: number;
+    if (income <= 3600000) kojo = income * 0.3 + 80000;
+    else if (income <= 6600000) kojo = income * 0.2 + 440000;
+    else if (income <= 8500000) kojo = income * 0.1 + 1100000;
+    else kojo = 1950000;
+    kojo = Math.max(kojo, getMinKyuyoKojo());
+    return Math.max(0, income - kojo);
+  }
+
+  // 所得税の基礎控除（合計所得金額に応じて変わる。令和7年度・令和8年度税制改正）
+  function getKisoKojo(netIncome: number) {
+    if (netIncome > 25000000) return 0;
+    if (netIncome > 24500000) return 160000;
+    if (netIncome > 24000000) return 320000;
+    if (netIncome > 23500000) return 480000;
+    if (TAX_YEAR <= 2025) {
+      // 令和7年分
+      if (netIncome <= 1320000) return 950000;
+      if (netIncome <= 3360000) return 880000;
+      if (netIncome <= 4890000) return 680000;
+      if (netIncome <= 6550000) return 630000;
+      return 580000;
+    }
+    if (TAX_YEAR <= 2027) {
+      // 令和8年分・令和9年分（本則62万円＋特例の上乗せ）
+      if (netIncome <= 4890000) return 1040000;
+      if (netIncome <= 6550000) return 670000;
+      return 620000;
+    }
+    // 令和10年分～
+    if (netIncome <= 1320000) return 990000;
+    return 620000;
   }
 
   // 所得税の速算表：[課税所得の上限, 税率, 控除額]
@@ -525,8 +563,9 @@ import Footer from '../../components/Footer.astro';
     [Infinity, 0.45, 4796000],
   ];
 
+  // 課税所得（概算）＝給与所得－基礎控除。社会保険料控除などは考慮しない
   function getTaxable(netIncome: number) {
-    return Math.max(0, netIncome - 480000);
+    return Math.max(0, netIncome - getKisoKojo(netIncome));
   }
 
   function getTaxRate(netIncome: number) {
