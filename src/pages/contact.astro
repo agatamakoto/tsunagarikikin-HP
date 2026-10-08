@@ -3,6 +3,10 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { DONATION_API_URL } from '../lib/donationConfig';
+
+// 寄付システムと同じ Cloudflare Worker の /contact に送る（事務局 info@escf.jp へメール転送）
+const CONTACT_ENDPOINT = `${DONATION_API_URL}/contact`;
 ---
 
 <Layout title="お問い合わせ" description="つながり基金へのお問い合わせページ">
@@ -20,7 +24,13 @@ import Footer from '../components/Footer.astro';
           <h2>お問い合わせフォーム</h2>
         </div>
 
-        <form class="form-panel">
+        <form class="form-panel" id="contact-form" novalidate>
+          <!-- ボット対策（人には見えない欄） -->
+          <div class="hp-field" aria-hidden="true">
+            <label for="website">ウェブサイト</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+          </div>
+
           <div class="form-row">
             <label for="name">お名前（必須）</label>
             <input type="text" id="name" name="name" placeholder="例：山田 太郎" required />
@@ -49,10 +59,35 @@ import Footer from '../components/Footer.astro';
             <textarea id="message" name="message" rows="8" placeholder="お問い合わせ内容をご入力ください" required></textarea>
           </div>
 
+          <p class="form-error" id="contact-input-error" role="alert" hidden></p>
+
           <button type="submit" class="submit-button">送信内容を確認する</button>
 
           <p class="form-note">※ご入力いただいた個人情報は、お問い合わせへの対応以外の目的には使用いたしません。取り扱いの詳細は<a href="/privacy">プライバシーポリシー</a>をご覧ください。</p>
         </form>
+
+        <!-- 確認画面 -->
+        <div class="form-panel" id="contact-confirm" hidden>
+          <p class="confirm-lead">以下の内容で送信します。よろしければ「送信する」を押してください。</p>
+          <dl class="confirm-list">
+            <dt>お名前</dt><dd data-confirm="name"></dd>
+            <dt>メールアドレス</dt><dd data-confirm="email"></dd>
+            <dt>お問い合わせの目的</dt><dd data-confirm="purpose"></dd>
+            <dt>メッセージ</dt><dd data-confirm="message" class="confirm-message"></dd>
+          </dl>
+          <p class="form-error" id="contact-send-error" role="alert" hidden></p>
+          <div class="confirm-actions">
+            <button type="button" class="back-button" id="contact-back">入力画面に戻る</button>
+            <button type="button" class="submit-button" id="contact-send">送信する</button>
+          </div>
+        </div>
+
+        <!-- 送信完了 -->
+        <div class="form-panel" id="contact-done" hidden>
+          <p class="done-title">お問い合わせを受け付けました。</p>
+          <p>ご入力いただいたメールアドレスに、受付確認のメールをお送りしました。内容を確認の上、担当者より折り返しご連絡いたします。</p>
+          <p class="form-note">※確認メールが届かない場合は、迷惑メールフォルダをご確認いただくか、お電話（0897-47-6943）でお問い合わせください。</p>
+        </div>
       </section>
 
       <section class="section faq-section">
@@ -116,7 +151,201 @@ import Footer from '../components/Footer.astro';
   <Footer />
 </Layout>
 
+<script is:inline define:vars={{ CONTACT_ENDPOINT }}>
+  (function () {
+    var form = document.getElementById('contact-form');
+    var confirmBox = document.getElementById('contact-confirm');
+    var doneBox = document.getElementById('contact-done');
+    var inputError = document.getElementById('contact-input-error');
+    var sendError = document.getElementById('contact-send-error');
+    var sendBtn = document.getElementById('contact-send');
+    var backBtn = document.getElementById('contact-back');
+    if (!form) return;
+
+    function showError(el, msg) {
+      el.textContent = msg;
+      el.hidden = !msg;
+    }
+    function values() {
+      var purposeSel = form.elements.purpose;
+      return {
+        name: form.elements.name.value.trim(),
+        email: form.elements.email.value.trim(),
+        purpose: purposeSel.value,
+        purposeLabel: purposeSel.value ? purposeSel.options[purposeSel.selectedIndex].text : '',
+        message: form.elements.message.value.trim(),
+        website: form.elements.website.value,
+      };
+    }
+    function scrollTo(el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // 「送信内容を確認する」：ページを再読み込みせず、確認画面に切り替える
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = values();
+      var missing = [];
+      if (!v.name) missing.push('お名前');
+      if (!v.email) missing.push('メールアドレス');
+      if (!v.purpose) missing.push('お問い合わせの目的');
+      if (!v.message) missing.push('メッセージ');
+      if (missing.length) {
+        showError(inputError, '未入力の項目があります：' + missing.join('、'));
+        return;
+      }
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v.email)) {
+        showError(inputError, 'メールアドレスの形式が正しくありません。');
+        return;
+      }
+      showError(inputError, '');
+      confirmBox.querySelector('[data-confirm="name"]').textContent = v.name;
+      confirmBox.querySelector('[data-confirm="email"]').textContent = v.email;
+      confirmBox.querySelector('[data-confirm="purpose"]').textContent = v.purposeLabel;
+      confirmBox.querySelector('[data-confirm="message"]').textContent = v.message;
+      showError(sendError, '');
+      form.hidden = true;
+      confirmBox.hidden = false;
+      scrollTo(confirmBox);
+    });
+
+    // 「入力画面に戻る」：入力内容はそのまま残る
+    backBtn.addEventListener('click', function () {
+      confirmBox.hidden = true;
+      form.hidden = false;
+      scrollTo(form);
+    });
+
+    // 「送信する」
+    sendBtn.addEventListener('click', function () {
+      var v = values();
+      sendBtn.disabled = true;
+      backBtn.disabled = true;
+      sendBtn.textContent = '送信中…';
+      showError(sendError, '');
+      fetch(CONTACT_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: v.name,
+          email: v.email,
+          purpose: v.purpose,
+          message: v.message,
+          website: v.website,
+        }),
+      })
+        .then(function (res) {
+          return res.json().catch(function () { return {}; }).then(function (data) {
+            if (!res.ok || !data.ok) throw new Error(data.error || '送信に失敗しました。');
+          });
+        })
+        .then(function () {
+          confirmBox.hidden = true;
+          doneBox.hidden = false;
+          form.reset();
+          scrollTo(doneBox);
+        })
+        .catch(function (err) {
+          showError(sendError, (err && err.message ? err.message : '送信に失敗しました。') +
+            ' 解決しない場合は、お電話（0897-47-6943）でご連絡ください。');
+        })
+        .finally(function () {
+          sendBtn.disabled = false;
+          backBtn.disabled = false;
+          sendBtn.textContent = '送信する';
+        });
+    });
+  })();
+</script>
+
 <style>
+  .hp-field {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .form-error {
+    margin-bottom: var(--spacing-md);
+    padding: 0.9rem 1.1rem;
+    border-radius: 12px;
+    background: #fdecec;
+    color: #a12a2a;
+    font-weight: 700;
+    line-height: 1.6;
+  }
+
+  .confirm-lead,
+  .done-title {
+    font-weight: 700;
+    color: var(--color-dark);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .done-title {
+    font-size: 1.15rem;
+    color: var(--color-primary);
+  }
+
+  .confirm-list {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.75rem 1.25rem;
+    margin: 0 0 var(--spacing-lg);
+    background: white;
+    border-radius: 16px;
+    padding: var(--spacing-lg);
+  }
+
+  .confirm-list dt {
+    font-weight: 700;
+    color: var(--color-dark);
+  }
+
+  .confirm-list dd {
+    margin: 0;
+    color: var(--color-dark);
+    word-break: break-word;
+  }
+
+  .confirm-message {
+    white-space: pre-wrap;
+    line-height: 1.75;
+  }
+
+  .confirm-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+  }
+
+  .back-button {
+    background: white;
+    color: var(--color-dark);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 999px;
+    padding: 1rem 1.6rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .submit-button:disabled,
+  .back-button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+
+  @media (max-width: 600px) {
+    .confirm-list {
+      grid-template-columns: 1fr;
+    }
+    .confirm-list dd {
+      margin-bottom: 0.5rem;
+    }
+  }
+
   .page {
     padding: var(--spacing-2xl) 0;
     max-width: 940px;

@@ -57,6 +57,14 @@ export default {
       return handleOmatsuEntry(ebody, env, ctx, cors);
     }
 
+    // ===== HPのお問い合わせフォーム（/contact ページ） =====
+    // 内容を事務局(info@escf.jp)にメールで転送し、送信者には受付確認を返す。
+    if (url.pathname === "/contact" && request.method === "POST") {
+      let qbody;
+      try { qbody = await request.json(); } catch { return json({ error: "invalid json" }, 400, cors); }
+      return handleContact(qbody, env, ctx, cors);
+    }
+
     if (request.method !== "POST") return json({ error: "method not allowed" }, 405, cors);
 
     let body;
@@ -350,6 +358,100 @@ async function handleOmatsuEntry(body, env, ctx, cors) {
       subject: "【OMATSU-RebootCAMP】エントリーを受け付けました",
       html: `<pre style="font-family:sans-serif;font-size:14px;line-height:1.8;white-space:pre-wrap;">${escapeHtml(applicantText)}</pre>`,
       text: applicantText,
+    })
+  );
+
+  return json({ ok: true }, 200, cors);
+}
+
+// ===== HPのお問い合わせ =====
+const CONTACT_OFFICE_TO = "info@escf.jp";
+const CONTACT_PURPOSES = {
+  donation: "寄付について（個人・法人・遺贈など）",
+  grant: "助成金の申請・相談について",
+  support: "伴走支援・協働プロジェクトについて",
+  media: "取材・メディア掲載について",
+  volunteer: "ボランティア・プロボノに興味がある",
+  other: "その他のお問い合わせ",
+};
+
+async function handleContact(body, env, ctx, cors) {
+  // ボット対策：人には見えない欄に入力があれば、受け付けたふりをして捨てる
+  if (str(body.website, 200)) return json({ ok: true }, 200, cors);
+
+  const name = str(body.name, 100);
+  const email = str(body.email, 200);
+  const purpose = CONTACT_PURPOSES[body.purpose] || "";
+  const message = str(body.message, 5000);
+
+  const missing = [];
+  if (!name) missing.push("お名前");
+  if (!email) missing.push("メールアドレス");
+  if (!purpose) missing.push("お問い合わせの目的");
+  if (!message) missing.push("メッセージ");
+  if (missing.length) {
+    return json({ error: "未入力の項目があります：" + missing.join("、") }, 400, cors);
+  }
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    return json({ error: "メールアドレスの形式が正しくありません" }, 400, cors);
+  }
+  if (!env.RESEND_API_KEY) {
+    return json({ error: "現在フォームをご利用いただけません。お手数ですがお電話（0897-47-6943）でご連絡ください。" }, 503, cors);
+  }
+
+  const receivedAt = jstDateTimeString();
+  const fields = [
+    ["お名前", name],
+    ["メールアドレス", email],
+    ["お問い合わせの目的", purpose],
+    ["メッセージ", message],
+  ];
+  const rows = fields
+    .map(
+      ([k, v]) =>
+        `<tr><th align="left" style="padding:8px 12px;background:#f6f6f6;white-space:nowrap;vertical-align:top;">${escapeHtml(k)}</th>` +
+        `<td style="padding:8px 12px;">${escapeHtml(v).replace(/\n/g, "<br>")}</td></tr>`
+    )
+    .join("");
+  const listText = fields.map(([k, v]) => k + "：" + v).join("\n");
+
+  const officeSent = await sendResendMail(env, {
+    to: [CONTACT_OFFICE_TO],
+    replyTo: email,
+    subject: `【HPお問い合わせ】${purpose}：${name}様`,
+    html:
+      `<p>HPのお問い合わせフォームから連絡がありました。</p>` +
+      `<p>受付日時：${escapeHtml(receivedAt)}</p>` +
+      `<table border="1" cellspacing="0" cellpadding="0" style="border-collapse:collapse;font-size:14px;">${rows}</table>` +
+      `<p style="font-size:13px;color:#666;">※このメールに返信すると送信者ご本人に届きます。</p>`,
+    text: "HPのお問い合わせフォームから連絡がありました。\n受付日時：" + receivedAt + "\n\n" + listText,
+  });
+  // 事務局に届かなければ受付できたことにしない
+  if (!officeSent) {
+    return json({ error: "送信に失敗しました。時間をおいて再度お試しいただくか、お電話（0897-47-6943）でご連絡ください。" }, 502, cors);
+  }
+
+  // --- 送信者宛の受付確認メール（失敗しても受付自体は成立させる） ---
+  const replyText =
+    `${name} 様\n\n` +
+    "公益財団法人えひめ西条つながり基金へお問い合わせいただき、ありがとうございます。\n" +
+    "以下の内容で受け付けました。担当者より折り返しご連絡いたします。\n\n" +
+    "――――――――――――――――――\n" +
+    listText +
+    "\n――――――――――――――――――\n\n" +
+    "※このメールは自動送信です。追加のご連絡は、このままご返信ください。\n\n" +
+    "公益財団法人えひめ西条つながり基金\n" +
+    "〒793-0030 愛媛県西条市大町1663番地\n" +
+    "TEL 0897-47-6943\n" +
+    "https://escf.jp/\n";
+
+  ctx.waitUntil(
+    sendResendMail(env, {
+      to: [email],
+      replyTo: CONTACT_OFFICE_TO,
+      subject: "【えひめ西条つながり基金】お問い合わせを受け付けました",
+      html: `<pre style="font-family:sans-serif;font-size:14px;line-height:1.8;white-space:pre-wrap;">${escapeHtml(replyText)}</pre>`,
+      text: replyText,
     })
   );
 
