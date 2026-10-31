@@ -102,6 +102,10 @@ function statusLabel(grant: Grant): string | null {
             </div>
           </div>
         )}
+
+        <p class="grant-results-link">
+          <a href="/activities/grants">これまでの助成実績を見る →</a>
+        </p>
       </section>
 
       <section id="crowdfunding" class="section section-crowdfunding">
@@ -242,6 +246,16 @@ function statusLabel(grant: Grant): string | null {
   .show-more-wrap {
     text-align: center;
     margin-top: var(--spacing-lg);
+  }
+
+  .grant-results-link {
+    text-align: center;
+    margin-top: var(--spacing-xl);
+    font-weight: 700;
+  }
+
+  .grant-results-link a {
+    color: var(--color-primary);
   }
 
   .show-more-btn {

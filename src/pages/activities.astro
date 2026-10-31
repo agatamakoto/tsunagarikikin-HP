@@ -5,6 +5,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { client } from '../lib/microcms';
 import type { News, Statistic, Report } from '../lib/microcms';
+import { GRANT_TOTAL, GRANT_ORG_COUNT } from '../data/grantResults';
 
 let newsList: News[] = [];
 let stats: Statistic | null = null;
@@ -52,6 +53,22 @@ try {
             <p class="stat-value">{stats ? stats.supporter_count.toLocaleString() : '集計中'}</p>
             <p class="stat-unit">{stats ? '人' : ''}</p>
           </article>
+
+          <article class="stat-card">
+            <p class="stat-label">助成総額</p>
+            <p class="stat-value">{Math.floor(GRANT_TOTAL / 10000).toLocaleString()}万</p>
+            <p class="stat-unit">円</p>
+          </article>
+
+          <article class="stat-card">
+            <p class="stat-label">助成先</p>
+            <p class="stat-value">{GRANT_ORG_COUNT}</p>
+            <p class="stat-unit">団体</p>
+          </article>
+        </div>
+
+        <div class="grant-results-link">
+          <a href="/activities/grants" class="results-button">助成実績を見る</a>
         </div>
       </section>
 
@@ -195,6 +212,26 @@ try {
     margin-top: var(--spacing-sm);
     color: var(--color-dark);
     font-weight: 700;
+  }
+
+  .grant-results-link {
+    text-align: center;
+    margin-top: var(--spacing-xl);
+  }
+
+  .results-button {
+    display: inline-block;
+    background: var(--color-primary);
+    color: white;
+    font-weight: 700;
+    padding: 0.9rem 2.4rem;
+    border-radius: 999px;
+    text-decoration: none;
+  }
+
+  .results-button:hover {
+    opacity: 0.88;
+    color: white;
   }
 
   .report-grid {

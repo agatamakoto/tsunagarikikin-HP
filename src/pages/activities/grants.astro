@@ -1,0 +1,235 @@
+---
+// src/pages/activities/grants.astro
+// 助成実績：これまでに助成した団体と金額の一覧（データは src/data/grantResults.ts）
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { GRANT_PROGRAMS, GRANT_TOTAL, GRANT_COUNT, GRANT_ORG_COUNT } from '../../data/grantResults';
+
+const yen = (n: number) => n.toLocaleString('ja-JP');
+
+// 年度ごとにまとめる（データの並び順＝新しい年度が先）
+const years: { year: string; programs: typeof GRANT_PROGRAMS }[] = [];
+for (const p of GRANT_PROGRAMS) {
+  const last = years[years.length - 1];
+  if (last && last.year === p.year) last.programs.push(p);
+  else years.push({ year: p.year, programs: [p] });
+}
+---
+
+<Layout title="助成実績" description="えひめ西条つながり基金がこれまでに助成した団体と金額の一覧です。">
+  <Header />
+
+  <main>
+    <div class="container page">
+      <nav class="breadcrumb">
+        <a href="/activities">← 活動を知るに戻る</a>
+      </nav>
+
+      <h1>助成実績</h1>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <p class="stat-label">助成総額</p>
+          <p class="stat-value">{yen(GRANT_TOTAL)}<span class="stat-unit">円</span></p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">助成先</p>
+          <p class="stat-value">{GRANT_ORG_COUNT}<span class="stat-unit">団体</span></p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">助成の数</p>
+          <p class="stat-value">{GRANT_COUNT}<span class="stat-unit">件</span></p>
+        </div>
+      </div>
+
+      {years.map(({ year, programs }) => (
+        <section class="year">
+          <h2>{year}</h2>
+          {programs.map((p) => (
+            <div class="program">
+              <h3>
+                {p.page ? <a href={p.page}>{p.title}</a> : p.title}
+              </h3>
+              <ul class="recipients">
+                {p.recipients.map((r) => (
+                  <li class="recipient">
+                    <span class="recipient-name">{r.name}</span>
+                    <span class="recipient-amount">{yen(r.amount)}円</span>
+                    {r.report
+                      ? <a class="report-link" href={r.report} target="_blank" rel="noopener">報告書（PDF）</a>
+                      : <span class="report-link report-link--none">報告書なし</span>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </section>
+      ))}
+
+      <p class="note">金額は実際にお支払いした額です。報告書は、個人のお名前を伏せて掲載しています。</p>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .page {
+    padding: var(--spacing-2xl) 0;
+    max-width: 900px;
+  }
+
+  .breadcrumb {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .breadcrumb a {
+    color: var(--color-primary);
+    font-weight: 700;
+  }
+
+  h1 {
+    color: var(--color-primary);
+    border-bottom: 3px solid var(--color-primary);
+    padding-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .stat-card {
+    background: var(--color-white);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 20px;
+    padding: var(--spacing-lg);
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(44, 62, 80, 0.05);
+  }
+
+  .stat-label {
+    color: var(--color-dark);
+    font-weight: 700;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .stat-value {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: var(--color-accent);
+    line-height: 1.1;
+  }
+
+  .stat-unit {
+    font-size: 1.1rem;
+    margin-left: 0.2em;
+    color: var(--color-dark);
+  }
+
+  .year {
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .year h2 {
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .program {
+    background: var(--color-white);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .program h3 {
+    font-size: 1.15rem;
+    color: var(--color-dark);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .program h3 a {
+    color: var(--color-primary);
+  }
+
+  .recipients {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .recipient {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: 0.75rem 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .recipient-name {
+    font-weight: 700;
+    color: var(--color-dark);
+  }
+
+  .recipient-amount {
+    font-weight: 800;
+    color: var(--color-dark);
+    white-space: nowrap;
+  }
+
+  .report-link {
+    font-weight: 700;
+    color: var(--color-primary);
+    white-space: nowrap;
+    min-width: 7.5em;
+    text-align: right;
+  }
+
+  .report-link--none {
+    color: var(--color-gray);
+    font-weight: 400;
+  }
+
+  .note {
+    color: var(--color-dark);
+    line-height: 1.8;
+  }
+
+  @media (max-width: 700px) {
+    .page {
+      padding: var(--spacing-xl) 0;
+    }
+
+    .stat-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .stat-grid .stat-card:first-child {
+      grid-column: 1 / -1;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+    }
+
+    .recipient {
+      grid-template-columns: 1fr auto;
+      row-gap: 0.25rem;
+    }
+
+    .recipient-name {
+      grid-column: 1 / -1;
+    }
+
+    .report-link {
+      min-width: 0;
+    }
+  }
+</style>
