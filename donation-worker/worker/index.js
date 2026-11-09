@@ -537,6 +537,14 @@ async function sendThanks(env, { donor, kind, amount, subscriptionId, reference 
     bank: bankInfo(env), receiptAttached, certAttached,
   });
 
+  // 事務局にも同じメール（添付つき）の写しを送り、新しい寄付に気づけるようにする。
+  // 宛先は wrangler.toml の THANKS_COPY_TO（カンマ区切りで複数可）。
+  // 寄付者からは見えないように BCC で送る。
+  const copyTo = String(env.THANKS_COPY_TO || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => s && s !== donor.email);
+
   try {
     await fetch(resendEndpoint(env), {
       method: "POST",
@@ -547,6 +555,7 @@ async function sendThanks(env, { donor, kind, amount, subscriptionId, reference 
       body: JSON.stringify({
         from: "公益財団法人えひめ西条つながり基金 <info@escf.jp>",
         to: [donor.email],
+        ...(copyTo.length ? { bcc: copyTo } : {}),
         reply_to: "info@escf.jp",
         subject: mail.subject,
         html: mail.html,
