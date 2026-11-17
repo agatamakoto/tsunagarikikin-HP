@@ -98,6 +98,9 @@ export default {
     if (entityType === "corporate") {
       donor.companyName = str(body.companyName, 100);
       donor.companyKana = str(body.companyKana, 100);
+      // 決算月（1〜12）。古いページから送られた場合などは空のまま受け付ける
+      const fm = parseInt(body.fiscalMonth, 10);
+      donor.fiscalMonth = Number.isInteger(fm) && fm >= 1 && fm <= 12 ? fm : "";
       donor.contactName = str(body.contactName, 100);
       donor.contactKana = str(body.contactKana, 100);
       donor.department = str(body.department, 100);

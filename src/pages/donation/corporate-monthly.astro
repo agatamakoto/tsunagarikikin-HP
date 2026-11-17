@@ -50,6 +50,14 @@ import Footer from '../../components/Footer.astro';
         <label class="field-label" for="tmc-company-kana">法人名（フリガナ）<em>必須</em></label>
         <input type="text" id="tmc-company-kana" placeholder="カブシキガイシャサイジョウ">
 
+        <label class="field-label" for="tmc-fiscal-month">決算月<em>必須</em></label>
+        <select id="tmc-fiscal-month">
+          <option value="">選択してください</option>
+          {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+            <option value={m}>{m}月</option>
+          ))}
+        </select>
+
         <label class="field-label" for="tmc-contact">ご担当者名<em>必須</em></label>
         <input type="text" id="tmc-contact" placeholder="西条 太郎">
 
@@ -168,6 +176,7 @@ import Footer from '../../components/Footer.astro';
       amount,
       companyName: document.getElementById("tmc-company").value.trim(),
       companyKana: document.getElementById("tmc-company-kana").value.trim(),
+      fiscalMonth: document.getElementById("tmc-fiscal-month").value,
       contactName: document.getElementById("tmc-contact").value.trim(),
       contactKana: document.getElementById("tmc-contact-kana").value.trim(),
       department: document.getElementById("tmc-dept").value.trim(),
@@ -182,6 +191,7 @@ import Footer from '../../components/Footer.astro';
     };
 
     if (!payload.companyName || !payload.companyKana) { show("err", "法人名・フリガナを入力してください。"); return; }
+    if (!payload.fiscalMonth) { show("err", "決算月を選択してください。"); return; }
     if (!payload.contactName || !payload.contactKana) { show("err", "ご担当者名・フリガナを入力してください。"); return; }
     if (!payload.email) { show("err", "メールアドレスを入力してください。"); return; }
     if (!payload.phone) { show("err", "電話番号を入力してください。"); return; }
