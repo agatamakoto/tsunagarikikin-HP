@@ -2,6 +2,12 @@ name = "saijo-monthly-donation"
 main = "index.js"
 compatibility_date = "2024-11-01"
 
+# 毎月1日 0:00 UTC（＝日本時間 9:00）に自動実行
+#   マンスリーの法人サポーターのうち、先月が決算月の法人へ「年間寄付額のお知らせ」（決算用の明細・受領証ではない）を送る。
+#   処理の中身は annual.js。
+[triggers]
+crons = ["0 0 1 * *"]
+
 # 許可するオリジン（末尾スラッシュなし）※本番運用のため escf.jp に限定済み
 [vars]
 ALLOW_ORIGIN = "https://escf.jp"

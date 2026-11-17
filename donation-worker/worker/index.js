@@ -18,8 +18,16 @@
 
 import { buildReceiptPdf, makeReceiptNo } from "./receipt.js";
 import { appendDonationRow } from "./sheets.js";
+import { runAnnualStatements } from "./annual.js";
 
 export default {
+  // ===== 毎月1日 9:00（日本時間）に自動実行（wrangler.toml の [triggers]） =====
+  // マンスリーの法人サポーターのうち、先月が決算月の法人へ「年間寄付額のお知らせ」を送る。
+  // （受領証ではなく決算用の明細。詳しくは annual.js）
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(runAnnualStatements(env, new Date(event.scheduledTime)));
+  },
+
   async fetch(request, env, ctx) {
     const cors = {
       "Access-Control-Allow-Origin": env.ALLOW_ORIGIN || "*",

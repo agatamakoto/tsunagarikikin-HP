@@ -57,6 +57,7 @@ import Footer from '../../components/Footer.astro';
             <option value={m}>{m}月</option>
           ))}
         </select>
+        <p class="field-help">月額でご寄付の法人様には、決算月の翌月に1年間のご寄付の合計額をメールでお知らせします。</p>
 
         <label class="field-label" for="tmc-contact">ご担当者名<em>必須</em></label>
         <input type="text" id="tmc-contact" placeholder="西条 太郎">
@@ -290,4 +291,5 @@ import Footer from '../../components/Footer.astro';
   .msg.err { display: block; background: #fdecea; color: #b3261e; }
   .msg.ok { display: block; background: #e6f4ea; color: #1e7d34; }
   .note { font-size: 0.78rem; color: var(--color-gray); margin-top: 10px; }
+  .field-help { font-size: 0.9rem; color: var(--color-gray); margin: 6px 0 0; line-height: 1.7; }
 </style>
